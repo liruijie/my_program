@@ -253,12 +253,12 @@ void AnalyzeBuffer(unsigned char *Rec_buf)
 				if(Rec_buf[12] == 0x00)
 				{
 					printf("update parameter succeed\n");
-					//kill(getpid(),SIGUSR1);
+					kill(getpid(),SIGUSR1);
 				}
 				else
 				{
 					printf("update parameter failure\n");
-					//kill(getpid(),SIGUSR2);
+					kill(getpid(),SIGUSR2);
 				}
 				break;
 			default:              	//faultdata

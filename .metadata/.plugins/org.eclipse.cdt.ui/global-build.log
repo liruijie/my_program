@@ -12614,3 +12614,32 @@ Invoking: GCC C++ Linker
 g++ -L/usr/lib/oracle/12.1/client64/lib -o "ITC100_XJ"  ./source/ExternPlatform.o ./source/external_query.o ./source/main.o ./source/occi_opration.o ./source/parsing_report.o ./source/parsing_report_alalrm.o ./source/queue.o ./source/signal_check_time.o ./source/signal_control_heart.o ./source/signal_report.o ./source/signal_timeout_check.o ./source/web_control_heart.o ./source/web_message_recv.o ./source/web_online_heart.o   -lpthread -lm -locci -lnsl -lclntsh
 Finished building target: ITC100_XJ
  
+10:49:16 **** Build of configuration Debug for project ITC100_XJ ****
+make all 
+Building file: ../source/signal_report.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"source/signal_report.d" -MT"source/signal_report.o" -o "source/signal_report.o" "../source/signal_report.cpp"
+Finished building: ../source/signal_report.cpp
+ 
+Building target: ITC100_XJ
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "ITC100_XJ"  ./source/ExternPlatform.o ./source/external_query.o ./source/main.o ./source/occi_opration.o ./source/parsing_report.o ./source/parsing_report_alalrm.o ./source/queue.o ./source/signal_check_time.o ./source/signal_control_heart.o ./source/signal_report.o ./source/signal_timeout_check.o ./source/web_control_heart.o ./source/web_message_recv.o ./source/web_online_heart.o   -lpthread -lm -locci -lnsl -lclntsh
+Finished building target: ITC100_XJ
+ 
+10:49:49 **** Build of configuration Debug for project xinjiang ****
+make all 
+Building file: ../src/ITC_Server.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/libxml2 -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ITC_Server.d" -MT"src/ITC_Server.o" -o "src/ITC_Server.o" "../src/ITC_Server.cpp"
+Finished building: ../src/ITC_Server.cpp
+ 
+Building file: ../src/main.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/libxml2 -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.cpp"
+Finished building: ../src/main.cpp
+ 
+Building target: xinjiang
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xinjiang"  ./src/ControlCenterCommt.o ./src/ControlSignal.o ./src/ITC_Server.o ./src/KeepConnectAlive.o ./src/Operation_Get.o ./src/Operation_Set.o ./src/ReportRealStatus.o ./src/XmlRequest.o ./src/main.o ./src/md5.o ./src/oracle.o ./src/publicfunction.o ./src/xml.o  /usr/lib64/libstdc++.so.6 -lxml2 -lnsl -lclntsh -locci -lm -lpthread
+Finished building target: xinjiang
+ 
