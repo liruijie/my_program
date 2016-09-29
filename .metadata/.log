@@ -225,3 +225,9 @@ java.lang.StringIndexOutOfBoundsException: String index out of range: -7
 	at org.eclipse.ui.actions.BuildAction$1.runInWorkspace(BuildAction.java:287)
 	at org.eclipse.core.internal.resources.InternalWorkspaceJob.run(InternalWorkspaceJob.java:39)
 	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+
+!ENTRY org.eclipse.cdt.core 1 0 2016-09-29 11:38:26.824
+!MESSAGE Indexed 'makefiletest' (1 sources, 150 headers) in 4.02 sec: 10,646 declarations; 16,522 references; 1 unresolved inclusions; 0 syntax errors; 76 unresolved names (0.28%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2016-09-29 11:39:46.562
+!MESSAGE Indexed 'PublicTransportPriority' (1 sources, 100 headers) in 2.49 sec: 8,168 declarations; 14,226 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
