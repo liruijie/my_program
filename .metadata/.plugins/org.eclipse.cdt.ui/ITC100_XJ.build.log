@@ -1,0 +1,15 @@
+11:42:58 **** Incremental Build of configuration Debug for project ITC100_XJ ****
+make all 
+Building file: ../source/parsing_report.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"source/parsing_report.d" -MT"source/parsing_report.o" -o "source/parsing_report.o" "../source/parsing_report.cpp"
+Finished building: ../source/parsing_report.cpp
+ 
+Building target: ITC100_XJ
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "ITC100_XJ"  ./source/ExternPlatform.o ./source/external_query.o ./source/main.o ./source/occi_opration.o ./source/parsing_report.o ./source/parsing_report_alalrm.o ./source/queue.o ./source/signal_check_time.o ./source/signal_control_heart.o ./source/signal_report.o ./source/signal_timeout_check.o ./source/web_control_heart.o ./source/web_message_recv.o ./source/web_online_heart.o   -lpthread -lm -locci -lnsl -lclntsh
+Finished building target: ITC100_XJ
+ 
+
+11:42:59 Build Finished (took 696ms)
+

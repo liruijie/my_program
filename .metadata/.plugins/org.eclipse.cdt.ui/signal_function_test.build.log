@@ -1,0 +1,15 @@
+11:25:15 **** Incremental Build of configuration Debug for project signal_function_test ****
+make all 
+Building file: ../src/signal_function_test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/signal_function_test.d" -MT"src/signal_function_test.o" -o "src/signal_function_test.o" "../src/signal_function_test.c"
+Finished building: ../src/signal_function_test.c
+ 
+Building target: signal_function_test
+Invoking: GCC C Linker
+gcc  -o "signal_function_test"  ./src/signal_function_test.o   -lpthread
+Finished building target: signal_function_test
+ 
+
+11:25:15 Build Finished (took 361ms)
+

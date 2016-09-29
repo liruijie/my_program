@@ -1,0 +1,335 @@
+/*
+ * xml.cpp
+ *
+ *  Created on: 2016年7月7日
+ *      Author: root
+ */
+#include "include.h"
+
+using namespace std;
+using namespace oracle::occi;
+/*int OutputXml()
+{
+  xmlDocPtr doc = NULL;
+  xmlNodePtr root_node = NULL, node = NULL, node1 = NULL;
+  xmlChar *outbuf;
+  int outlen;
+  doc = xmlNewDoc(BAD_CAST "1.0");
+  root_node = xmlNewNode(NULL,BAD_CAST"root");
+  xmlDocSetRootElement(doc, root_node);
+
+  xmlNewChild(root_node, NULL, BAD_CAST "node1",BAD_CAST "content of node1");    //在root节点下建立一个新的节点node1
+
+  node=xmlNewChild(root_node, NULL, BAD_CAST "node3",BAD_CAST"node has attributes");//在root节点下建立一个新的节点node3
+  xmlNewProp(node, BAD_CAST "attribute1", BAD_CAST "确定");                       //添加属性
+  xmlNewProp(node, BAD_CAST "attribute2", BAD_CAST "取消");                       //添加属性
+
+  node = xmlNewNode(NULL, BAD_CAST "node4");                          //建立一个节点node4
+  node1 = xmlNewText(BAD_CAST"other way to create content");
+  xmlAddChild(node, node1);
+  xmlAddChild(root_node, node);                                         //把节点node4添加到root节点下
+
+  node = xmlNewNode(NULL, BAD_CAST "node5");                          //建立一个节点node5
+  xmlNewChild(node, NULL, BAD_CAST "node6",BAD_CAST"node6666666666666"); //在node5节点下建立一个新的节点node6
+  xmlAddChild(root_node, node);                                         //把节点node5添加到root节点下
+
+  xmlDocDumpFormatMemoryEnc(doc, &outbuf, &outlen, "UTF-8", 1);
+
+
+  printf("%d\n",outlen);
+  puts((char *)outbuf);
+  //xmlSaveFormatFileEnc(argc > 1 ? argv[1] : "-", doc, "UTF-8", 1);
+  xmlFreeDoc(doc);
+  xmlCleanupParser();
+  xmlMemoryDump();
+  return(0);
+}*/
+
+int ReadXmlFromBuf(int ThreadNum)
+{
+
+
+		xmlDocPtr pdoc;
+
+		xmlKeepBlanksDefault(0);
+
+		pdoc = xmlReadMemory(TcpThread[ThreadNum].Message,(int )strlen(TcpThread[ThreadNum].Message), NULL, "utf-8", XML_PARSE_RECOVER|XML_PARSE_NOBLANKS);//
+		AnalyseXml(pdoc,ThreadNum);
+		return 1;
+}
+void AnalyseXml(xmlDocPtr pdoc,int ThreadNum)
+{
+
+	xmlXPathContextPtr Xpath;    //XPATH上下文指针
+
+	//xmlNodePtr root_node = xmlDocGetRootElement(pdoc);
+	//TraversalNode(root_node);
+
+	Xpath = xmlXPathNewContext(pdoc);     //创建一个XPath上下文指针
+	if (Xpath == NULL)
+	{
+	   printf("context is NULL");
+
+	}
+
+
+	if(IsTokenValid(Xpath,ThreadNum))
+	{
+
+	}
+	xmlXPathFreeContext(Xpath);
+}
+
+
+
+void TraversalNode(xmlNodePtr cur)
+{
+	xmlChar* content;
+    if (cur != NULL)
+    {
+      cur = cur->xmlChildrenNode;
+
+      while (cur != NULL)
+        {
+    	  	  	 if(cur->type == XML_TEXT_NODE)
+    	         {
+    	         	return;
+    	         }
+            printf("Current Node: %s\t", cur->name);
+            content = xmlNodeGetContent(cur);
+            if(content != NULL)
+				{
+            	printf("Node text: %s",content);
+            	xmlFree(content);
+				}
+            printf("\n");
+            TraversalNode(cur);
+            cur = cur->next;
+        }
+
+        return;
+    }
+    else
+    {
+       printf("ERROR: Null Node!");
+        return;
+    }
+}
+int IsTokenValid(xmlXPathContextPtr Xpath,int ThreadNum)
+{
+	xmlChar *KeyWord = (xmlChar*)"//Token";
+	xmlXPathObjectPtr Xresult;       //XPATH对象指针，用来存储查询结果
+	xmlNodeSetPtr nodeset = NULL;
+
+	Xresult = xmlXPathEvalExpression(KeyWord, Xpath); //查询XPath表达式，得到一个查询结果
+	if (Xresult == NULL)
+	{
+	   printf("xmlXPathEvalExpression return NULL");
+	   return fail;
+	}
+	if (xmlXPathNodeSetIsEmpty(Xresult->nodesetval))   //检查查询结果是否为空	令牌为空判断是不是请求登录的操作
+	{
+	   xmlXPathFreeObject(Xresult);
+	   printf("Token is empty,\n");
+
+	   return fail;
+	}
+	nodeset = Xresult ->nodesetval;
+
+	xmlNodePtr node = nodeset->nodeTab[0];
+	xmlChar *text = xmlNodeGetContent(node);
+	if(strlen((char *)text)==0)                   //Token节点的文本是空的 即没有令牌
+	{
+		IsUserLogin(Xpath,ThreadNum);     //判断是不是请求登录的报文
+		return fail;
+	}
+	printf("text = %s\n",text);
+	// 获取令牌和该TCP链接的令牌进行比较,判断报文中令牌的正确性
+	if(	strncmp((char *)text,TcpThread[ThreadNum].Token,8) == 0 )
+	{
+		xmlXPathFreeObject(Xresult);
+		return succeed;
+	}
+
+	return fail;
+
+}
+
+int IsUserLogin(xmlXPathContextPtr Xpath,int ThreadNum)
+{
+
+
+	xmlXPathObjectPtr Xresult;       //XPATH对象指针，用来存储查询结果
+	//xmlNodeSetPtr nodeset = NULL;
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//Type", Xpath); //查找 数据包类型
+	if(CheckXmlResult(Xresult) == fail)
+	{
+		xmlXPathFreeObject(Xresult);
+		return fail;
+	}
+	xmlNodePtr node = Xresult->nodesetval->nodeTab[0];
+	xmlChar *text = xmlNodeGetContent(node);
+	printf("text = %s\n",text);
+
+	if(	strncmp((char *)text,"REQUEST",7) == 0 )               //如果是请求消息，判断是不是登录操作
+	{
+		xmlXPathFreeObject(Xresult);
+		Xresult = xmlXPathEvalExpression((xmlChar*)"//Operation", Xpath); //查找 操作命令
+		if(CheckXmlResult(Xresult) == fail)
+		{
+			xmlXPathFreeObject(Xresult);
+			return fail;
+		}
+
+		node = Xresult->nodesetval->nodeTab[0];
+		//text = xmlNodeGetContent(node);                    //xmlChar * xmlGetProp (xmlNodePtr node, const xmlChar * name) //读取节点属性
+		text =  xmlGetProp(node,(xmlChar *)"name");
+		printf("text = %s\n",text);
+		if( strncmp((char *)text,"Login",5) == 0 )                    // 登录操作，生成令牌并回复
+		{
+			/*
+			 *
+			 * 判断用户名和密码是否有效
+			 *
+			 */
+
+			char *token=UpdateToken();
+			//TcpThread[ThreadNum].Token = UpdateToken();
+			memcpy(TcpThread[ThreadNum].Token,token,strlen(token));
+			//response
+			LoginResponse(ThreadNum);
+			xmlXPathFreeObject(Xresult);
+			xmlFreeNode(node);
+		}
+		return succeed;
+	}
+	return fail;
+}
+
+int LoginResponse(int ThreadNum)
+{
+		xmlDocPtr pdoc;
+		xmlNodePtr node ;
+		xmlXPathContextPtr Xpath;    //XPATH上下文指针
+		xmlKeepBlanksDefault(0);
+
+		pdoc = xmlReadMemory(TcpThread[ThreadNum].Message,(int )strlen(TcpThread[ThreadNum].Message), NULL, "utf-8", XML_PARSE_RECOVER|XML_PARSE_NOBLANKS);//
+
+		Xpath = xmlXPathNewContext(pdoc);     //创建一个XPath上下文指针
+		if (Xpath == NULL)
+		{
+		   printf("context is NULL");
+		   return fail;
+		}
+		xmlChar *KeyWord = (xmlChar*)"//Token";
+		xmlXPathObjectPtr Xresult;       //XPATH对象指针，用来存储查询结果
+		//xmlNodeSetPtr nodeset = NULL;
+
+		Xresult = xmlXPathEvalExpression(KeyWord, Xpath); //查询XPath表达式，得到一个查询结果
+
+		if(CheckXmlResult(Xresult) == fail)
+			return fail;
+
+		node = Xresult ->nodesetval->nodeTab[0];
+		xmlNodeSetContentLen(node, (const xmlChar *)TcpThread[ThreadNum].Token,  strlen(TcpThread[ThreadNum].Token));
+		xmlXPathFreeObject(Xresult);
+
+
+		Xresult = xmlXPathEvalExpression((xmlChar*)"//Type", Xpath); //查询XPath表达式，得到一个查询结果
+
+		if(CheckXmlResult(Xresult) == fail)
+			return fail;
+		node = Xresult ->nodesetval->nodeTab[0];
+		xmlNodeSetContent(node, (const xmlChar *)"RESPONSE");// xmlNodeSetContent
+
+
+		/*xmlXPathObjectPtr Xresult_From,Xresult_To;
+		xmlNodePtr node_From,node_FromAddr ;             //From节点  From下面的Address节点
+		xmlNodePtr node_To,node_ToAddr ;                 //To节点  To下面的Address节点
+
+
+		Xresult_From = xmlXPathEvalExpression((xmlChar*)"//From", Xpath); //
+		if(CheckXmlResult(Xresult_From) == fail)
+			return fail;
+		Xresult_To = xmlXPathEvalExpression((xmlChar*)"//To", Xpath);
+		if(CheckXmlResult(Xresult_To) == fail)
+			return fail;
+		node_From = Xresult_From ->nodesetval->nodeTab[0];
+		node_FromAddr = xmlCopyNode(node_From->children,1);
+		node = node_From->children;
+		xmlUnlinkNode(node);
+		xmlFreeNode(node);
+		node_To = Xresult_To ->nodesetval->nodeTab[0];
+		node_ToAddr = xmlCopyNode(node_To->children,1);
+		node = node_To->children;
+		xmlUnlinkNode(node);
+		xmlFreeNode(node);
+		xmlAddChild(node_From,node_ToAddr);
+		xmlAddChild(node_To,node_FromAddr);
+*/
+		SwitchFromTo(Xpath);
+		xmlChar *outbuf;
+		int outlen;
+		xmlDocDumpFormatMemoryEnc(pdoc, &outbuf, &outlen, "UTF-8", 1);
+		puts((char *)outbuf);
+
+		TCPService_Data_Send(TcpThread[ThreadNum].commt_fd,(char *)outbuf,outlen);
+
+
+		xmlXPathFreeObject(Xresult);
+		xmlFreeDoc(pdoc);
+		xmlCleanupParser();
+		xmlMemoryDump();
+		return succeed;
+}
+
+
+int CheckXmlResult(xmlXPathObjectPtr Xresult)
+{
+		if (Xresult == NULL)
+		{
+		   printf("xmlXPathEvalExpression return NULL");
+		   return fail;
+		}
+		if (xmlXPathNodeSetIsEmpty(Xresult->nodesetval))   //检查查询结果是否为空	令牌为空判断是不是请求登录的操作
+		{
+		   xmlXPathFreeObject(Xresult);
+		   return fail;
+		}
+		return succeed;
+}
+
+int SwitchFromTo(xmlXPathContextPtr Xpath)
+{
+	xmlNodePtr node;
+	xmlXPathObjectPtr Xresult_From,Xresult_To;
+	xmlNodePtr node_From,node_FromAddr ;             //From节点  From下面的Address节点
+	xmlNodePtr node_To,node_ToAddr ;                 //To节点  To下面的Address节点
+
+
+	Xresult_From = xmlXPathEvalExpression((xmlChar*)"//From", Xpath); //
+	if(CheckXmlResult(Xresult_From) == fail)
+		return fail;
+	Xresult_To = xmlXPathEvalExpression((xmlChar*)"//To", Xpath);
+	if(CheckXmlResult(Xresult_To) == fail)
+		return fail;
+	node_From = Xresult_From ->nodesetval->nodeTab[0];
+	node_FromAddr = xmlCopyNode(node_From->children,1);
+	node = node_From->children;
+	xmlUnlinkNode(node);
+	xmlFreeNode(node);
+	node_To = Xresult_To ->nodesetval->nodeTab[0];
+	node_ToAddr = xmlCopyNode(node_To->children,1);
+	node = node_To->children;
+	xmlUnlinkNode(node);
+	xmlFreeNode(node);
+	xmlAddChild(node_From,node_ToAddr);
+	xmlAddChild(node_To,node_FromAddr);
+/*	xmlFreeNode(node_From);
+	xmlFreeNode(node_To);*/
+	return succeed;
+}
+
+
+
+

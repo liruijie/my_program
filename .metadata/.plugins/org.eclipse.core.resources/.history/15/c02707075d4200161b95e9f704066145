@@ -1,0 +1,28 @@
+/*
+ * include.h
+ *
+ *  Created on: 2016年7月4日
+ *      Author: root
+ */
+
+#ifndef INCLUDE_H_
+#define INCLUDE_H_
+
+#include <iostream>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <libxml/parser.h>
+#include <libxml/xmlreader.h>
+#include <libxml/tree.h>
+#include <libxml/xmlmemory.h>
+#include <occi.h>
+
+#include "publicdefine.h"
+#include "oracle.h"
+#include "ControlCenterCommt.h"
+
+
+
+#endif /* INCLUDE_H_ */

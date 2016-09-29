@@ -1,0 +1,19 @@
+/*
+ * ITC_Server.h
+ *
+ *  Created on: 2016年7月7日
+ *      Author: root
+ */
+
+#ifndef ITC_SERVER_H_
+#define ITC_SERVER_H_
+
+extern struct SignalData SignalRealData[SignalMaxNum];
+void ConnetcServer();
+int checksum( char * rcv_buf);
+void AnalyzeBuffer(char *Rec_buf);
+void realdata(char *recvbuf,int signal_num);
+void faultdata(char *recvbuf,int signal_num);
+void occodata(char *recvbuf,int signal_num);
+void voldata(char *recvbuf,int signal_num);
+#endif /* ITC_SERVER_H_ */

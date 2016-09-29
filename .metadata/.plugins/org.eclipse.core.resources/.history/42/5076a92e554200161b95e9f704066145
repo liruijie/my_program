@@ -1,0 +1,80 @@
+//============================================================================
+// Name        : xinjiang.cpp
+// Author      : LIRUIJIE
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+//============================================================================
+
+#include "include.h"
+
+using namespace std;
+
+string oracle_username ;
+string oracle_password ;
+string oracle_connectstring;
+int GetOracleConfige();
+int main()
+{
+	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+
+
+	if(fail == GetOracleConfige())
+	{
+		printf("Get Oracle Confige fail\n");
+		return fail;
+	}
+	if(fail == occi_open())
+	{
+		printf("Init Oracle CoonPool fail\n");
+		return fail;
+	}
+	return 0;
+}
+int GetOracleConfige()
+{
+  char buf[80];
+  getcwd(buf,sizeof(buf));
+  printf("current working directory: %s\n", buf);
+
+
+  FILE *fp = fopen(OracleConfigeFile,"r");
+  if( fp == NULL )
+  {
+          printf("!!! Can't open file %s\n",OracleConfigeFile);
+          return fail;
+  }
+  char line[64];
+  char tmp[64];
+
+  char connfig[50];
+
+  memset(connfig,'\0',sizeof(connfig));
+  fgets(line,64,fp);
+  sscanf(line,"%[^=]=%s",tmp,connfig);
+  printf("temp = %s,config = %s\n",tmp,connfig);
+  oracle_username = connfig;
+
+  memset(connfig,'\0',sizeof(connfig));
+  fgets(line,64,fp);
+  sscanf(line,"%[^=]=%s",tmp,connfig);
+  printf("temp = %s,config = %s\n",tmp,connfig);
+  oracle_password = connfig;
+
+  memset(connfig,'\0',sizeof(connfig));
+  fgets(line,64,fp);
+  sscanf(line,"%[^=]=%s",tmp,connfig);
+  printf("temp = %s,config = %s\n",tmp,connfig);
+  oracle_connectstring = connfig;
+
+  memset(connfig,'\0',sizeof(connfig));
+  fgets(line,64,fp);
+  sscanf(line,"%[^=]=%s",tmp,connfig);
+  //signal_report_timeout = atoi(connfig);
+  printf("temp = %s,config = %s\n",tmp,connfig);
+ // printf("signal report timeout = %d\n",signal_report_timeout);
+
+  fclose(fp);
+  return succeed;
+}
+

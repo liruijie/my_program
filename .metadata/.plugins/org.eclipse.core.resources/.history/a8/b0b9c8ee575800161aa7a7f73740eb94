@@ -1,0 +1,109 @@
+/*
+ * publicdefine.h
+ *
+ *  Created on: 2016年7月4日
+ *      Author: root
+ */
+
+#ifndef PUBLICDEFINE_H_
+#define PUBLICDEFINE_H_
+
+
+#define SingleRecvMaxLen    5000                                //单次接收报文最大长度   决定了接收时所用buffer的大小
+//#define OracleConfigeFile          "./confige"                 //控制台运行时用这个目录
+#define OracleConfigeFile         "./Debug/confige"              //eclipse调试用这个目录
+
+#define succeed   1
+#define fail      0
+#define Online 	1
+#define Offline 	0
+
+
+#define SDE_Version 		-1
+#define SDE_Token  		-2
+#define SDE_Addr			-3
+#define SDE_MsgType		-4
+#define SDE_OperName		-5
+#define SDE_UserName		-6
+#define SDE_Pwd			-7
+#define SDE_NotAllow		-8
+#define SDE_Failure		-9
+#define SDE_Unknown		-10
+
+#define MaxConnect 			 200
+#define SignalMaxNum 		 512
+
+struct CrossReportInfo
+{
+	int CrossID;							//路口ID
+	int RunningState;                //运行状态
+	int CrossCycle_flag;             //是否上报路口周期
+	int CrossStage_flag;					//是否上报路口阶段
+	int CrossPhaseLampStatus_flag;	//是否上报路口相位灯态
+	int CrossTrafficData_flag;			//是否上报交通流数据
+	int SignalControlerError_flag;	//信号机故障
+	int IsSignalErrorUpdate;			//信号机故障是否更新（避免重复上报）
+};
+
+struct xmlResponseError
+{
+	char OperateProp_Order[2];
+	char OperateProp_Name[10];
+	char ObjectnName[20];
+};
+struct TcpThreadInfo
+{
+	int IsConnect;                    	//连接标志
+	int commt_fd;                			//链接文件描述符
+	pthread_t thread_id;        			//线程ID
+	//Sequeue *squeue;
+	char Message[SingleRecvMaxLen]; 		//接收缓存区
+	char Token[35];              			//令牌
+	struct xmlResponseError xmlErrorInfo;       				//错误信息（错误节点所在的operation的order和name，以及对象的名字）
+	struct CrossReportInfo ReportInfo[SignalMaxNum];      //上报信息标志  1上报  0不上报
+	Connection *conn;                 //oracle连接描述符
+	Statement *stmt;                  //oracle操作描述符
+};
+
+struct CrossPhaseLampStatus
+{
+	int PhaseNo;
+	int LampStatus;
+};
+struct CrossTrafficData
+{
+	int LaneNo;
+	long Volume;
+	int AvgVehLen;
+	int Pcu;
+	int HeadDistance;
+	int HeadTime;
+	int Speed;
+	int Saturation;
+	int Density;
+	int QueueLength;
+	long Occupancy;
+};
+struct SignalData
+{
+	int CrossID;
+
+	int Running_Status;
+
+	int StartTime;
+	int LastCycleLen;
+
+	int LastStageNo;
+	int LastStageLen;
+	int CurStageNo;
+	int CurStageLen;
+
+	//struct CrossPhaseLampStatus  PhaseLampStatus[32];
+	char PhaseLampStatus[32];
+	struct CrossTrafficData TrafficData[32];
+
+	int SignalError;
+	char ErrorDesri[100];
+};
+
+#endif /* PUBLICDEFINE_H_ */

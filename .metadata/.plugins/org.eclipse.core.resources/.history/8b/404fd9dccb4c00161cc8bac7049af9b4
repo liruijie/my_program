@@ -1,0 +1,673 @@
+/*
+ * XmlRequest.cpp
+ *
+ * Created on: 2016年7月14日
+ * Author: root
+ */
+
+#include "include.h"
+
+int RequestOperate(xmlDocPtr pdoc,xmlXPathContextPtr Xpath,int ThreadNum)
+{
+		xmlXPathObjectPtr Xresult;
+		xmlNodePtr node;
+		xmlChar *OperationName;
+		int node_count;
+		int ret;
+		Xresult = xmlXPathEvalExpression((xmlChar*)"//Operation", Xpath);
+		if(CheckXmlResult(Xresult) == fail)
+			return fail;
+		for(node_count = 0;node_count < Xresult->nodesetval->nodeNr;node_count++)
+		{
+			node = Xresult->nodesetval->nodeTab[node_count];
+			OperationName = xmlGetProp(node, (xmlChar *)"name");
+			if(strncmp("Get",(char *)OperationName,3) == 0)
+			{
+				ret = Operation_Get(Xresult->nodesetval->nodeTab[node_count],ThreadNum);
+			}
+			else if(strncmp("Set",(char *)OperationName,3) == 0)
+			{
+				Operation_Set(Xresult->nodesetval->nodeTab[node_count],ThreadNum);
+			}
+		}
+		Xresult = xmlXPathEvalExpression((xmlChar*)"//Type", Xpath);
+		if(CheckXmlResult(Xresult) == fail)
+			return fail;
+		if(ret == succeed)
+		{
+			xmlNodeSetContent(Xresult ->nodesetval->nodeTab[0], (const xmlChar *)"RESPONSE");
+		}
+		else
+		{
+			xmlNodeSetContent(Xresult ->nodesetval->nodeTab[0], (const xmlChar *)"ERROR");
+		}
+
+		xmlChar *outbuf;
+		int outlen;
+		xmlDocDumpFormatMemoryEnc(pdoc, &outbuf, &outlen, "UTF-8", 1);
+		puts((char *)outbuf);
+
+		TCPService_Data_Send(TcpThread[ThreadNum].commt_fd,(char *)outbuf,outlen);
+		xmlFree(OperationName);
+		OperationName = NULL;
+		xmlFreeNode(node);
+		node = NULL;
+		xmlFree(OperationName);
+		OperationName = NULL;
+
+		xmlXPathFreeObject(Xresult);
+		Xresult = NULL;
+		return succeed;
+
+}
+
+int Operation_Get(xmlNodePtr OperationNode,int ThreadNum)
+{
+		//xmlChar *TSCCmd;
+		//xmlNodePtr ObjectNode;
+		xmlNodePtr Object;
+		char *ObjectName;
+		Object = OperationNode ->children ->children;          //operation节点->TSCCmdt节点->要操作的对象节点
+		while(1)                         //  找到object节点
+		{
+			if(Object == NULL)
+			{
+				return fail;
+			}
+			else
+			{
+				if(strncmp("Object",(char *)Object->name,6) == 0)
+				{
+					break;
+				}
+				else
+				{
+					Object = Object ->next;
+				}
+			}
+		}
+		ObjectName = (char *)xmlNodeGetContent(Object);
+		if( strncmp(ObjectName,(char *)&SysInfo,sizeof(SysInfo)) == 0)
+		{
+			return Get_SysInfo(OperationNode,ThreadNum);
+		}
+		else if( strncmp(ObjectName,(char *)&RegionID,sizeof(RegionID)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&SubRegionParam,sizeof(SubRegionParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossParam,sizeof(CrossParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&SignalControler,sizeof(SignalControler)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&LampGroup,sizeof(LampGroup)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&DetParam,sizeof(DetParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&LaneParam,sizeof(LaneParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&PhaseParam,sizeof(PhaseParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&StageParam,sizeof(StageParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&PlanParam,sizeof(PlanParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&SysState,sizeof(SysState)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&RegionState,sizeof(RegionState)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossState,sizeof(CrossState)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&SignalControlerError,sizeof(SignalControlerError)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossControlMode,sizeof(CrossControlMode)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossCycle,sizeof(CrossCycle)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossStage,sizeof(CrossStage)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossPhaseLampStatus,sizeof(CrossPhaseLampStatus)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossPlan,sizeof(CrossPlan)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossTrafficData,sizeof(CrossTrafficData)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&LockFlowDirection,sizeof(LockFlowDirection)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&UnLockFlowDirection,sizeof(UnLockFlowDirection)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossReportCtrl,sizeof(CrossReportCtrl)) == 0)
+		{
+
+		}
+
+		return fail;
+}
+
+int Operation_Set(xmlNodePtr OperationNode,int ThreadNum)
+{
+		xmlNodePtr Object;
+		char *ObjectName;
+		Object = OperationNode ->children ->children;          //operation节点->object节点->要操作的对象节点
+		if(Object == NULL)
+		{
+			return fail;
+		}
+		ObjectName = (char *)Object ->name;
+		if( strncmp(ObjectName,(char *)&SysInfo,sizeof(SysInfo)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&RegionID,sizeof(RegionID)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&SubRegionParam,sizeof(SubRegionParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossParam,sizeof(CrossParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&SignalControler,sizeof(SignalControler)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&LampGroup,sizeof(LampGroup)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&DetParam,sizeof(DetParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&LaneParam,sizeof(LaneParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&PhaseParam,sizeof(PhaseParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&StageParam,sizeof(StageParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&PlanParam,sizeof(PlanParam)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&SysState,sizeof(SysState)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&RegionState,sizeof(RegionState)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossState,sizeof(CrossState)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&SignalControlerError,sizeof(SignalControlerError)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossControlMode,sizeof(CrossControlMode)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossCycle,sizeof(CrossCycle)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossStage,sizeof(CrossStage)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossPhaseLampStatus,sizeof(CrossPhaseLampStatus)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossPlan,sizeof(CrossPlan)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossTrafficData,sizeof(CrossTrafficData)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&LockFlowDirection,sizeof(LockFlowDirection)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&UnLockFlowDirection,sizeof(UnLockFlowDirection)) == 0)
+		{
+
+		}
+		else if( strncmp(ObjectName,(char *)&CrossReportCtrl,sizeof(CrossReportCtrl)) == 0)
+		{
+
+		}
+		return fail;
+}
+
+int Get_SysInfo(xmlNodePtr OperationNode,int ThreadNum)
+{
+	char sqlbuf[500];
+	ResultSet *Result;
+
+	xmlNodePtr node_SysInfo = xmlNewNode(NULL, BAD_CAST "SysInfo");
+	xmlNewChild(node_SysInfo, NULL, BAD_CAST "SysName",BAD_CAST "ATC");
+	xmlNewChild(node_SysInfo, NULL, BAD_CAST "SysVersion",BAD_CAST "1.0");
+	xmlNewChild(node_SysInfo, NULL, BAD_CAST "Supplier",BAD_CAST "北京博研智通科技有限公司");
+	xmlNodePtr node_RegionIDList = xmlNewNode(NULL, BAD_CAST "RegionIDList");
+	sprintf(sqlbuf,"select t.disrict_id , t.disrict_name from DISRICT_INFOR t");
+	try
+	{
+		TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+		Result = TcpThread[ThreadNum].stmt->executeQuery();
+		while(Result->next() != 0)
+		{
+			xmlNewChild(node_RegionIDList, NULL, BAD_CAST "RegionID",BAD_CAST Result->getString(1).c_str());
+		}
+	}
+	catch(SQLException &sqlExcp)
+	{
+		cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return fail;
+	}
+	xmlAddChild(node_SysInfo, node_RegionIDList);
+
+	xmlNodePtr node_SignalControlerIDList = xmlNewNode(NULL, BAD_CAST "SignalControlerIDList");
+	sprintf(sqlbuf,"select t.signal_id from SIGNAL_CONFIG_INFO t");
+	try
+	{
+		TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+		Result = TcpThread[ThreadNum].stmt->executeQuery();
+		while(Result->next() != 0)
+		{
+			xmlNewChild(node_SignalControlerIDList, NULL, BAD_CAST "SignalControlerID",BAD_CAST Result->getString(1).c_str());
+		}
+	}
+	catch(SQLException &sqlExcp)
+	{
+		cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return fail;
+	}
+	xmlAddChild(node_SysInfo, node_SignalControlerIDList);
+	xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+	xmlAddChild(node_Object, node_SysInfo);
+	xmlUnlinkNode(OperationNode->children);
+	xmlAddChild(OperationNode, node_Object);
+	return succeed;
+}
+int Set_SysInfo(xmlNodePtr OperationNode,int ThreadNum)
+{
+	return 0;
+}
+
+int Get_RegionParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	char sqlbuf[500];
+	ResultSet *Result;
+	char CrossID_buf[200];
+	int ResultNum = 0;
+	int ID = 0;
+	ID = Get_Object_ID(OperationNode);
+	if(ID < 0)
+	{
+		return fail;
+	}
+	xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+	xmlNodePtr node_RegionParam;
+	xmlNodePtr node_CrossIDList;
+	if(ID == 0)          //all
+	{
+			sprintf(sqlbuf," select t.disrict_id,t.disrict_name,nvl((select replace(WMSYS.WM_CONCAT(u.unit_id),',',',') from UNIT_INFO u where u.disrict_id=t.disrict_id),'NULL') as unitIds from DISRICT_INFOR t order by t.disrict_id");
+
+			try
+			{
+				TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+				Result = TcpThread[ThreadNum].stmt->executeQuery();
+				while(Result->next() != 0)
+				{
+					ResultNum++;
+					node_RegionParam = xmlNewNode(NULL, BAD_CAST "RegionParam");
+					xmlNewChild(node_RegionParam, NULL, BAD_CAST "RegionID",BAD_CAST Result->getString(1).c_str());
+					xmlNewChild(node_RegionParam, NULL, BAD_CAST "RegionName",BAD_CAST Result->getString(2).c_str());
+					xmlNewChild(node_RegionParam, NULL, BAD_CAST "SubRegionIDList",NULL);
+					node_CrossIDList = xmlNewNode(NULL, BAD_CAST "CrossIDList");
+					strcpy(CrossID_buf,Result->getString(3).c_str());
+					if(strncmp(CrossID_buf,"NULL",4) == 0)                   //
+					{
+						xmlAddChild(node_RegionParam,node_CrossIDList);
+						xmlAddChild(node_Object,node_RegionParam);
+						break;
+					}
+					char *CrossID;
+					CrossID = strtok(CrossID_buf, (char *)&",");
+					xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+					while((CrossID = strtok(NULL, (char *)&",")))
+						xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+					xmlAddChild(node_RegionParam,node_CrossIDList);
+					xmlAddChild(node_Object,node_RegionParam);
+				}
+				if(ResultNum == 0)
+				{
+					return fail;
+				}
+			}
+			catch(SQLException &sqlExcp)
+			{
+				cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+				cout << sqlExcp.getMessage() << endl; //获得异常信息
+				return fail;
+			}
+	}
+	else                    //id
+	{
+			sprintf(sqlbuf," select t.disrict_id,t.disrict_name,nvl((select replace(WMSYS.WM_CONCAT(u.unit_id),',',',') from UNIT_INFO u where u.disrict_id=t.disrict_id),'NULL') as unitIds from DISRICT_INFOR t where t.disrict_id= %d order by t.disrict_id",ID);
+			node_RegionParam = xmlNewNode(NULL, BAD_CAST "RegionParam");
+			try
+			{
+				TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+				Result = TcpThread[ThreadNum].stmt->executeQuery();
+				while(Result->next() != 0)
+				{
+					ResultNum++;
+					xmlNewChild(node_RegionParam, NULL, BAD_CAST "RegionID",BAD_CAST Result->getString(1).c_str());
+					xmlNewChild(node_RegionParam, NULL, BAD_CAST "RegionName",BAD_CAST Result->getString(2).c_str());
+					xmlNewChild(node_RegionParam, NULL, BAD_CAST "SubRegionIDList",NULL);
+					node_CrossIDList = xmlNewNode(NULL, BAD_CAST "CrossIDList");
+					strcpy(CrossID_buf,Result->getString(3).c_str());
+					if(strncmp(CrossID_buf,"NULL",4) == 0)                   //
+					{
+						xmlAddChild(node_RegionParam,node_CrossIDList);
+						xmlAddChild(node_Object,node_RegionParam);
+						break;
+					}
+					char *CrossID;
+					CrossID = strtok(CrossID_buf, (char *)&",");
+					xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+					while((CrossID = strtok(NULL, (char *)&",")))
+					xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+					xmlAddChild(node_RegionParam,node_CrossIDList);
+					xmlAddChild(node_Object,node_RegionParam);
+					break;
+				}
+				if(ResultNum == 0)
+				{
+					return fail;
+				}
+			}
+			catch(SQLException &sqlExcp)
+			{
+				cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+				cout << sqlExcp.getMessage() << endl; //获得异常信息
+				return fail;
+			}
+	}
+	xmlUnlinkNode(OperationNode->children);
+	xmlAddChild(OperationNode, node_Object);
+	return succeed;
+}
+int Set_RegionParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	return 0;
+}
+
+int Get_SubRegionParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+		char sqlbuf[500];
+		ResultSet *Result;
+		char CrossID_buf[200];
+		int ResultNum = 0;
+		int ID = 0;
+		ID = Get_Object_ID(OperationNode);
+		if(ID < 0)
+			return fail;
+		xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+		xmlNodePtr node_SubRegionParam;
+		xmlNodePtr node_CrossIDList;
+		if(ID == 0)          //all
+		{
+				sprintf(sqlbuf,"elect t.sub_district_id,t.sub_district_name,nvl((select replace(WMSYS.WM_CONCAT(u.unit_id),',',',') from SUB_DIS_UNIT u where u.sub_district_id=t.sub_district_id),'NULL') as unitIds from SUB_DISTRICT_INFO t  order by t.sub_district_ids");
+
+				try
+				{
+					TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+					Result = TcpThread[ThreadNum].stmt->executeQuery();
+					while(Result->next() != 0)
+					{
+						ResultNum++;
+						node_SubRegionParam = xmlNewNode(NULL, BAD_CAST "SubRegionParam");
+						xmlNewChild(node_SubRegionParam, NULL, BAD_CAST "SubRegionID",BAD_CAST Result->getString(1).c_str());
+						xmlNewChild(node_SubRegionParam, NULL, BAD_CAST "SubRegionName",BAD_CAST Result->getString(2).c_str());
+						node_CrossIDList = xmlNewNode(NULL, BAD_CAST "CrossIDList");
+						strcpy(CrossID_buf,Result->getString(3).c_str());
+						if(strncmp(CrossID_buf,"NULL",4) == 0)                   //
+						{
+							xmlAddChild(node_SubRegionParam,node_CrossIDList);
+							xmlAddChild(node_Object,node_SubRegionParam);
+							break;
+						}
+						char *CrossID;
+						CrossID = strtok(CrossID_buf, (char *)&",");
+						xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+						while((CrossID = strtok(NULL, (char *)&",")))
+							xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+						xmlAddChild(node_SubRegionParam,node_CrossIDList);
+						xmlAddChild(node_Object,node_SubRegionParam);
+					}
+					if(ResultNum == 0)
+					{
+						return fail;
+					}
+				}
+				catch(SQLException &sqlExcp)
+				{
+					cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+					cout << sqlExcp.getMessage() << endl; //获得异常信息
+					return fail;
+				}
+		}
+		else                    //id
+		{
+				sprintf(sqlbuf," select t.sub_district_id,t.sub_district_name,nvl((select replace(WMSYS.WM_CONCAT(u.unit_id),',',',') from SUB_DIS_UNIT u where u.sub_district_id=t.sub_district_id),'NULL') as unitIds from SUB_DISTRICT_INFO t where t.sub_district_id=%d order by t.sub_district_id",ID);
+				node_SubRegionParam = xmlNewNode(NULL, BAD_CAST "SubRegionParam");
+				try
+				{
+					TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+					Result = TcpThread[ThreadNum].stmt->executeQuery();
+					while(Result->next() != 0)
+					{
+						ResultNum++;
+						xmlNewChild(node_SubRegionParam, NULL, BAD_CAST "SubRegionID",BAD_CAST Result->getString(1).c_str());
+						xmlNewChild(node_SubRegionParam, NULL, BAD_CAST "SubRegionName",BAD_CAST Result->getString(2).c_str());
+						node_CrossIDList = xmlNewNode(NULL, BAD_CAST "CrossIDList");
+						strcpy(CrossID_buf,Result->getString(3).c_str());
+						if(strncmp(CrossID_buf,"NULL",4) == 0)                   //
+						{
+							xmlAddChild(node_SubRegionParam,node_CrossIDList);
+							xmlAddChild(node_Object,node_SubRegionParam);
+							break;
+						}
+						char *CrossID;
+						CrossID = strtok(CrossID_buf, (char *)&",");
+						xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+						while((CrossID = strtok(NULL, (char *)&",")))
+						xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+						xmlAddChild(node_SubRegionParam,node_CrossIDList);
+						xmlAddChild(node_Object,node_SubRegionParam);
+						break;
+					}
+					if(ResultNum == 0)
+					{
+						return fail;
+					}
+				}
+				catch(SQLException &sqlExcp)
+				{
+					cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+					cout << sqlExcp.getMessage() << endl; //获得异常信息
+					return fail;
+				}
+		}
+		xmlUnlinkNode(OperationNode->children);
+		xmlAddChild(OperationNode, node_Object);
+		return succeed;
+}
+
+int Set_SubRegionParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	return 0;
+}
+
+int Get_SignalControler(xmlNodePtr OperationNode,int ThreadNum)
+{
+	char sqlbuf[500];
+	ResultSet *Result;
+	char CrossID_buf[200];
+	int ResultNum = 0;
+	int ID = 0;
+	ID = Get_Object_ID(OperationNode);
+	if(ID < 0)
+		return fail;
+	xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+	xmlNodePtr node_SignalControler;
+	xmlNodePtr node_CrossIDList;
+	if(ID == 0)          //all
+	{
+			sprintf(sqlbuf,"elect t.sub_district_id,t.sub_district_name,nvl((select replace(WMSYS.WM_CONCAT(u.unit_id),',',',') from SUB_DIS_UNIT u where u.sub_district_id=t.sub_district_id),'NULL') as unitIds from SUB_DISTRICT_INFO t  order by t.sub_district_ids");
+
+			try
+			{
+				TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+				Result = TcpThread[ThreadNum].stmt->executeQuery();
+				while(Result->next() != 0)
+				{
+					ResultNum++;
+					node_SignalControler = xmlNewNode(NULL, BAD_CAST "SignalControler");
+					xmlNewChild(node_SubRegionParam, NULL, BAD_CAST "SubRegionID",BAD_CAST Result->getString(1).c_str());
+					xmlNewChild(node_SubRegionParam, NULL, BAD_CAST "SubRegionName",BAD_CAST Result->getString(2).c_str());
+					node_CrossIDList = xmlNewNode(NULL, BAD_CAST "CrossIDList");
+					strcpy(CrossID_buf,Result->getString(3).c_str());
+					if(strncmp(CrossID_buf,"NULL",4) == 0)                   //
+					{
+						xmlAddChild(node_SubRegionParam,node_CrossIDList);
+						xmlAddChild(node_Object,node_SubRegionParam);
+						break;
+					}
+					char *CrossID;
+					CrossID = strtok(CrossID_buf, (char *)&",");
+					xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+					while((CrossID = strtok(NULL, (char *)&",")))
+						xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+					xmlAddChild(node_SubRegionParam,node_CrossIDList);
+					xmlAddChild(node_Object,node_SubRegionParam);
+				}
+				if(ResultNum == 0)
+				{
+					return fail;
+				}
+			}
+			catch(SQLException &sqlExcp)
+			{
+				cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+				cout << sqlExcp.getMessage() << endl; //获得异常信息
+				return fail;
+			}
+	}
+	else                    //id
+	{
+			sprintf(sqlbuf," select t.sub_district_id,t.sub_district_name,nvl((select replace(WMSYS.WM_CONCAT(u.unit_id),',',',') from SUB_DIS_UNIT u where u.sub_district_id=t.sub_district_id),'NULL') as unitIds from SUB_DISTRICT_INFO t where t.sub_district_id=%d order by t.sub_district_id",ID);
+			node_SignalControler = xmlNewNode(NULL, BAD_CAST "SignalControler");
+			try
+			{
+				TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+				Result = TcpThread[ThreadNum].stmt->executeQuery();
+				while(Result->next() != 0)
+				{
+					ResultNum++;
+					xmlNewChild(node_SubRegionParam, NULL, BAD_CAST "SubRegionID",BAD_CAST Result->getString(1).c_str());
+					xmlNewChild(node_SubRegionParam, NULL, BAD_CAST "SubRegionName",BAD_CAST Result->getString(2).c_str());
+					node_CrossIDList = xmlNewNode(NULL, BAD_CAST "CrossIDList");
+					strcpy(CrossID_buf,Result->getString(3).c_str());
+					if(strncmp(CrossID_buf,"NULL",4) == 0)                   //
+					{
+						xmlAddChild(node_SubRegionParam,node_CrossIDList);
+						xmlAddChild(node_Object,node_SubRegionParam);
+						break;
+					}
+					char *CrossID;
+					CrossID = strtok(CrossID_buf, (char *)&",");
+					xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+					while((CrossID = strtok(NULL, (char *)&",")))
+					xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+					xmlAddChild(node_SubRegionParam,node_CrossIDList);
+					xmlAddChild(node_Object,node_SubRegionParam);
+					break;
+				}
+				if(ResultNum == 0)
+				{
+					return fail;
+				}
+			}
+			catch(SQLException &sqlExcp)
+			{
+				cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+				cout << sqlExcp.getMessage() << endl; //获得异常信息
+				return fail;
+			}
+	}
+	xmlUnlinkNode(OperationNode->children);
+	xmlAddChild(OperationNode, node_Object);
+	return succeed;
+}

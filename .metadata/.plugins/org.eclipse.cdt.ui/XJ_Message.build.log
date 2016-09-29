@@ -1,0 +1,15 @@
+15:35:47 **** Incremental Build of configuration Debug for project XJ_Message ****
+make all 
+Building file: ../src/XJ_Message.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/libxml2 -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/XJ_Message.d" -MT"src/XJ_Message.o" -o "src/XJ_Message.o" "../src/XJ_Message.cpp"
+Finished building: ../src/XJ_Message.cpp
+ 
+Building target: XJ_Message
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "XJ_Message"  ./src/XJ_Message.o   -lpthread -lclntsh -lnsl -lm -liconv -locci -lxml2
+Finished building target: XJ_Message
+ 
+
+15:35:48 Build Finished (took 735ms)
+

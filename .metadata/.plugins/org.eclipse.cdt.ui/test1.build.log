@@ -1,0 +1,18 @@
+15:02:17 **** Incremental Build of configuration Debug for project test1 ****
+make all 
+Building file: ../src/test1.c
+Invoking: Cross GCC Compiler
+arm-none-linux-gnueabi-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test1.d" -MT"src/test1.o" -o "src/test1.o" "../src/test1.c"
+../src/test1.c:20:6: warning: return type of 'main' is not 'int' [-Wmain]
+ void main()
+      ^
+Finished building: ../src/test1.c
+ 
+Building target: test1
+Invoking: Cross GCC Linker
+arm-none-linux-gnueabi-gcc  -o "test1"  ./src/test1.o   
+Finished building target: test1
+ 
+
+15:02:17 Build Finished (took 135ms)
+

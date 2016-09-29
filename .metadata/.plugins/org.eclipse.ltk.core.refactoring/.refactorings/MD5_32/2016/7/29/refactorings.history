@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;MD5_32/src/MD5.H&apos; to &apos;md5.h&apos;" description="Rename resource &apos;MD5.H&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/MD5.H" name="md5.h" stamp="1468222391179" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;MD5_32/src/md5.c&apos; to &apos;md5.cpp&apos;" description="Rename resource &apos;md5.c&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/md5.c" name="md5.cpp" stamp="1468223235692" updateReferences="true"/>
+</session>

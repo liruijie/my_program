@@ -1,0 +1,15 @@
+14:05:07 **** Incremental Build of configuration Debug for project queuetest ****
+make all 
+Building file: ../src/queuetest.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/queuetest.d" -MT"src/queuetest.o" -o "src/queuetest.o" "../src/queuetest.c"
+Finished building: ../src/queuetest.c
+ 
+Building target: queuetest
+Invoking: GCC C Linker
+gcc  -o "queuetest"  ./src/queuetest.o   
+Finished building target: queuetest
+ 
+
+14:05:07 Build Finished (took 281ms)
+

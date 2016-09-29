@@ -1,0 +1,204 @@
+/*
+ * ControlCenterCommt.cpp
+ *
+ *  Created on: 2016年7月5日
+ *      Author: root
+ */
+#include "include.h"
+#define ControlCenterPort   8801
+#define MaxConnect 			 10
+
+void *ControlCenterCommt(void *arg)
+{
+	printf("Creat thread ControlCenterCommt success,%s,%s,%d\n",__FILE__,__FUNCTION__,__LINE__);
+
+	return (void *)0;
+}
+
+void Tcp()
+{
+		int sockfd, commt_fd; 		/* 监听端口描述符，通讯描述符 */
+		int flags;
+		int sin_size;
+		struct sockaddr_in my_addr; 	/* 自身的地址信息 */
+		struct sockaddr_in client_addr; 	/* 连接对方的地址信息 */
+		struct timeval 	timeVal;
+		fd_set  fdSet;
+		int ret;
+		char buf[1000];
+		//pthread_t ConnectThread[MaxConnect];
+		if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+		{
+			perror("socket");
+			exit(1);
+		}
+		printf("socket success\n");
+		sleep(1);
+		my_addr.sin_family = AF_INET;
+		my_addr.sin_port = htons(ControlCenterPort); 		/* 网络字节顺序 */
+		my_addr.sin_addr.s_addr = INADDR_ANY; 					/* 自动填本机IP */
+		bzero(&(my_addr.sin_zero), 8); 							/* 其余部分置0 */
+		if (bind(sockfd, (struct sockaddr *)&my_addr,sizeof(struct sockaddr)) == -1)
+		{
+			perror("bind");
+			exit(1);
+		}
+		printf("bind success\n");
+		sleep(1);
+		if (listen(sockfd, MaxConnect) == -1)
+		 {
+			perror("listen");
+			exit(1);
+		 }
+		printf("listen success\n");
+		sleep(1);
+		flags = fcntl(sockfd, F_GETFL);
+		if( (flags<0)||((fcntl(sockfd, F_SETFL, flags |O_ASYNC))<0) )
+		{
+			perror("fcntl\n");
+		}
+		else
+		{
+			printf("fcntl success\n");
+			sleep(2);
+		}
+
+		while(1)
+		{
+
+			timeVal.tv_sec = 10;
+			timeVal.tv_usec = 0;
+
+			FD_ZERO(&fdSet);
+			FD_SET(sockfd, &fdSet);
+			printf("start select\n");
+			ret = select((int) sockfd + 1, &fdSet,NULL, NULL, &timeVal);
+			printf("%d\n",FD_ISSET(sockfd,&fdSet));
+			if( ret == 0 )    //select timeout
+			{
+
+				continue;
+
+			}
+			if( !ret )    //select error
+			{
+				printf("sockfd select failed with result=%d\n",ret);
+				continue;
+
+			}
+			else          //select success
+			{
+
+				sin_size = sizeof(struct sockaddr_in);
+				commt_fd = accept(sockfd, (struct sockaddr *)&client_addr, (socklen_t *)&sin_size);
+				if  (commt_fd == -1)
+				 {
+					perror("accept");
+					continue;
+
+				 }
+				printf("new commt_fd is %d\n",commt_fd);
+				printf("Got connection from %s:%d\n", inet_ntoa( client_addr.sin_addr ),ntohs(client_addr.sin_port));
+
+
+
+
+				if(!fork())
+				{		 //子进程    用于收发数据
+
+						while(1)
+						{
+
+							//printf("in while\n");
+							ret = TCPService_Data_Receive(commt_fd,buf);
+							printf("only test,Rece ret is %d\n",ret);
+							if(ret>0)
+							{
+								printf("");
+								ret = TCPService_Data_Send(commt_fd,buf,ret);
+							}
+							else if(ret<0)
+							{
+								printf("TCP error\n");
+								printf("this link is  %s:%d\n", inet_ntoa( client_addr.sin_addr ),ntohs(client_addr.sin_port));
+								break;
+							}
+							sleep(5);
+						}
+						printf("close the TCPLink\n");
+						close(new_fd);     //
+				}
+				//sleep(10);
+				printf("child process will close the TCPLink num = %d\n",commt_fd);
+				close(commt_fd);
+			}
+		}
+}
+
+int TCPService_Data_Receive(int Rec_fd,char *Rec_buf)
+{
+	struct timeval 	Rec_timeVal;
+	fd_set  Rec_fdSet;
+	int ret,numbytes;
+
+	printf("here is TCPService_Data_Receive process,process ID %d,commt_fd = %d\n",getpid(),Rec_fd);
+	Rec_timeVal.tv_sec = 10;
+	Rec_timeVal.tv_usec = 0;
+
+	FD_ZERO(&Rec_fdSet);
+	FD_SET(Rec_fd, &Rec_fdSet);
+
+	ret = select((int) Rec_fd + 1, &Rec_fdSet,NULL, NULL, &Rec_timeVal);
+
+
+	if( ret == 0 )    //select timeout
+	{
+		printf("Rec select timeout with result=%d\n",ret);
+		return 0;
+	}
+	if( !ret )    //select error
+	{
+		printf("Rec select failed with result=%d\n",ret);
+		return 0;
+	}
+	else          //select success
+	{
+
+		if ((numbytes=recv(Rec_fd,Rec_buf,10000,0))==-1)
+		 {
+			perror("recv ");
+			sleep(2);
+			exit(1);
+		 }
+		if(numbytes == 0)
+		{
+			return -1;
+		}
+
+		Rec_buf[numbytes] = '\0';
+
+		printf("%d receive data is %s\n",Rec_fd,Rec_buf);
+		printf("len = %d\n",numbytes);
+		return numbytes;
+	}
+	//printf("exit TCPService_Data_Receive\n");
+	//return 0;
+}
+
+int TCPService_Data_Send(int Send_fd,char *Send_buf,int Data_Length)
+{
+	int len;
+	printf("start send\n");
+	len =send(Send_fd,Send_buf,Data_Length,0);
+	printf("send over length is %d\n",len);
+	if(len == Data_Length)
+	{
+		//printf("send over length is %d\n",len);
+		return len;
+	}
+	else
+	{
+		perror("send");
+		return 0;
+	}
+}

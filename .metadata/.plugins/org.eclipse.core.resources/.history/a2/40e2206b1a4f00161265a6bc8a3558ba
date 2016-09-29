@@ -1,0 +1,347 @@
+/*
+ * Operation_Set.cpp
+ *
+ *  Created on: 2016年7月20日
+ *      Author: root
+ */
+#include "include.h"
+
+int Set_SysInfo(xmlNodePtr OperationNode,int ThreadNum)
+{
+	return succeed;
+}
+int Set_RegionParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	return succeed;
+}
+int Set_SubRegionParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	return succeed;
+}
+
+int Set_CrossParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	return succeed;
+}
+
+int Set_StageParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	//char *ObjectName;
+	int ObjectNum = 0;
+	int PhaseCount=0;
+	int CrossID=0;
+	struct Stage_Param StageInfo[64];
+	struct ITC_CFG_STAGE_DETAIL StageDetail[64];
+	char sqlbuf[500];
+	ResultSet *Result;
+
+	xmlNodePtr Object = OperationNode ->children ->children;          //operation节点->TSCCmdt节点->要操作的对象节点
+	xmlNodePtr CurrNode;
+	if(Object == NULL)
+	{
+		return SDE_Failure;
+	}
+	while(Object != NULL)
+	{
+		if( strncmp((char *)Object->name,(char *)&StageParam,sizeof(StageParam) ) != 0 )
+		{
+			return SDE_Failure;
+		}
+		CurrNode = Object->children;
+		if(Get_Node(CurrNode,"CrossID") != succeed)
+		{
+			return SDE_Failure;
+		}
+		//保证一个Object节点下的路口ID是相同的
+		if(ObjectNum == 0)
+		{
+			StageInfo[ObjectNum].CrossID = atoi((char *)xmlNodeGetContent(CurrNode));
+		}
+		else
+		{
+			CrossID= atoi((char *)xmlNodeGetContent(CurrNode));
+			if(StageInfo[0].CrossID != CrossID)
+			{
+				return SDE_Failure;
+			}
+			StageInfo[ObjectNum].CrossID = CrossID;
+		}
+		if(Get_Node(CurrNode,"StageNo") != succeed)
+		{
+			return SDE_Failure;
+		}
+		StageInfo[ObjectNum].StageNo = atoi((char *)xmlNodeGetContent(CurrNode));
+		if(Get_Node(CurrNode,"StageName") != succeed)
+		{
+			return SDE_Failure;
+		}
+		strcpy(StageInfo[ObjectNum].StageName,(char *)xmlNodeGetContent(CurrNode));
+		if(Get_Node(CurrNode,"Attribute") != succeed)
+		{
+			return SDE_Failure;
+		}
+		StageInfo[ObjectNum].Attribute = atoi((char *)xmlNodeGetContent(CurrNode));
+		if(Get_Node(CurrNode,"Green") != succeed)
+		{
+			return SDE_Failure;
+		}
+		StageInfo[ObjectNum].Green = atoi((char *)xmlNodeGetContent(CurrNode));
+		if(Get_Node(CurrNode,"PhaseNoList") != succeed)
+		{
+			return SDE_Failure;
+		}
+		//放行相位序号列表。包含至少一个放行相位序号<PhaseNo>
+		CurrNode = CurrNode ->children;
+		if(CurrNode == NULL)
+		{
+			return SDE_Failure;
+		}
+		PhaseCount = 0;
+		while(CurrNode != NULL)
+		{
+			StageInfo[ObjectNum].PhaseNoList[PhaseCount] = atoi((char *)xmlNodeGetContent(CurrNode));
+			PhaseCount++;
+			CurrNode = CurrNode->next;
+		}
+		if(PhaseCount == 0)
+		{
+			return SDE_Failure;
+		}
+		ObjectNum++;
+		Object = Object ->next;
+	}
+	if(ObjectNum == 0)
+	{
+		return SDE_Failure;
+	}
+	/*
+	 * 所有参数获取成功  更新数据库
+	 */
+
+	int StageDetailCount=0;
+	try
+	{
+		memset(sqlbuf,'\0',sizeof(sqlbuf));
+		sprintf(sqlbuf,"select t.stage_id,t.stage_image ITC_CFG_STAGE_DETAIL t where t.signal_id=%d",StageInfo[0].CrossID);
+		TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+		Result = TcpThread[ThreadNum].stmt->executeQuery();
+
+		while(Result->next() != 0)                //cun zai
+		{
+
+			StageDetail[StageDetailCount].stage_id = Result->getInt(1);
+			strcpy(StageDetail[StageDetailCount].stage_image , Result->getString(1).c_str());
+			StageDetailCount++;
+		}
+		TcpThread[ThreadNum].stmt->closeResultSet(Result);
+	}
+	catch(SQLException &sqlExcp)
+	{
+		TcpThread[ThreadNum].stmt->closeResultSet(Result);
+		cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return SDE_Failure;
+	}
+
+	try
+	{
+		memset(sqlbuf,'\0',sizeof(sqlbuf));
+		sprintf(sqlbuf,"delete from ITC_CFG_STAGE_DETAIL t where t.signal_id=%d",StageInfo[0].CrossID);
+		TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+		Result = TcpThread[ThreadNum].stmt->executeUpdate();
+
+		memset(sqlbuf,'\0',sizeof(sqlbuf));
+		sprintf(sqlbuf,"delete from ITC_CFG_STAGE t where t.signal_id=%d",StageInfo[0].CrossID);
+		TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+		Result = TcpThread[ThreadNum].stmt->executeUpdate();
+	}
+	catch(SQLException &sqlExcp)
+	{
+		cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return SDE_Failure;
+	}
+	int i,j;
+	try
+	{
+		memset(sqlbuf,'\0',sizeof(sqlbuf));
+		sprintf(sqlbuf,"insert into ITC_CFG_STAGE t(t.signal_id,t.stage_id,t.stage_phase,t.shield_occ,t.relieve_occ,t.stat_time,t.auto_occ_control,t.stage_step,t.auto_control_time) values(:x1,:x2,:x3,:x4,:x5,:x6,:x7,:x8,:x9)");
+		TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+		TcpThread[ThreadNum].stmt->setMaxIterations(200);
+		TcpThread[ThreadNum].stmt->setMaxParamSize(1,sizeof(int));
+		TcpThread[ThreadNum].stmt->setMaxParamSize(2,sizeof(int));
+		TcpThread[ThreadNum].stmt->setMaxParamSize(3,300);
+		TcpThread[ThreadNum].stmt->setMaxParamSize(4,sizeof(int));
+		TcpThread[ThreadNum].stmt->setMaxParamSize(5,sizeof(int));
+		TcpThread[ThreadNum].stmt->setMaxParamSize(6,sizeof(int));
+		TcpThread[ThreadNum].stmt->setMaxParamSize(7,sizeof(int));
+		TcpThread[ThreadNum].stmt->setMaxParamSize(8,sizeof(int));
+		TcpThread[ThreadNum].stmt->setMaxParamSize(9,sizeof(int));
+		char temp_buf[300];
+		char num[6];
+		for(i = 0; i < ObjectNum;i++)
+		{
+			if(i != 0 )
+			{
+				TcpThread[ThreadNum].stmt->addIteration();
+			}
+			TcpThread[ThreadNum].stmt->setNumber(1,StageInfo[i].CrossID);
+			TcpThread[ThreadNum].stmt->setNumber(2,StageInfo[i].StageNo);
+			j=0;
+			while(StageInfo[i].PhaseNoList[j] != '\0')
+			{
+				sprintf(num,"%d,",StageInfo[i].PhaseNoList[j]);
+				strcat(temp_buf,num);
+				j++;
+			}
+			TcpThread[ThreadNum].stmt->setString(3,temp_buf);
+			TcpThread[ThreadNum].stmt->setNumber(4,0);
+			TcpThread[ThreadNum].stmt->setNumber(5,0);
+			TcpThread[ThreadNum].stmt->setNumber(6,0);
+			TcpThread[ThreadNum].stmt->setNumber(7,0);
+			TcpThread[ThreadNum].stmt->setNumber(8,0);
+			TcpThread[ThreadNum].stmt->setNumber(9,0);
+
+		}
+		TcpThread[ThreadNum].stmt->executeUpdate();
+	}
+	catch(SQLException &sqlExcp)
+	{
+		cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return SDE_Failure;
+	}
+
+	try
+	{
+		memset(sqlbuf,'\0',sizeof(sqlbuf));
+		sprintf(sqlbuf,"insert into ITC_CFG_STAGE_DETAIL t(t.signal_id,t.stage_id,t.stage_image,t.detail) values(:x1,:x2,:x3,:x4)");
+		TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+		TcpThread[ThreadNum].stmt->setMaxIterations(200);
+		TcpThread[ThreadNum].stmt->setMaxParamSize(1,sizeof(int));
+		TcpThread[ThreadNum].stmt->setMaxParamSize(2,sizeof(int));
+		TcpThread[ThreadNum].stmt->setMaxParamSize(3,20);
+		TcpThread[ThreadNum].stmt->setMaxParamSize(4,300);
+
+		for(i = 0; i < ObjectNum;i++)
+		{
+			TcpThread[ThreadNum].stmt->setNumber(1,StageInfo[i].CrossID);
+			TcpThread[ThreadNum].stmt->setNumber(2,StageInfo[i].StageNo);
+			TcpThread[ThreadNum].stmt->setString(3,"");
+			for(j=0;j<StageDetailCount;j++)
+			{
+				if(StageInfo[i].StageNo == StageDetail[j].stage_id)
+				{
+					TcpThread[ThreadNum].stmt->setString(3,StageDetail[j].stage_image);
+					break;
+				}
+			}
+			TcpThread[ThreadNum].stmt->setString(4,StageInfo[i].StageName);
+			TcpThread[ThreadNum].stmt->addIteration();
+		}
+		TcpThread[ThreadNum].stmt->executeUpdate();
+	}
+	catch(SQLException &sqlExcp)
+	{
+		cout  << __FILE__<< '\r'<< __FUNCTION__<< '\r'<< __LINE__<<endl
+		cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return SDE_Failure;
+	}
+	try
+	{
+		memset(sqlbuf,'\0',sizeof(sqlbuf));
+		sprintf(sqlbuf,"update ITC_CFG_PLAN_CHAIN t set t.stage_time=%d where t.signal_id=%s and t.stage_id=%d");
+		for(i = 0; i < ObjectNum;i++)
+		{
+			memset(sqlbuf,'\0',sizeof(sqlbuf));
+			sprintf(sqlbuf,"update ITC_CFG_PLAN_CHAIN t set t.stage_time=%d where t.signal_id=%s and t.stage_id=%d",StageInfo[i].Green,StageInfo[i].CrossID,StageInfo[i].StageNo);
+			TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+			stmt->executeUpdate();
+		}
+	}
+	catch(SQLException &sqlExcp)
+	{
+		cout << __FILE__<< __FUNCTION__<< __LINE__<< " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return SDE_Failure;
+	}
+
+	return succeed;
+}
+int Set_PlanParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	char *ObjectName;
+		int ObjectNum = 0;
+		int PhaseCount=0;
+		struct Plan_Param PlanInfo[128];
+		xmlNodePtr Object = OperationNode ->children ->children;          //operation节点->TSCCmdt节点->要操作的对象节点
+		xmlNodePtr CurrNode;
+		if(Object == NULL)
+		{
+			return SDE_Failure;
+		}
+		while(Object != NULL)
+		{
+			if( strncmp((char *)Object->name,(char *)&PlanParam,sizeof(PlanParam) ) != 0 )
+			{
+				return SDE_Failure;
+			}
+			CurrNode = Object->children;
+			if(Get_Node(CurrNode,"CrossID") != succeed)
+			{
+				return SDE_Failure;
+			}
+			PlanInfo[ObjectNum].CrossID = atoi((char *)xmlNodeGetContent(CurrNode));
+			if(Get_Node(CurrNode,"PlanNo") != succeed)
+			{
+				return SDE_Failure;
+			}
+			PlanInfo[ObjectNum].PlanNo = atoi((char *)xmlNodeGetContent(CurrNode));
+			if(Get_Node(CurrNode,"CycleLen") != succeed)
+			{
+				return SDE_Failure;
+			}
+			PlanInfo[ObjectNum].CycleLen = atoi((char *)xmlNodeGetContent(CurrNode));
+			if(Get_Node(CurrNode,"CoordPhaseNo") != succeed)
+			{
+				return SDE_Failure;
+			}
+			PlanInfo[ObjectNum].CoordPhaseNo = atoi((char *)xmlNodeGetContent(CurrNode));
+			if(Get_Node(CurrNode,"OffSet") != succeed)
+			{
+				return SDE_Failure;
+			}
+			PlanInfo[ObjectNum].OffSet = atoi((char *)xmlNodeGetContent(CurrNode));
+			if(Get_Node(CurrNode,"StageNoList") != succeed)
+			{
+				return SDE_Failure;
+			}
+			//放行阶段序号列表。包含至少一个阶段序号<StageNo>
+			CurrNode = CurrNode ->children;
+			if(CurrNode == NULL)
+			{
+				return SDE_Failure;
+			}
+			while(CurrNode != NULL)
+			{
+				PlanInfo[ObjectNum].StageNoList[PhaseCount] = atoi((char *)xmlNodeGetContent(CurrNode));
+				PhaseCount++;
+				CurrNode = CurrNode->next;
+			}
+			if(PhaseCount == 0)
+			{
+				return SDE_Failure;
+			}
+			ObjectNum++;
+			Object = Object ->next;
+		}
+		if(ObjectNum == 0)
+		{
+			return SDE_Failure;
+		}
+		/* 所有参数获取成功  更新数据库 */
+
+
+	return succeed;
+}

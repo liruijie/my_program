@@ -1,0 +1,64 @@
+/*
+ * ReportRealStatus.cpp
+ *
+ *  Created on: 2016年7月26日
+ *      Author: root
+ */
+#include "include.h"
+
+//#define Error 3
+void *ReportRealStatus(void *arg)
+{
+	int ThreadNum;
+	int i,j;
+	while(1)
+	{
+		for(ThreadNum = 0;ThreadNum <MaxConnect;ThreadNum++)
+		{
+			if(TcpThread[ThreadNum].IsConnect == true)
+			{
+				for(i = 0;i<SignalMaxNum;i++)
+				{
+					if(TcpThread[ThreadNum].ReportInfo[i].CrossID == 0)           //该链接中的所有需要上报的信号机已经完成
+						break;
+					for(j = 0;  j<SignalMaxNum ;j++)                           	//找到要上报信号机的数据
+					{
+						if(TcpThread[ThreadNum].ReportInfo[i].CrossID == SignalRealData[j].CrossID)
+							break;
+					}
+					if(j==SignalMaxNum)                                  //j等于最大值就是没有找到
+						continue;
+					if( SignalRealData[j].Running_Status != Online )   //信号机不在线  只上报状态
+					{
+						continue;
+					}
+					if(TcpThread[ThreadNum].ReportInfo[i].CrossCycle_flag == true)
+					{
+
+					}
+					if(TcpThread[ThreadNum].ReportInfo[i].CrossStage_flag == true)
+					{
+
+					}
+					if(TcpThread[ThreadNum].ReportInfo[i].CrossPhaseLampStatus_flag == true)
+					{
+
+					}
+					if(TcpThread[ThreadNum].ReportInfo[i].CrossTrafficData_flag == true)
+					{
+
+					}
+					if(TcpThread[ThreadNum].ReportInfo[i].IsSignalErrorUpdate == true)
+					{
+
+					}
+
+				}
+			}
+		}
+		sleep(1);
+	}
+	return (void *)0;
+}
+
+

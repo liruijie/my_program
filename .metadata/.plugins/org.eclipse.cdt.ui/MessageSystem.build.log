@@ -1,0 +1,15 @@
+09:33:02 **** Incremental Build of configuration Debug for project MessageSystem ****
+make all 
+Building file: ../src/MessageSystem.c
+Invoking: GCC C Compiler
+gcc -I/usr/local/include/libxml2 -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/MessageSystem.d" -MT"src/MessageSystem.o" -o "src/MessageSystem.o" "../src/MessageSystem.c"
+Finished building: ../src/MessageSystem.c
+ 
+Building target: MessageSystem
+Invoking: GCC C Linker
+gcc -L/usr/local/lib -o "MessageSystem"  ./src/MessageSystem.o   -liconv -lxml2 -lpthread
+Finished building target: MessageSystem
+ 
+
+09:33:03 Build Finished (took 605ms)
+

@@ -1,0 +1,7 @@
+AbstractTextEditor.Color.SelectionBackground=32,74,135
+AbstractTextEditor.Color.SelectionBackground.SystemDefault=false
+AbstractTextEditor.Color.SelectionForeground=238,238,236
+AbstractTextEditor.Color.SelectionForeground.SystemDefault=false
+eclipse.preferences.version=1
+overviewRuler_migration=migrated_3.1
+spellingEnabled=false

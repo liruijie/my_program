@@ -1,0 +1,16 @@
+/*
+ * pulicfunction.cpp
+ *
+ *  Created on: 2016年7月8日
+ *      Author: root
+ */
+
+#include "include.h"
+
+char *UpdateToken()
+{
+	char *Token = (char *)"123456";
+	return Token;
+}
+
+

@@ -1,0 +1,46 @@
+/*
+ ============================================================================
+ Name        : signal_function_test.c
+ Author      : LIRUIJIE
+ Version     :
+ Copyright   : Your copyright notice
+ Description : Hello World in C, Ansi-style
+ ============================================================================
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+
+void signalfunc(int sig)
+{
+	if(sig == SIGUSR1)
+	{
+		printf("get sigusr1\n");
+	}
+	else if(sig == SIGUSR2)
+	{
+		printf("get sigusr2\n");
+	}
+	else
+	{
+		printf("can not get signal\n");
+	}
+
+}
+
+int main(void)
+{
+	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
+	printf("pid  = %d\n",getpid());
+	if(signal(SIGUSR1,signalfunc) == SIG_ERR)
+	{
+		printf("get sigusr1 error\n");
+	}
+	if(signal(SIGUSR2,signalfunc) == SIG_ERR)
+	{
+		printf("get sigusr2 error\n");
+	}
+	return EXIT_SUCCESS;
+}
+

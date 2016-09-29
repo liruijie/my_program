@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;xinjiang/src/Operate_Get.cpp&apos; to &apos;Operation_Get.cpp&apos;" description="Rename resource &apos;Operate_Get.cpp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/Operate_Get.cpp" name="Operation_Get.cpp" stamp="1469412027868" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;xinjiang/src/Operate_Get.h&apos; to &apos;Operation_Get.h&apos;" description="Rename resource &apos;Operate_Get.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/Operate_Get.h" name="Operation_Get.h" stamp="1469412039187" updateReferences="true"/>
+</session>

@@ -1,0 +1,16 @@
+/*
+ * XmlRequest.h
+ *
+ *  Created on: 2016年7月14日
+ *  Author: root
+ */
+
+#ifndef XMLREQUEST_H_
+#define XMLREQUEST_H_
+
+int RequestOperate();
+
+
+
+
+#endif /* XMLREQUEST_H_ */

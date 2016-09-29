@@ -1,0 +1,65 @@
+/*
+ * pulicfunction.cpp
+ *
+ *  Created on: 2016年7月8日
+ *      Author: root
+ */
+
+#include "include.h"
+
+int IsUserValid(char *UserName,char *PassWd)
+{
+	char sqlbuf[200];
+	unsigned char OutMD5[16];
+	char PassWd_MD5[32];
+	//select t.user_id from USER_INFO t where t.user_name = 'admin' and t.user_pwd = 'c4ca4238a0b923820dcc509a6f75849b'
+
+	memset(PassWd_MD5,'\0',32);
+	MD5_CTX md5;
+	MD5Init(&md5);
+	MD5Update(&md5,(unsigned char *)PassWd,strlen((char *)PassWd));
+	MD5Final(&md5,OutMD5);
+	char buf[2];
+	int i;
+	printf("加密前:%s\n加密后:",PassWd);
+	for(i=0;i<16;i++)
+	{
+		sprintf(buf,"%02x",OutMD5[i]);
+		strncat(PassWd_MD5,buf,2);
+		memset(buf,'\0',2);
+	}
+
+	sprintf(sqlbuf,"select t.user_id from  where user_name = '%s' and user_pwd = '%s'",UserName,PassWd_MD5);
+	printf(sqlbuf);
+	return JudgeIsExist(sqlbuf);
+}
+
+
+char *UpdateToken()
+{
+	char Token[32];
+	int i;
+	unsigned char encrypt[5];//21232f297a57a5a743894a0e4a801fc3
+	unsigned char decrypt[16];
+	srand(time(0));
+	i = 1 + rand()%100;
+
+	sprintf((char *)encrypt,"%d",i);
+
+	memset(Token,'\0',32);
+	MD5_CTX md5;
+	MD5Init(&md5);
+	MD5Update(&md5,encrypt,strlen((char *)encrypt));
+	MD5Final(&md5,decrypt);
+	char buf[2];
+	printf("加密前:%s\n加密后:",encrypt);
+	for(i=0;i<16;i++)
+	{
+		sprintf(buf,"%02x",decrypt[i]);
+		strncat(Token,buf,2);
+		memset(buf,'\0',2);
+	}
+	return Token;
+}
+
+

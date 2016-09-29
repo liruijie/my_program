@@ -1,0 +1,75 @@
+/*
+ * oracle.cpp
+ *
+ *  Created on: 2016年7月4日
+ *      Author: root
+ */
+
+#include "include.h"
+using namespace oracle::occi;
+using namespace std;
+
+extern string oracle_username ;
+extern string oracle_password ;
+extern string oracle_connectstring;
+
+StatelessConnectionPool *pConnPool;
+int occi_open()
+{
+        while(1)
+        {
+            try
+            {
+               const string userName = oracle_username;
+               const string password = oracle_password;
+               const string connectString= oracle_connectstring;
+
+                cout <<"name = " << oracle_username     <<"   oracle_password = " <<  oracle_password <<        "   oracle_connectstring = " << oracle_connectstring << endl;
+                cout <<"name = " << userName    <<"  oracle_password = " <<  password <<        "    oracle_connectstring = " << connectString << endl;
+               unsigned int maxConn=20;
+               unsigned int minConn=5;
+               unsigned int incrConn=2;
+
+                string sql;
+
+               oracle::occi::Environment *env = oracle::occi::Environment::createEnvironment(Environment::OBJECT);
+
+
+
+               pConnPool= env->createStatelessConnectionPool(userName,password,connectString,minConn,maxConn,incrConn);
+
+                if(pConnPool)
+                  	  {
+                     pConnPool->setTimeOut(10000);
+
+                     Connection *conn;
+                     Statement *stmt;
+                     conn=pConnPool->getConnection(userName,password,connectString);
+                     if(conn)
+                     	 	 {
+									 stmt = conn->createStatement();
+									 stmt->setAutoCommit(false);
+									 return succeed;
+                     	 	 }
+                  	  }
+            }
+            catch (SQLException &sqlExcp)
+            {
+               sqlExcp.getErrorCode();
+               string strinfo=sqlExcp.getMessage();
+               cout<<strinfo;
+               return fail;
+            }
+                printf("oracle open fail\n");
+                sleep(1);
+        }
+
+  return 0;
+}
+
+
+
+
+
+
+

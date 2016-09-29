@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;ITC100_XJ/source/Tianjin_API.cpp&apos; to &apos;ExternPlatform.cpp&apos;" description="Rename resource &apos;Tianjin_API.cpp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="source/Tianjin_API.cpp" name="ExternPlatform.cpp" stamp="1471916980990" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;ITC100_XJ/source/Tianjin_API.h&apos; to &apos;ExternPlatform.h&apos;" description="Rename resource &apos;Tianjin_API.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="source/Tianjin_API.h" name="ExternPlatform.h" stamp="1471917007419" updateReferences="true"/>
+</session>

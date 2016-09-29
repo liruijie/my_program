@@ -1,0 +1,17 @@
+/*
+ * publicdefine.h
+ *
+ *  Created on: 2016年7月4日
+ *      Author: root
+ */
+
+#ifndef PUBLICDEFINE_H_
+#define PUBLICDEFINE_H_
+
+
+
+//#define OracleConfigeFile          "./confige"                 //控制台运行时用这个目录
+#define OracleConfigeFile         "./Debug/confige"              //eclipse调试用这个目录
+
+
+#endif /* PUBLICDEFINE_H_ */

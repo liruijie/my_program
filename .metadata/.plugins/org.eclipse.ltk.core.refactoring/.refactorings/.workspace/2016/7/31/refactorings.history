@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;xinjiang/src/queue.cpp&apos;" deleteContents="false" description="Delete resource &apos;xinjiang/src/queue.cpp&apos;" element1="/xinjiang/src/queue.cpp" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1469412392240"/>&#x0A;<refactoring comment="Delete resource &apos;xinjiang/src/queue.h&apos;" deleteContents="false" description="Delete resource &apos;xinjiang/src/queue.h&apos;" element1="/xinjiang/src/queue.h" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1469412399036"/>
+</session>

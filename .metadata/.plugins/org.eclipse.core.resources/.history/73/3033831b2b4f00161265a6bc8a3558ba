@@ -1,0 +1,80 @@
+/*
+ * Operation_Set.h
+ *
+ *  Created on: 2016年7月20日
+ *      Author: root
+ */
+
+#ifndef OPERATION_SET_H_
+#define OPERATION_SET_H_
+
+//路口参数
+/*struct Crossparam
+{
+	int CrossID;
+	char CrossName[100];
+	int Feature;
+	int IsKey;
+	char DetIDList[32];
+	char LaneList[32];
+	char PhaseNoList[32];
+};
+
+//车道参数
+struct LaneParam
+{
+	int CrossID;
+	int LaneNo;
+	int Direction;
+	int Attribute;
+	int Movement;
+	int Feature;
+};*/
+
+//阶段参数
+struct Stage_Param
+{
+	int CrossID;
+	int StageNo;
+	char StageName[100];
+	int Attribute;
+	int Green;
+	int RedYellow;
+	int Yellow;
+	int AllRed;
+	int PhaseNoList[32];
+};
+
+//配时方案参数
+struct Plan_Param
+{
+	int CrossID;
+	int PlanNo;
+	int CycleLen;
+	int CoordPhaseNo;
+	int OffSet;
+	char StageNoList[32];
+};
+struct ITC_CFG_STAGE_DETAIL
+{
+	int stage_id;
+	char stage_image[20];
+};
+struct Itc_Cfg_Plan_Detail
+{
+	int PlanID;
+	char Detail[50];
+};
+struct ITC_CFG_PLAN_CHAIN
+{
+	int stage_id[10];
+	char stage_time[10];
+	char stage_type[10];
+	char green_time[10];
+	char green_flash_time[10];
+	char green_flash_qtime[10];
+	char red_time[10];
+};
+int Set_StageParam(xmlNodePtr OperationNode,int ThreadNum);
+int Set_PlanParam(xmlNodePtr OperationNode,int ThreadNum);
+#endif /* OPERATION_SET_H_ */

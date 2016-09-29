@@ -1,0 +1,6 @@
+//org.eclipse.debug.core.PREFERRED_DELEGATES/org.eclipse.cdt.launch.applicationLaunchType=org.eclipse.cdt.dsf.gdb.launch.localCLaunch,debug,;org.eclipse.cdt.cdi.launch.localCLaunch,run,;
+//org.eclipse.debug.core.PREFERRED_DELEGATES/org.eclipse.cdt.launch.attachLaunchType=org.eclipse.cdt.dsf.gdb.launch.attachCLaunch,debug,;
+//org.eclipse.debug.core.PREFERRED_DELEGATES/org.eclipse.cdt.launch.postmortemLaunchType=org.eclipse.cdt.dsf.gdb.launch.coreCLaunch,debug,;
+//org.eclipse.debug.core.PREFERRED_DELEGATES/org.eclipse.cdt.launch.remoteApplicationLaunchType=org.eclipse.rse.remotecdt.dsf.debug,debug,;
+eclipse.preferences.version=1
+prefWatchExpressions=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<watchExpressions>\n<expression enabled\="true" text\="TcpThread"/>\n<expression enabled\="true" text\="cur"/>\n<expression enabled\="true" text\="zhongwen"/>\n<expression enabled\="true" text\="oracle_username"/>\n<expression enabled\="true" text\="SignalRealData"/>\n<expression enabled\="true" text\="Queue"/>\n<expression enabled\="true" text\="QueueHead"/>\n<expression enabled\="true" text\="QueueTail"/>\n<expression enabled\="true" text\="Node_Body"/>\n<expression enabled\="true" text\="Text"/>\n<expression enabled\="true" text\="saved"/>\n</watchExpressions>\n

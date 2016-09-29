@@ -1,0 +1,15 @@
+//============================================================================
+// Name        : test001
+// Author      : 
+// Version     :
+// Copyright   : Your copyright notice
+
+//============================================================================
+
+#include <iostream>
+using namespace std;
+
+int main() {
+	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+	return 0;
+}

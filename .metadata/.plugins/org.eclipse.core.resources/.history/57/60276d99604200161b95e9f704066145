@@ -1,0 +1,133 @@
+/*
+ * ControlCenterCommt.cpp
+ *
+ *  Created on: 2016年7月5日
+ *      Author: root
+ */
+#include "include.h"
+#define ControlCenterPort   8801
+#define BACKLOG 				 10
+
+void *ControlCenterCommt(void *arg)
+{
+
+
+	return (void *)0;
+}
+
+void Tcp()
+{
+	int sockfd, new_fd; 		/* 监听端口，数据端口 */
+		int flags;
+		int sin_size;
+		struct sockaddr_in my_addr; 	/* 自身的地址信息 */
+		struct sockaddr_in client_addr; 	/* 连接对方的地址信息 */
+		struct timeval 	timeVal;
+		fd_set  fdSet;
+		int ret;
+
+		char buf[1000];
+		if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+		{
+			perror("socket");
+			exit(1);
+		}
+		printf("socket success\n");
+		sleep(2);
+		my_addr.sin_family = AF_INET;
+		my_addr.sin_port = htons(ControlCenterPort); 		/* 网络字节顺序 */
+		my_addr.sin_addr.s_addr = INADDR_ANY; 	/* 自动填本机IP */
+		bzero(&(my_addr.sin_zero), 8); 		/* 其余部分置0 */
+		if (bind(sockfd, (struct sockaddr *)&my_addr,sizeof(struct sockaddr)) == -1)
+		{
+			perror("bind");
+			exit(1);
+		}
+		printf("bind success\n");
+		sleep(2);
+		if (listen(sockfd, BACKLOG) == -1)
+		 {
+			perror("listen");
+			exit(1);
+		 }
+		printf("listen success\n");
+		sleep(2);
+		flags = fcntl(sockfd, F_GETFL);
+		if( (flags<0)||((fcntl(sockfd, F_SETFL, flags |O_ASYNC))<0) )
+		{
+			perror("fcntl\n");
+		}
+		else
+		{
+			printf("fcntl success\n");
+			sleep(2);
+		}
+
+		while(1)
+		{
+
+			timeVal.tv_sec = 10;
+			timeVal.tv_usec = 0;
+
+			FD_ZERO(&fdSet);
+			FD_SET(sockfd, &fdSet);
+			printf("start select\n");
+			ret = select((int) sockfd + 1, &fdSet,NULL, NULL, &timeVal);
+			printf("%d\n",FD_ISSET(sockfd,&fdSet));
+			if( ret == 0 )    //select timeout
+			{
+				//printf("sockfd select timeout with result=%d\n",ret);
+				continue;
+				//exit(0);
+			}
+			if( !ret )    //select error
+			{
+				printf("sockfd select failed with result=%d\n",ret);
+				continue;
+				//exit(0);
+			}
+			else          //select success
+			{
+				printf("test1112222\n");
+				sin_size = sizeof(struct sockaddr_in);
+				new_fd = accept(sockfd, (sockaddr *)&client_addr, (socklen_t *)&sin_size);
+				if  (new_fd == -1)
+				 {
+					perror("accept");
+					continue;
+					//exit(0);
+				 }
+				printf("new_fd is %d\n",new_fd);
+				printf("Got connection from %s:%d\n", inet_ntoa( client_addr.sin_addr ),ntohs(client_addr.sin_port));
+
+				if(!fork())
+				{	/* 子进程    用于收发数据 */
+							if (send(new_fd,"1234567890",10, 0) == -1)perror("send");
+							while(1)
+								{
+
+									//printf("in while\n");
+									ret = TCPService_Data_Receive(new_fd,buf);
+									printf("only test,Rece ret is %d\n",ret);
+									if(ret>0)
+										ret = TCPService_Data_Send(new_fd,buf,ret);
+									else if(ret<0)
+									{
+										printf("TCP error\n");
+										printf("this link is  %s:%d\n", inet_ntoa( client_addr.sin_addr ),ntohs(client_addr.sin_port));
+										break;
+									}
+									sleep(5);
+								}
+							printf("close the TCPLink\n");
+							close(new_fd);     //
+				}
+				sleep(10);
+				printf("child process will close the TCPLink num = %d\n",new_fd);
+				close(new_fd);
+			}
+
+
+		}
+
+}

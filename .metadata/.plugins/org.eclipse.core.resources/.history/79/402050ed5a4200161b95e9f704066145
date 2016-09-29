@@ -1,0 +1,15 @@
+/*
+ * ControlCenterCommt.h
+ *
+ *  Created on: 2016年7月5日
+ *      Author: root
+ */
+
+#ifndef CONTROLCENTERCOMMT_H_
+#define CONTROLCENTERCOMMT_H_
+
+
+void *ControlCenterCommt();
+
+
+#endif /* CONTROLCENTERCOMMT_H_ */

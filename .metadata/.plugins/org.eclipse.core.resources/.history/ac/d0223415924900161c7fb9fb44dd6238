@@ -1,0 +1,15 @@
+/*
+ * publicfunction.h
+ *
+ *  Created on: 2016年7月8日
+ *      Author: root
+ */
+
+#ifndef PUBLICFUNCTION_H_
+#define PUBLICFUNCTION_H_
+
+
+char *UpdateToken();
+
+
+#endif /* PUBLICFUNCTION_H_ */
