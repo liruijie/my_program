@@ -12665,3 +12665,15 @@ Invoking: GCC C++ Linker
 g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xinjiang"  ./src/ControlCenterCommt.o ./src/ControlSignal.o ./src/ITC_Server.o ./src/KeepConnectAlive.o ./src/Operation_Get.o ./src/Operation_Set.o ./src/ReportRealStatus.o ./src/XmlRequest.o ./src/main.o ./src/md5.o ./src/oracle.o ./src/publicfunction.o ./src/xml.o  /usr/lib64/libstdc++.so.6 -lxml2 -lnsl -lclntsh -locci -lm -lpthread
 Finished building target: xinjiang
  
+13:16:46 **** Incremental Build of configuration Debug for project xinjiang ****
+make all 
+Building file: ../src/ITC_Server.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/local/include/libxml2 -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ITC_Server.d" -MT"src/ITC_Server.o" -o "src/ITC_Server.o" "../src/ITC_Server.cpp"
+Finished building: ../src/ITC_Server.cpp
+ 
+Building target: xinjiang
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xinjiang"  ./src/ControlCenterCommt.o ./src/ControlSignal.o ./src/ITC_Server.o ./src/KeepConnectAlive.o ./src/Operation_Get.o ./src/Operation_Set.o ./src/ReportRealStatus.o ./src/XmlRequest.o ./src/main.o ./src/md5.o ./src/oracle.o ./src/publicfunction.o ./src/xml.o  /usr/lib64/libstdc++.so.6 -lxml2 -lnsl -lclntsh -locci -lm -lpthread
+Finished building target: xinjiang
+ 

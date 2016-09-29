@@ -32,8 +32,6 @@ void *ItcServerCommt(void *arg)
 	int len;
 	int i;
 	time_t time_now;
-
-
 	pthread_t pth_AnalyzeSignalData;
 	printf("Creat thread ItcServerCommt success,%s,%s,%d\n",__FILE__,__FUNCTION__,__LINE__);
 	sleep(1);

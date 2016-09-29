@@ -1,4 +1,4 @@
-11:10:08 **** Incremental Build of configuration Debug for project xinjiang ****
+13:16:46 **** Incremental Build of configuration Debug for project xinjiang ****
 make all 
 Building file: ../src/ITC_Server.cpp
 Invoking: GCC C++ Compiler
@@ -11,5 +11,5 @@ g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xinjiang"  ./src/Co
 Finished building target: xinjiang
  
 
-11:10:09 Build Finished (took 864ms)
+13:16:47 Build Finished (took 1s.647ms)
 
