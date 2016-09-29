@@ -24,8 +24,7 @@ pthread_mutex_t UpdateSignalParameter;
 当解析数据时，上报线程停止上报，等待解析完成*/
 pthread_mutex_t UpdateRealData;
 struct SignalData SignalRealData[SignalMaxNum];
-time_t time1;
-time_t time2;
+
 extern char ITC_ServerAddr[20];
 void *ItcServerCommt(void *arg)
 {
@@ -49,7 +48,6 @@ void *ItcServerCommt(void *arg)
 	}
 
 	pthread_mutex_init(&UpdateSignalParameter,NULL);
-	time(&time1);
 	UpdateParam(1000);
 
 	sleep(5);
@@ -248,8 +246,7 @@ void AnalyzeBuffer(unsigned char *Rec_buf)
 				occodata(Rec_buf,signal_num);
 				break;
 			case 0xCC:              //update response
-				time(&time2);
-				printf("update need %ld s\n",time2-time1);
+
 				if(Rec_buf[12] == 0x00)
 				{
 					printf("update parameter succeed\n");
