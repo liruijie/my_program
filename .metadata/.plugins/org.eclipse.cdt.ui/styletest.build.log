@@ -1,0 +1,15 @@
+14:12:01 **** Build of configuration Debug for project styletest ****
+make all 
+Building file: ../src/styletest.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/styletest.d" -MT"src/styletest.o" -o "src/styletest.o" "../src/styletest.cpp"
+Finished building: ../src/styletest.cpp
+ 
+Building target: styletest
+Invoking: GCC C++ Linker
+g++  -o "styletest"  ./src/styletest.o   
+Finished building target: styletest
+ 
+
+14:12:02 Build Finished (took 1s.123ms)
+

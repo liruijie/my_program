@@ -32,8 +32,8 @@
 
 
 //1111
-typedef char (*PTRFUN)(int,char *);
-PTRFUN pFun;
+typedef char (*_PTRFUN)(int,char *);
+_PTRFUN pFun;
 //2222
 char (*pFun2)(int,char *);
 char glFun(int a,char *p)
@@ -47,7 +47,7 @@ int main()
 
 printf("%-13ldaaaaa\n",123456L);
     pFun = glFun;
-    pFun2 = glFun;
+    pFun2 = (_PTRFUN )glFun;
     c = (*pFun)(0x32,"this is pFun\n");
     printf("pFun      %c\n",c);
     c = (*pFun2)(0x33,"this is pFun2\n");

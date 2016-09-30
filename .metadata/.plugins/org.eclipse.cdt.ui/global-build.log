@@ -12677,3 +12677,27 @@ Invoking: GCC C++ Linker
 g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xinjiang"  ./src/ControlCenterCommt.o ./src/ControlSignal.o ./src/ITC_Server.o ./src/KeepConnectAlive.o ./src/Operation_Get.o ./src/Operation_Set.o ./src/ReportRealStatus.o ./src/XmlRequest.o ./src/main.o ./src/md5.o ./src/oracle.o ./src/publicfunction.o ./src/xml.o  /usr/lib64/libstdc++.so.6 -lxml2 -lnsl -lclntsh -locci -lm -lpthread
 Finished building target: xinjiang
  
+14:12:01 **** Build of configuration Debug for project styletest ****
+make all 
+Building file: ../src/styletest.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/styletest.d" -MT"src/styletest.o" -o "src/styletest.o" "../src/styletest.cpp"
+Finished building: ../src/styletest.cpp
+ 
+Building target: styletest
+Invoking: GCC C++ Linker
+g++  -o "styletest"  ./src/styletest.o   
+Finished building target: styletest
+ 
+15:21:27 **** Incremental Build of configuration Debug for project test ****
+make all 
+Building file: ../src/test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test.d" -MT"src/test.o" -o "src/test.o" "../src/test.c"
+Finished building: ../src/test.c
+ 
+Building target: test
+Invoking: GCC C Linker
+gcc  -o "test"  ./src/test.o   
+Finished building target: test
+ 

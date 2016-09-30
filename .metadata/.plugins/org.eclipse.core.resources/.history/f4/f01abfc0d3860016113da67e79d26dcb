@@ -1,0 +1,776 @@
+/*
+ * Operate_Get.cpp
+ *
+ *  Created on: 2016年7月25日
+ *      Author: root
+ */
+#include "include.h"
+
+int Get_SysInfo(xmlNodePtr OperationNode,int ThreadNum)
+{
+	char sqlbuf[500];
+	ResultSet *Result;
+
+	xmlNodePtr node_SysInfo = xmlNewNode(NULL, BAD_CAST "SysInfo");
+	xmlNewChild(node_SysInfo, NULL, BAD_CAST "SysName",BAD_CAST "ATC");
+	xmlNewChild(node_SysInfo, NULL, BAD_CAST "SysVersion",BAD_CAST "1.0");
+	xmlNewChild(node_SysInfo, NULL, BAD_CAST "Supplier",BAD_CAST "北京博研智通科技有限公司");
+	xmlNodePtr node_RegionIDList = xmlNewNode(NULL, BAD_CAST "RegionIDList");
+	sprintf(sqlbuf,"select t.disrict_id  from DISRICT_INFOR t order by t.disrict_id");
+	try
+	{
+		TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+		Result = TcpThread[ThreadNum].stmt->executeQuery();
+		while(Result->next() != 0)
+		{
+			xmlNewChild(node_RegionIDList, NULL, BAD_CAST "RegionID",BAD_CAST Result->getString(1).c_str());
+		}
+		TcpThread[ThreadNum].stmt->closeResultSet(Result);
+	}
+	catch(SQLException &sqlExcp)
+	{
+		cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return SDE_Failure;
+	}
+	xmlAddChild(node_SysInfo, node_RegionIDList);
+
+	xmlNodePtr node_SignalControlerIDList = xmlNewNode(NULL, BAD_CAST "SignalControlerIDList");
+	sprintf(sqlbuf,"select t.signal_id from SIGNAL_CONFIG_INFO t order by to_number( t.signal_id)");
+	try
+	{
+		TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+		Result = TcpThread[ThreadNum].stmt->executeQuery();
+		while(Result->next() != 0)
+		{
+			xmlNewChild(node_SignalControlerIDList, NULL, BAD_CAST "SignalControlerID",BAD_CAST Result->getString(1).c_str());
+		}
+		TcpThread[ThreadNum].stmt->closeResultSet(Result);
+	}
+	catch(SQLException &sqlExcp)
+	{
+		TcpThread[ThreadNum].stmt->closeResultSet(Result);
+		cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return SDE_Failure;
+	}
+
+	xmlAddChild(node_SysInfo, node_SignalControlerIDList);
+	xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+	xmlAddChild(node_Object, node_SysInfo);
+	xmlNodePtr node_unlink = OperationNode->children;
+	xmlUnlinkNode(node_unlink);
+	//printf("Free Unlink Node\n");
+
+	xmlFreeNode(node_unlink);
+	//printf("Free Unlink Node success\n");
+	xmlAddChild(OperationNode, node_Object);
+	return succeed;
+}
+
+
+int Get_RegionParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	char sqlbuf[500];
+	ResultSet *Result;
+	char CrossID_buf[200];
+	int ResultNum = 0;
+	int ID = 0;
+	ID = Get_Object_ID(OperationNode);       //区域编号
+	if(ID <= 0)
+	{
+		return SDE_Failure;
+	}
+	xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+	xmlNodePtr node_RegionParam;
+	xmlNodePtr node_CrossIDList;
+	if(ID == 0)          //all
+	{
+			sprintf(sqlbuf," select t.disrict_id,t.disrict_name,nvl((select replace(WMSYS.WM_CONCAT(u.unit_id),',',',') from UNIT_INFO u where u.disrict_id=t.disrict_id),'NULL') as unitIds from DISRICT_INFOR t order by t.disrict_id");
+	}
+	else                    //id
+	{
+			sprintf(sqlbuf," select t.disrict_id,t.disrict_name,nvl((select replace(WMSYS.WM_CONCAT(u.unit_id),',',',') from UNIT_INFO u where u.disrict_id=t.disrict_id),'NULL') as unitIds from DISRICT_INFOR t where t.disrict_id= %d order by t.disrict_id",ID);
+	}
+	try
+	{
+		TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+		Result = TcpThread[ThreadNum].stmt->executeQuery();
+		while(Result->next() != 0)
+		{
+			ResultNum++;
+			node_RegionParam = xmlNewNode(NULL, BAD_CAST "RegionParam");
+			xmlNewChild(node_RegionParam, NULL, BAD_CAST "RegionID",BAD_CAST Result->getString(1).c_str());
+			xmlNewChild(node_RegionParam, NULL, BAD_CAST "RegionName",BAD_CAST Result->getString(2).c_str());
+			xmlNewChild(node_RegionParam, NULL, BAD_CAST "SubRegionIDList",NULL);
+			node_CrossIDList = xmlNewNode(NULL, BAD_CAST "CrossIDList");
+			strcpy(CrossID_buf,Result->getString(3).c_str());
+			if(strncmp(CrossID_buf,"NULL",4) == 0)                   //
+			{
+				xmlAddChild(node_RegionParam,node_CrossIDList);
+				xmlAddChild(node_Object,node_RegionParam);
+				continue;
+			}
+			char *CrossID;
+			CrossID = strtok(CrossID_buf, (char *)&",");
+			xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+			while((CrossID = strtok(NULL, (char *)&",")))
+				xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+			xmlAddChild(node_RegionParam,node_CrossIDList);
+			xmlAddChild(node_Object,node_RegionParam);
+		}
+		if(ResultNum == 0)
+		{
+			TcpThread[ThreadNum].stmt->closeResultSet(Result);
+			return SDE_Failure;
+		}
+	}
+	catch(SQLException &sqlExcp)
+	{
+		TcpThread[ThreadNum].stmt->closeResultSet(Result);
+		cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return SDE_Failure;
+	}
+	TcpThread[ThreadNum].stmt->closeResultSet(Result);
+	xmlUnlinkNode(OperationNode->children);
+	xmlAddChild(OperationNode, node_Object);
+	return succeed;
+}
+
+
+int Get_SubRegionParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+		char sqlbuf[500];
+		ResultSet *Result;
+		char CrossID_buf[200];
+		int ResultNum = 0;
+		int ID = 0;
+		ID = Get_Object_ID(OperationNode);
+		if(ID <= 0)
+			return SDE_Failure;
+		xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+		xmlNodePtr node_SubRegionParam;
+		xmlNodePtr node_CrossIDList;
+		if(ID == 0)          //all
+		{
+				sprintf(sqlbuf,"select t.sub_district_id,t.sub_district_name,nvl((select replace(WMSYS.WM_CONCAT(u.unit_id),',',',') from SUB_DIS_UNIT u where u.sub_district_id=t.sub_district_id),'NULL') as unitIds from SUB_DISTRICT_INFO t  order by t.sub_district_ids");
+		}
+		else                    //id
+		{
+				sprintf(sqlbuf," select t.sub_district_id,t.sub_district_name,nvl((select replace(WMSYS.WM_CONCAT(u.unit_id),',',',') from SUB_DIS_UNIT u where u.sub_district_id=t.sub_district_id),'NULL') as unitIds from SUB_DISTRICT_INFO t where t.sub_district_id=%d order by t.sub_district_id",ID);
+		}
+		try
+		{
+			TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+			Result = TcpThread[ThreadNum].stmt->executeQuery();
+			while(Result->next() != 0)
+			{
+				ResultNum++;
+				node_SubRegionParam = xmlNewNode(NULL, BAD_CAST "SubRegionParam");
+				xmlNewChild(node_SubRegionParam, NULL, BAD_CAST "SubRegionID",BAD_CAST Result->getString(1).c_str());
+				xmlNewChild(node_SubRegionParam, NULL, BAD_CAST "SubRegionName",BAD_CAST Result->getString(2).c_str());
+				node_CrossIDList = xmlNewNode(NULL, BAD_CAST "CrossIDList");
+				strcpy(CrossID_buf,Result->getString(3).c_str());
+				if(strncmp(CrossID_buf,"NULL",4) == 0)                   //
+				{
+					xmlAddChild(node_SubRegionParam,node_CrossIDList);
+					xmlAddChild(node_Object,node_SubRegionParam);
+					continue;
+				}
+				char *CrossID;
+				CrossID = strtok(CrossID_buf, (char *)&",");
+				xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+				while((CrossID = strtok(NULL, (char *)&",")))
+					xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID",BAD_CAST CrossID);
+				xmlAddChild(node_SubRegionParam,node_CrossIDList);
+				xmlAddChild(node_Object,node_SubRegionParam);
+			}
+			if(ResultNum == 0)
+			{
+				TcpThread[ThreadNum].stmt->closeResultSet(Result);
+				return SDE_Failure;
+			}
+		}
+		catch(SQLException &sqlExcp)
+		{
+			TcpThread[ThreadNum].stmt->closeResultSet(Result);
+			cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+			cout << sqlExcp.getMessage() << endl; //获得异常信息
+			return SDE_Failure;
+		}
+		TcpThread[ThreadNum].stmt->closeResultSet(Result);
+		xmlUnlinkNode(OperationNode->children);
+		xmlAddChild(OperationNode, node_Object);
+		return succeed;
+}
+
+
+
+int Get_CrossParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	char sqlbuf[500];
+		ResultSet *Result;
+		char Result_buf[500];
+		int ResultNum = 0;
+		int ID = 0;
+		ID = Get_Object_ID(OperationNode);
+		if(ID <= 0)
+			return SDE_Failure;
+		xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+		xmlNodePtr node_CorssParam;
+		xmlNodePtr node_DetIDList;
+		xmlNodePtr node_LaneNoList;
+		xmlNodePtr node_PhaseNoList;
+		xmlNodePtr node_StageNoList;
+		xmlNodePtr node_PlanNoList;
+		if(ID == 0)          //all
+		{
+				sprintf(sqlbuf,"select t.unit_id,t.unit_name,(select c.remark from CODE c where c.code_type_id=2 and c.code=t.unit_type) as typeCode,'0' as isKey\
+									,(select replace(WMSYS.WM_CONCAT(d.detector_id),',',',') from ITC_CFG_DETECTOR d where d.signal_id=t.signal_id and d.detector_type!=0) as DetIDList\
+									,(select replace(WMSYS.WM_CONCAT(d.detector_id),',',',') from ITC_CFG_DETECTOR d where d.signal_id=t.signal_id and d.detector_type!=0) as LaneNoList\
+									,(select replace(WMSYS.WM_CONCAT(d.phase_id),',',',') from ITC_CFG_PHASE d where d.signal_id=t.signal_id and d.phase_type!=0) as PhaseNoList\
+									,(select replace(WMSYS.WM_CONCAT(d.stage_id),',',',') from ITC_CFG_STAGE d where d.signal_id=t.signal_id and d.stage_phase is not null) as StageNoList\
+									,(select replace(WMSYS.WM_CONCAT(d.plan_id),',',',') from ITC_CFG_PLAN d where d.signal_id=1 and d.list_unit_id>0) as planList\
+									 from UNIT_INFO t");
+		}
+		else                    //id
+		{
+				sprintf(sqlbuf," select t.unit_id,t.unit_name,(select c.remark from CODE c where c.code_type_id=2 and c.code=t.unit_type) as typeCode,'0' as isKey\
+									,(select replace(WMSYS.WM_CONCAT(d.detector_id),',',',') from ITC_CFG_DETECTOR d where d.signal_id=t.signal_id and d.detector_type!=0) as DetIDList\
+									,(select replace(WMSYS.WM_CONCAT(d.detector_id),',',',') from ITC_CFG_DETECTOR d where d.signal_id=t.signal_id and d.detector_type!=0) as LaneNoList\
+									,(select replace(WMSYS.WM_CONCAT(d.phase_id),',',',') from ITC_CFG_PHASE d where d.signal_id=t.signal_id and d.phase_type!=0) as PhaseNoList\
+									,(select replace(WMSYS.WM_CONCAT(d.stage_id),',',',') from ITC_CFG_STAGE d where d.signal_id=t.signal_id and d.stage_phase is not null) as StageNoList\
+									,(select replace(WMSYS.WM_CONCAT(d.plan_id),',',',') from ITC_CFG_PLAN d where d.signal_id=1 and d.list_unit_id>0) as planList\
+									 from UNIT_INFO t where t.unit_id=%d",ID);
+
+		}
+		try
+		{
+			TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+			Result = TcpThread[ThreadNum].stmt->executeQuery();
+			while(Result->next() != 0)
+			{
+				ResultNum++;
+				node_CorssParam = xmlNewNode(NULL, BAD_CAST "CorssParam");
+				xmlNewChild(node_CorssParam, NULL, BAD_CAST "CrossID",BAD_CAST Result->getString(1).c_str());
+				xmlNewChild(node_CorssParam, NULL, BAD_CAST "CrossName",BAD_CAST Result->getString(2).c_str());
+				xmlNewChild(node_CorssParam, NULL, BAD_CAST "Feature",BAD_CAST Result->getString(3).c_str());
+				xmlNewChild(node_CorssParam, NULL, BAD_CAST "IsKey",BAD_CAST Result->getString(4).c_str());
+				//DetIDList
+				node_DetIDList = xmlNewNode(NULL, BAD_CAST "DetIDList");
+				strcpy(Result_buf,Result->getString(5).c_str());
+				if(strncmp(Result_buf,"\0",1) == 0)                   //
+				{
+					xmlAddChild(node_CorssParam,node_DetIDList);
+				}
+				else
+				{
+					char *DetID;
+					DetID = strtok(Result_buf, (char *)&",");
+					xmlNewChild(node_DetIDList, NULL, BAD_CAST "DetID",BAD_CAST DetID);
+					while((DetID = strtok(NULL, (char *)&",")))
+						xmlNewChild(node_DetIDList, NULL, BAD_CAST "DetID",BAD_CAST DetID);
+					xmlAddChild(node_CorssParam,node_DetIDList);
+				}
+				//LaneNoList
+				node_LaneNoList = xmlNewNode(NULL, BAD_CAST "LaneNoList");
+				strcpy(Result_buf,Result->getString(6).c_str());
+				if(strncmp(Result_buf,"\0",1) == 0)                   //
+				{
+					xmlAddChild(node_CorssParam,node_LaneNoList);
+				}
+				else
+				{
+					char *LaneNo;
+					LaneNo = strtok(Result_buf, (char *)&",");
+					xmlNewChild(node_LaneNoList, NULL, BAD_CAST "LaneNo",BAD_CAST LaneNo);
+					while((LaneNo = strtok(NULL, (char *)&",")))
+						xmlNewChild(node_LaneNoList, NULL, BAD_CAST "LaneNo",BAD_CAST LaneNo);
+					xmlAddChild(node_CorssParam,node_LaneNoList);
+				}
+				//PhaseNoList
+				node_PhaseNoList = xmlNewNode(NULL, BAD_CAST "PhaseNoList");
+				strcpy(Result_buf,Result->getString(7).c_str());
+				if(strncmp(Result_buf,"\0",1) == 0)                   //
+				{
+					xmlAddChild(node_CorssParam,node_PhaseNoList);
+				}
+				else
+				{
+					char *PhaseNo;
+					PhaseNo = strtok(Result_buf, (char *)&",");
+					xmlNewChild(node_PhaseNoList, NULL, BAD_CAST "PhaseNo",BAD_CAST PhaseNo);
+					while((PhaseNo = strtok(NULL, (char *)&",")))
+						xmlNewChild(node_PhaseNoList, NULL, BAD_CAST "PhaseNo",BAD_CAST PhaseNo);
+					xmlAddChild(node_CorssParam,node_PhaseNoList);
+				}
+				//StageNoList
+				node_StageNoList = xmlNewNode(NULL, BAD_CAST "StageNoList");
+				strcpy(Result_buf,Result->getString(8).c_str());
+				if(strncmp(Result_buf,"\0",1) == 0)                   //
+				{
+					xmlAddChild(node_CorssParam,node_StageNoList);
+				}
+				else
+				{
+					char *StageNo;
+					StageNo = strtok(Result_buf, (char *)&",");
+					xmlNewChild(node_StageNoList, NULL, BAD_CAST "StageNo",BAD_CAST StageNo);
+					while((StageNo = strtok(NULL, (char *)&",")))
+						xmlNewChild(node_StageNoList, NULL, BAD_CAST "StageNo",BAD_CAST StageNo);
+					xmlAddChild(node_CorssParam,node_StageNoList);
+				}
+				//PlanNoList
+				node_PlanNoList = xmlNewNode(NULL, BAD_CAST "PlanNoList");
+				strcpy(Result_buf,Result->getString(9).c_str());
+				if(strncmp(Result_buf,"\0",1) == 0)                   //
+				{
+					xmlAddChild(node_CorssParam,node_PlanNoList);
+				}
+				else
+				{
+					char *PlanNo;
+					PlanNo = strtok(Result_buf, (char *)&",");
+					xmlNewChild(node_PlanNoList, NULL, BAD_CAST "PlanNo",BAD_CAST PlanNo);
+					while((PlanNo = strtok(NULL, (char *)&",")))
+						xmlNewChild(node_PlanNoList, NULL, BAD_CAST "PlanNo",BAD_CAST PlanNo);
+					xmlAddChild(node_CorssParam,node_PlanNoList);
+				}
+
+				xmlAddChild(node_Object,node_CorssParam);
+			}
+			if(ResultNum == 0)
+			{
+				TcpThread[ThreadNum].stmt->closeResultSet(Result);
+				return SDE_Failure;
+			}
+		}
+		catch(SQLException &sqlExcp)
+		{
+			TcpThread[ThreadNum].stmt->closeResultSet(Result);
+			cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+			cout << sqlExcp.getMessage() << endl; //获得异常信息
+			return SDE_Failure;
+		}
+		TcpThread[ThreadNum].stmt->closeResultSet(Result);
+		xmlUnlinkNode(OperationNode->children);
+		xmlAddChild(OperationNode, node_Object);
+	return succeed;
+}
+
+
+int Get_SignalControler(xmlNodePtr OperationNode,int ThreadNum)
+{
+	char sqlbuf[500];
+	ResultSet *Result;
+	char CrossID_buf[20];
+	int ResultNum = 0;
+	int ID = 0;
+	ID = Get_Object_ID(OperationNode);
+	if(ID <= 0)
+		return SDE_Failure;
+	xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+	xmlNodePtr node_SignalControler;
+	xmlNodePtr node_CrossIDList;
+	if(ID == 0)          //all
+	{
+			sprintf(sqlbuf,"select T.SIGNAL_ID,NVL(T.MANUFACTURER,'北京博研智通科技有限公司'),T.SIGNAL_TYPE,T.UNIT_ID from SIGNAL_CONFIG_INFO t");
+	}
+	else                    //id
+	{
+			sprintf(sqlbuf," select T.SIGNAL_ID,NVL(T.MANUFACTURER,'北京博研智通科技有限公司'),T.SIGNAL_TYPE,T.UNIT_ID from SIGNAL_CONFIG_INFO t where t.signal_id=%d",ID);
+	}
+	try
+	{
+		TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+		Result = TcpThread[ThreadNum].stmt->executeQuery();
+		while(Result->next() != 0)
+		{
+			ResultNum++;
+			node_SignalControler = xmlNewNode(NULL, BAD_CAST "SignalControler");
+			xmlNewChild(node_SignalControler, NULL, BAD_CAST "SignalControlerID",BAD_CAST Result->getString(1).c_str());
+			xmlNewChild(node_SignalControler, NULL, BAD_CAST "Supplier",BAD_CAST Result->getString(2).c_str());
+			xmlNewChild(node_SignalControler, NULL, BAD_CAST "Type",BAD_CAST Result->getString(3).c_str());
+			node_CrossIDList = xmlNewNode(NULL, BAD_CAST "CrossIDList");
+			strcpy(CrossID_buf,Result->getString(4).c_str());
+			if(strncmp(CrossID_buf,"\0",1) == 0)                   //
+			{
+
+			}
+			else
+			{
+				xmlNewChild(node_CrossIDList, NULL, BAD_CAST "CrossID", BAD_CAST Result->getString(4).c_str());
+			}
+			xmlAddChild(node_SignalControler,node_CrossIDList);
+			xmlAddChild(node_Object,node_SignalControler);
+		}
+		if(ResultNum == 0)
+		{
+			TcpThread[ThreadNum].stmt->closeResultSet(Result);
+			return SDE_Failure;
+		}
+	}
+	catch(SQLException &sqlExcp)
+	{
+		TcpThread[ThreadNum].stmt->closeResultSet(Result);
+		cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return SDE_Failure;
+	}
+	TcpThread[ThreadNum].stmt->closeResultSet(Result);
+	xmlUnlinkNode(OperationNode->children);
+	xmlAddChild(OperationNode, node_Object);
+	return succeed;
+}
+
+int Get_LampGroup(xmlNodePtr OperationNode,int ThreadNum)
+{
+		xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+		xmlNodePtr node_LampGroup = xmlNewNode(NULL, BAD_CAST "LampGroup");
+		xmlNewChild(node_LampGroup, NULL, BAD_CAST "SignalControlerID",NULL);
+		xmlNewChild(node_LampGroup, NULL, BAD_CAST "LampGroupNo",NULL);
+		xmlNewChild(node_LampGroup, NULL, BAD_CAST "Direction",NULL);
+		xmlNewChild(node_LampGroup, NULL, BAD_CAST "Type",NULL);
+		xmlAddChild(node_Object,node_LampGroup);
+		xmlUnlinkNode(OperationNode->children);
+		xmlAddChild(OperationNode, node_Object);
+		return succeed;
+}
+
+int Get_DetParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+		char sqlbuf[500];
+		ResultSet *Result;
+		int ResultNum = 0;
+		int ID = 0;
+		ID = Get_Object_ID(OperationNode);
+		if(ID <= 0)
+			return SDE_Failure;
+		xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+		xmlNodePtr node_DetParam;
+		xmlNodePtr node_LaneNoList;
+		if(ID == 0)          //all
+		{
+				return SDE_Failure;
+		}
+		else                    //id
+		{
+				sprintf(sqlbuf,"select t.detector_id,3 as distance,t.signal_id,t.detector_id as laneNo from ITC_CFG_DETECTOR t,ITC_CFG_DETECTOR_DETAIL D where t.signal_id=%d and t.signal_id=d.signal_id(+) and t.detector_id=d.detector_id(+) and t.detector_type>0 order by t.detector_id",ID);
+				try
+				{
+					TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+					Result = TcpThread[ThreadNum].stmt->executeQuery();
+					while(Result->next() != 0)
+					{
+						ResultNum++;
+						node_DetParam = xmlNewNode(NULL, BAD_CAST "DetParam");
+						xmlNewChild(node_DetParam, NULL, BAD_CAST "DetID",BAD_CAST Result->getString(1).c_str());
+						xmlNewChild(node_DetParam, NULL, BAD_CAST "Distance",BAD_CAST Result->getString(2).c_str());
+						xmlNewChild(node_DetParam, NULL, BAD_CAST "CrossID",BAD_CAST Result->getString(3).c_str());
+						node_LaneNoList = xmlNewNode(NULL, BAD_CAST "LaneNoList");
+						xmlNewChild(node_LaneNoList, NULL, BAD_CAST "CrossID", BAD_CAST Result->getString(4).c_str());
+						xmlAddChild(node_DetParam,node_LaneNoList);
+						xmlAddChild(node_Object,node_DetParam);
+					}
+					if(ResultNum == 0)
+					{
+						TcpThread[ThreadNum].stmt->closeResultSet(Result);
+						return SDE_Failure;
+					}
+				}
+				catch(SQLException &sqlExcp)
+				{
+					TcpThread[ThreadNum].stmt->closeResultSet(Result);
+					cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+					cout << sqlExcp.getMessage() << endl; //获得异常信息
+					return SDE_Failure;
+				}
+		}
+		TcpThread[ThreadNum].stmt->closeResultSet(Result);
+		xmlUnlinkNode(OperationNode->children);
+		xmlAddChild(OperationNode, node_Object);
+		return succeed;
+}
+
+
+
+int Get_LaneParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+		char sqlbuf[500];
+		ResultSet *Result;
+		char CrossID_buf[20];
+		int ResultNum = 0;
+		int ID = 0;
+		ID = Get_Object_ID(OperationNode);
+		if(ID <= 0)
+			return SDE_Failure;
+		xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+		xmlNodePtr node_LaneParam;
+
+		if(ID == 0)          //all
+		{
+				return SDE_Failure;
+		}
+		else                    //id
+		{
+				sprintf(sqlbuf,"select t.signal_id,t.detector_id,nvl((select c.remark from CODE c where c.code_type_id=20 and c.code=d.direction),'NULL'),'1' as attribute,'21' as movement,'1' as feature from ITC_CFG_DETECTOR t,ITC_CFG_DETECTOR_DETAIL D where t.signal_id=%d and t.signal_id=d.signal_id(+) and t.detector_id=d.detector_id(+) and t.detector_type>0 order by t.detector_id",ID);
+				puts(sqlbuf);
+				try
+				{
+					TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+					Result = TcpThread[ThreadNum].stmt->executeQuery();
+					while(Result->next() != 0)
+					{
+						ResultNum++;
+						node_LaneParam = xmlNewNode(NULL, BAD_CAST "LaneParam");
+						xmlNewChild(node_LaneParam, NULL, BAD_CAST "CrossID",BAD_CAST Result->getString(1).c_str());
+						xmlNewChild(node_LaneParam, NULL, BAD_CAST "LaneNo",BAD_CAST Result->getString(2).c_str());
+						strcpy(CrossID_buf,Result->getString(3).c_str());
+						if(strncmp(CrossID_buf,"NULL",4) == 0)                   //
+						{
+							xmlNewChild(node_LaneParam, NULL, BAD_CAST "Direction",NULL);
+						}
+						else
+						{
+							xmlNewChild(node_LaneParam, NULL, BAD_CAST "Direction",BAD_CAST  Result->getString(3).c_str());
+						}
+						xmlNewChild(node_LaneParam, NULL, BAD_CAST "Attribute",BAD_CAST Result->getString(4).c_str());
+						xmlNewChild(node_LaneParam, NULL, BAD_CAST "Movement",BAD_CAST Result->getString(5).c_str());
+						xmlNewChild(node_LaneParam, NULL, BAD_CAST "Feature",BAD_CAST Result->getString(6).c_str());
+						xmlAddChild(node_Object,node_LaneParam);
+					}
+					if(ResultNum == 0)
+					{
+						TcpThread[ThreadNum].stmt->closeResultSet(Result);
+						return SDE_Failure;
+					}
+				}
+				catch(SQLException &sqlExcp)
+				{
+					TcpThread[ThreadNum].stmt->closeResultSet(Result);
+					cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+					cout << sqlExcp.getMessage() << endl; //获得异常信息
+					return SDE_Failure;
+				}
+		}
+		TcpThread[ThreadNum].stmt->closeResultSet(Result);
+		xmlUnlinkNode(OperationNode->children);
+		xmlAddChild(OperationNode, node_Object);
+		return succeed;
+}
+
+
+int Get_PhaseParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+			char sqlbuf[500];
+			ResultSet *Result;
+			char LaneNoList[100];
+			int ResultNum = 0;
+			int ID = 0;
+			ID = Get_Object_ID(OperationNode);
+			if(ID <= 0)
+				return SDE_Failure;
+			xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+			xmlNodePtr node_PhaseParam;
+			xmlNodePtr node_LaneNoList;
+			xmlNodePtr node_PedDirList;
+			if(ID == 0)          //all
+			{
+					return SDE_Failure;
+			}
+			else                    //id
+			{
+					sprintf(sqlbuf,"select t.signal_id,t.phase_id,p.detail,t.phase_type,t.detector_apply,'1' as attribute  from ITC_CFG_PHASE t,ITC_CFG_PHASE_DETAIL P where t.signal_id=%d and t.signal_id=p.signal_id(+) and t.phase_id=p.phase_id(+) and t.phase_type>0 order by t.phase_id ",ID);
+					try
+					{
+						TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+						Result = TcpThread[ThreadNum].stmt->executeQuery();
+						while(Result->next() != 0)
+						{
+							ResultNum++;
+							node_PhaseParam = xmlNewNode(NULL, BAD_CAST "PhaseParam");
+							xmlNewChild(node_PhaseParam, NULL, BAD_CAST "CrossID",BAD_CAST Result->getString(1).c_str());
+							xmlNewChild(node_PhaseParam, NULL, BAD_CAST "PhaseNo",BAD_CAST Result->getString(2).c_str());
+							xmlNewChild(node_PhaseParam, NULL, BAD_CAST "PhaseName",BAD_CAST Result->getString(3).c_str());
+							xmlNewChild(node_PhaseParam, NULL, BAD_CAST "Attribute",BAD_CAST Result->getString(4).c_str());
+							node_LaneNoList = xmlNewNode(NULL, BAD_CAST "LaneNoList");
+							strcpy(LaneNoList,Result->getString(5).c_str());
+							char *LaneNo;
+							LaneNo = strtok(LaneNoList, (char *)&",");
+							xmlNewChild(node_LaneNoList, NULL, BAD_CAST "LaneNo",BAD_CAST LaneNo);
+							while((LaneNo = strtok(NULL, (char *)&",")))
+								xmlNewChild(node_LaneNoList, NULL, BAD_CAST "LaneNo",BAD_CAST LaneNo);
+							xmlAddChild(node_PhaseParam,node_LaneNoList);
+							node_PedDirList = xmlNewNode(NULL, BAD_CAST "PedDirList");
+							xmlNewChild(node_PedDirList, NULL, BAD_CAST "Direction",NULL);
+							xmlAddChild(node_PhaseParam,node_PedDirList);
+							xmlAddChild(node_Object,node_PhaseParam);
+						}
+						if(ResultNum == 0)
+						{
+							TcpThread[ThreadNum].stmt->closeResultSet(Result);
+							return SDE_Failure;
+						}
+					}
+					catch(SQLException &sqlExcp)
+					{
+						TcpThread[ThreadNum].stmt->closeResultSet(Result);
+						cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+						cout << sqlExcp.getMessage() << endl; //获得异常信息
+						return SDE_Failure;
+					}
+			}
+			TcpThread[ThreadNum].stmt->closeResultSet(Result);
+			xmlUnlinkNode(OperationNode->children);
+			xmlAddChild(OperationNode, node_Object);
+			return succeed;
+}
+
+int Get_StageParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	char sqlbuf[500];
+	ResultSet *Result;
+	char PhaseNoList[100];
+	char StageNo_buf[128];              //存储已经存在的阶段，用来去除重复
+	int StageNo;
+	int i;
+	int ResultNum = 0;
+	int ID = 0;
+	ID = Get_Object_ID(OperationNode);
+	if(ID <= 0)
+		return SDE_Failure;
+	xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+	xmlNodePtr node_PhaseParam;
+	xmlNodePtr node_PhaseNoList;
+	if(ID == 0)          //all
+	{
+			return SDE_Failure;
+	}
+	else                    //id
+	{
+			sprintf(sqlbuf,"select distinct s.signal_id,s.stage_id,(SELECT SD.DETAIL FROM ITC_CFG_STAGE_DETAIL SD WHERE SD.SIGNAL_ID=s.signal_id AND SD.STAGE_ID=s.stage_id) as stageName\
+								,(select c.remark from CODE c where c.code_type_id=25 and c.code=p.stage_type) as attribute,p.stage_time,s.stage_phase from ITC_CFG_STAGE s,Itc_Cfg_Plan_Chain p where s.signal_id=%d and s.signal_id=p.signal_id(+) and \
+								s.stage_id=p.stage_id(+) and s.stage_phase is not null order by s.stage_id",ID);
+			try
+			{
+				TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+				Result = TcpThread[ThreadNum].stmt->executeQuery();
+				while(Result->next() != 0)
+				{
+					StageNo = Result->getInt(2);
+					for(i = 0; i< ResultNum ; i++)
+					{
+						if(StageNo == StageNo_buf[i])
+						{
+							continue;
+						}
+					}
+					StageNo_buf[ResultNum] = StageNo;
+					ResultNum++;
+					node_PhaseParam = xmlNewNode(NULL, BAD_CAST "PhaseParam");
+					xmlNewChild(node_PhaseParam, NULL, BAD_CAST "CorssID",BAD_CAST Result->getString(1).c_str());
+					xmlNewChild(node_PhaseParam, NULL, BAD_CAST "StageNo",BAD_CAST Result->getString(2).c_str());
+					xmlNewChild(node_PhaseParam, NULL, BAD_CAST "StageName",BAD_CAST Result->getString(3).c_str());
+					xmlNewChild(node_PhaseParam, NULL, BAD_CAST "Attribute",BAD_CAST Result->getString(4).c_str());
+					xmlNewChild(node_PhaseParam, NULL, BAD_CAST "Green",BAD_CAST Result->getString(5).c_str());
+					xmlNewChild(node_PhaseParam, NULL, BAD_CAST "RedYellow",NULL);
+					xmlNewChild(node_PhaseParam, NULL, BAD_CAST "Yellow",NULL);
+					xmlNewChild(node_PhaseParam, NULL, BAD_CAST "AllRed",NULL);
+					node_PhaseNoList = xmlNewNode(NULL, BAD_CAST "PhaseNoList");
+					strcpy(PhaseNoList,Result->getString(6).c_str());
+					char *PhaseNo;
+					PhaseNo = strtok(PhaseNoList, (char *)&",");
+					xmlNewChild(node_PhaseNoList, NULL, BAD_CAST "PhaseNo",BAD_CAST PhaseNo);
+					while((PhaseNo = strtok(NULL, (char *)&",")))
+						xmlNewChild(node_PhaseNoList, NULL, BAD_CAST "PhaseNo",BAD_CAST PhaseNo);
+					xmlAddChild(node_PhaseParam,node_PhaseNoList);
+					xmlAddChild(node_Object,node_PhaseParam);
+				}
+				if(ResultNum == 0)
+				{
+					TcpThread[ThreadNum].stmt->closeResultSet(Result);
+					return SDE_Failure;
+				}
+			}
+			catch(SQLException &sqlExcp)
+			{
+				TcpThread[ThreadNum].stmt->closeResultSet(Result);
+				cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+				cout << sqlExcp.getMessage() << endl; //获得异常信息
+				return SDE_Failure;
+			}
+	}
+	TcpThread[ThreadNum].stmt->closeResultSet(Result);
+	xmlUnlinkNode(OperationNode->children);
+	xmlAddChild(OperationNode, node_Object);
+	return succeed;
+}
+
+
+int Get_PlanParam(xmlNodePtr OperationNode,int ThreadNum)
+{
+	char sqlbuf[500];
+	ResultSet *Result;
+	char LaneNoList[100];
+	int ResultNum = 0;
+	int SignalID = 0;
+	SignalID = Get_Object_ID(OperationNode);
+	if(SignalID <= 0)
+		return SDE_Failure;
+	xmlNodePtr node_Object = xmlNewNode(NULL, BAD_CAST "Object");
+	xmlNodePtr node_PlanParam;
+	xmlNodePtr node_StageNoList;
+	if(SignalID == 0)          //all
+	{
+			return SDE_Failure;
+	}
+	else                    //id
+	{
+			sprintf(sqlbuf,"select p.signal_id,p.plan_id,p.plan_week,p.plan_record,p.phase_diff_time,(select replace(WMSYS.WM_CONCAT(cp.stage_id),',',',') from Itc_Cfg_Plan_Chain cp where cp.signal_id=p.signal_id and cp.plan_id=p.plan_id) as stages from ITC_CFG_PLAN p where p.signal_id=%d and p.plan_week>0 order by p.plan_id",SignalID);
+			try
+			{
+				TcpThread[ThreadNum].stmt->setSQL(sqlbuf);
+				Result = TcpThread[ThreadNum].stmt->executeQuery();
+				while(Result->next() != 0)
+				{
+					ResultNum++;
+					node_PlanParam = xmlNewNode(NULL, BAD_CAST "PlanParam");
+					xmlNewChild(node_PlanParam, NULL, BAD_CAST "CrossID",BAD_CAST Result->getString(1).c_str());
+					xmlNewChild(node_PlanParam, NULL, BAD_CAST "PlanNo",BAD_CAST Result->getString(2).c_str());
+					xmlNewChild(node_PlanParam, NULL, BAD_CAST "CycleLen",BAD_CAST Result->getString(3).c_str());
+					xmlNewChild(node_PlanParam, NULL, BAD_CAST "CoordPhaseNo",BAD_CAST Result->getString(4).c_str());
+					xmlNewChild(node_PlanParam, NULL, BAD_CAST "OffSet",BAD_CAST Result->getString(5).c_str());
+					node_StageNoList = xmlNewNode(NULL, BAD_CAST "StageNoList");
+					strcpy(LaneNoList,Result->getString(6).c_str());
+					char *StageNo;
+					StageNo = strtok(LaneNoList, (char *)&",");
+					xmlNewChild(node_StageNoList, NULL, BAD_CAST "StageNo",BAD_CAST StageNo);
+					while((StageNo = strtok(NULL, (char *)&",")))
+						xmlNewChild(node_StageNoList, NULL, BAD_CAST "StageNo",BAD_CAST StageNo);
+					xmlAddChild(node_PlanParam,node_StageNoList);
+					xmlAddChild(node_Object,node_PlanParam);
+				}
+				if(ResultNum == 0)
+				{
+					TcpThread[ThreadNum].stmt->closeResultSet(Result);
+					return SDE_Failure;
+				}
+			}
+			catch(SQLException &sqlExcp)
+			{
+				TcpThread[ThreadNum].stmt->closeResultSet(Result);
+				cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+				cout << sqlExcp.getMessage() << endl; //获得异常信息
+				return SDE_Failure;
+			}
+	}
+	TcpThread[ThreadNum].stmt->closeResultSet(Result);
+	xmlUnlinkNode(OperationNode->children);
+	xmlAddChild(OperationNode, node_Object);
+	return succeed;
+}
+
+
+
+
