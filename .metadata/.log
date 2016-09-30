@@ -611,3 +611,43 @@ Command-line arguments:  -os linux -ws gtk -arch x86_64 -product org.eclipse.epp
 
 !ENTRY org.eclipse.cdt.core 1 0 2016-09-30 14:05:11.167
 !MESSAGE Indexed 'styletest' (1 sources, 100 headers) in 4.63 sec: 8,168 declarations; 14,226 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.egit.core 4 0 2016-09-30 16:03:24.771
+!MESSAGE An exception occurred during push on URI git@github.com:liruijie/my_program.git: git@github.com:liruijie/my_program.git: Write timed out after 30,000 ms
+!STACK 0
+org.eclipse.jgit.api.errors.TransportException: git@github.com:liruijie/my_program.git: Write timed out after 30,000 ms
+	at org.eclipse.jgit.api.PushCommand.call(PushCommand.java:172)
+	at org.eclipse.egit.core.op.PushOperation.run(PushOperation.java:217)
+	at org.eclipse.egit.ui.internal.push.PushJob.performJob(PushJob.java:77)
+	at org.eclipse.egit.ui.internal.jobs.RepositoryJob.run(RepositoryJob.java:48)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+Caused by: org.eclipse.jgit.errors.TransportException: git@github.com:liruijie/my_program.git: Write timed out after 30,000 ms
+	at org.eclipse.jgit.transport.BasePackPushConnection.doPush(BasePackPushConnection.java:236)
+	at org.eclipse.jgit.transport.BasePackPushConnection.push(BasePackPushConnection.java:168)
+	at org.eclipse.jgit.transport.PushProcess.execute(PushProcess.java:172)
+	at org.eclipse.jgit.transport.Transport.push(Transport.java:1272)
+	at org.eclipse.jgit.api.PushCommand.call(PushCommand.java:161)
+	... 4 more
+Caused by: java.io.InterruptedIOException: Write timed out after 30,000 ms
+	at org.eclipse.jgit.util.io.TimeoutOutputStream.writeTimedOut(TimeoutOutputStream.java:154)
+	at org.eclipse.jgit.util.io.TimeoutOutputStream.write(TimeoutOutputStream.java:115)
+	at org.eclipse.jgit.transport.BasePackPushConnection$CheckingSideBandOutputStream.write(BasePackPushConnection.java:468)
+	at org.eclipse.jgit.internal.storage.pack.PackOutputStream.write(PackOutputStream.java:126)
+	at java.util.zip.DeflaterOutputStream.deflate(DeflaterOutputStream.java:253)
+	at java.util.zip.DeflaterOutputStream.write(DeflaterOutputStream.java:211)
+	at java.io.FilterOutputStream.write(FilterOutputStream.java:97)
+	at org.eclipse.jgit.lib.ObjectLoader.copyTo(ObjectLoader.java:266)
+	at org.eclipse.jgit.internal.storage.pack.PackWriter.writeWholeObjectDeflate(PackWriter.java:1577)
+	at org.eclipse.jgit.internal.storage.pack.PackWriter.writeObjectImpl(PackWriter.java:1555)
+	at org.eclipse.jgit.internal.storage.pack.PackWriter.writeObject(PackWriter.java:1498)
+	at org.eclipse.jgit.internal.storage.pack.PackOutputStream.writeObject(PackOutputStream.java:164)
+	at org.eclipse.jgit.internal.storage.file.WindowCursor.writeObjects(WindowCursor.java:207)
+	at org.eclipse.jgit.internal.storage.pack.PackWriter.writeObjects(PackWriter.java:1486)
+	at org.eclipse.jgit.internal.storage.pack.PackWriter.writeObjects(PackWriter.java:1474)
+	at org.eclipse.jgit.internal.storage.pack.PackWriter.writePack(PackWriter.java:1038)
+	at org.eclipse.jgit.transport.BasePackPushConnection.writePack(BasePackPushConnection.java:359)
+	at org.eclipse.jgit.transport.BasePackPushConnection.doPush(BasePackPushConnection.java:216)
+	... 8 more
+
+!ENTRY org.eclipse.egit.ui 4 0 2016-09-30 16:03:24.789
+!MESSAGE Can't connect to any repository: git@github.com:liruijie/my_program.git (git@github.com:liruijie/my_program.git: Write timed out after 30,000 ms)
