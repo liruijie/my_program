@@ -30,10 +30,10 @@
 #include	<sys/un.h>		/* for Unix domain sockets */
 
 
-
+#define CALLBACK
 //1111
-typedef char (*_PTRFUN)(int,char *);
-_PTRFUN pFun;
+typedef char (* CALLBACK _PTRFUN)(int,char *);
+CALLBACK _PTRFUN pFun;
 //2222
 char (*pFun2)(int,char *);
 char glFun(int a,char *p)
@@ -45,7 +45,7 @@ int main()
 {
 		char c;
 
-printf("%-13ldaaaaa\n",123456L);
+		printf("%-13ldaaaaa\n",123456L);
     pFun = glFun;
     pFun2 = (_PTRFUN )glFun;
     c = (*pFun)(0x32,"this is pFun\n");

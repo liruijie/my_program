@@ -1,4 +1,4 @@
-15:21:27 **** Incremental Build of configuration Debug for project test ****
+17:15:26 **** Incremental Build of configuration Debug for project test ****
 make all 
 Building file: ../src/test.c
 Invoking: GCC C Compiler
@@ -11,5 +11,5 @@ gcc  -o "test"  ./src/test.o
 Finished building target: test
  
 
-15:21:28 Build Finished (took 765ms)
+17:15:27 Build Finished (took 294ms)
 

@@ -23,6 +23,7 @@ struct event_cb
 
 static struct event_cb saved = { 0, 0 };
 
+//
 void event_cb_register(ptFun_Event cb, void *user_data)
 {
     saved.cb_func = cb;

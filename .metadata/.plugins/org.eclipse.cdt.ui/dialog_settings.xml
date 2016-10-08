@@ -56,7 +56,16 @@
 	</section>
 	<section name="NewClassWizardPage">
 	</section>
+	<section name="org.eclipse.cdt.internal.ui.preferences.EditTemplateDialog_dialogBounds">
+		<item value="759" key="DIALOG_WIDTH"/>
+		<item value="1|Cantarell|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
+		<item value="336" key="DIALOG_HEIGHT"/>
+		<item value="89" key="DIALOG_X_ORIGIN"/>
+		<item value="106" key="DIALOG_Y_ORIGIN"/>
+	</section>
 	<section name="completion_proposal_size">
+		<item value="380" key="contextSelector.size.y"/>
+		<item value="280" key="contextSelector.size.x"/>
 	</section>
 	<section name="org.eclipse.cdt.internal.ui.includebrowser.IBViewPart">
 		<item value="false" key="showFolders"/>
