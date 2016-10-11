@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;PublicTransportPriority/src/CommunicateWithDevice.H&apos; to &apos;CommunicateWithDevice.h&apos;" description="Rename resource &apos;CommunicateWithDevice.H&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/CommunicateWithDevice.H" name="CommunicateWithDevice.h" stamp="1475985464176" updateReferences="true"/>
+</session>

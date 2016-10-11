@@ -1,0 +1,15 @@
+/*
+ * CommunicateWithDevice.h
+ *
+ * Created on: 2016年10月9日
+ * Author: LIRUIJIE
+ */
+
+#ifndef COMMUNICATEWITHDEVICE_H_
+#define COMMUNICATEWITHDEVICE_H_
+
+void * CommunicateWithDevice(void *arg);
+
+int GetDeviceIndex(char *buf);
+
+#endif /* COMMUNICATEWITHDEVICE_H_ */

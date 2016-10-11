@@ -152,7 +152,7 @@ int RecvFromServer(int Rec_fd,unsigned char *Rec_buf)
 		}
 		if( !ret )    //select error
 		{
-			printf("TCP Select error result=%d,file=%s,function=%s,line=%d\n",ret,__FILE__,__FUNCTION__,__LINE__);
+			printf("UDP Select error result=%d,file=%s,function=%s,line=%d\n",ret,__FILE__,__FUNCTION__,__LINE__);
 			return 0;
 		}
 		else          //select success

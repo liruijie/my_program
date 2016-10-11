@@ -139,7 +139,7 @@ void *signal_report_pl_1(void *arg)
 
 		sql_pl_tc100 = "update REAL_SIGNAL_STATUS set Xiangweidengtai=:x1,detect_status=:x2,detect_data=:x3,detect_urgent_status=:x4,detect_pri_status=:x5,door_status=:x6,BoardOnline=:x7 ,update_time=sysdate ,signal_time = to_date(:x8,'yyyy-mm-dd hh24:mi:ss') where signal_id = :x9 ";
 		stmt_tc100->setSQL(sql_pl_tc100);
-	       stmt_tc100->setMaxIterations(1000);
+	   stmt_tc100->setMaxIterations(1000);
 		   
 		stmt_tc100->setMaxParamSize(1,100);
 		stmt_tc100->setMaxParamSize(2,210);
@@ -154,7 +154,7 @@ void *signal_report_pl_1(void *arg)
 		
 		sql_pl_itc100 = "update REAL_SIGNAL_STATUS set PHASE_LIGHT_STATE=:x1,PHASE_CURRENT=:x2,DETECT_STATUS=:x3,DETECT_DATA=:x4,DETECT_URGENT_STATUS=:x5,DETECT_PRI_STATUS=:x6,DOOR_STATUS=:x7 ,BOARDONLINE=:x8,update_time=sysdate ,signal_time = to_date(:x9,'yyyy-mm-dd hh24:mi:ss') where signal_id = :10 ";
 		stmt_itc100->setSQL(sql_pl_itc100);
-	       stmt_itc100->setMaxIterations(1000);
+	   stmt_itc100->setMaxIterations(1000);
 		   
 		stmt_itc100->setMaxParamSize(1,100);
 		stmt_itc100->setMaxParamSize(2,400);
@@ -175,46 +175,45 @@ void *signal_report_pl_1(void *arg)
 				static int signal_id_online;
 				for(i = 1 ; i < signal_number;i++)
 				{
-					if(i <signal_number )
-					{
-						signal_id = i;
-					}
-					
-#if 1		
-					if(signal_info_data[signal_id].oracleFlag[0]== 0 )
-					{
-						//printf("wei  NULL !!!!!!!!!!!!!!!!!!!!!!!!!!");
-						if(i!= signal_number-1) //ȥ������Ķ����źŻ�
-							continue;
-						else //�����һ�������źŻ��滻Ϊ���ߵ�
-							signal_id = signal_id_online;
-					}
-					else
-						signal_info_data[signal_id].oracleFlag[0] = 0;
-#endif
-			//		if(signal_info_data[signal_id].l_online_alarm == 0)
-				if(strcmp(signal_info_data[signal_id].device_type,"TC100") == 0)
-				
+						if(i <signal_number )
 						{
-							tc100flag= 1;
-							signal_id_online = signal_id;
-							 stmt_tc100->setString(1,signal_info_data[signal_id].phase_lht);
-							 stmt_tc100->setString(2,signal_info_data[signal_id].detect_status);
-							 stmt_tc100->setString(3,signal_info_data[signal_id].detect_data_status);
-							 stmt_tc100->setString(4,signal_info_data[signal_id].detect_urgent_status);
-							 stmt_tc100->setString(5,signal_info_data[signal_id].detect_pri_status);
-							 stmt_tc100->setString(6,signal_info_data[signal_id].door_status);
-							 stmt_tc100->setString(7,signal_info_data[signal_id].board_state);
-							 stmt_tc100->setString(8,signal_info_data[signal_id].update_time);
-							 stmt_tc100->setNumber(9,signal_info_data[signal_id].signal_id);
-							//printf("update TC100 real status,id=%d\n",signal_info_data[signal_id].signal_id);
-						//	printf("signal_time :: %s\n",signal_info_data[signal_id].update_time);
-							//stmt_tc100->executeUpdate();
-							if (i !=signal_number-1)
-								stmt_tc100->addIteration();
-							
+							signal_id = i;
 						}
-				else if(strcmp(signal_info_data[signal_id].device_type,"ITC100") == 0)
+
+	#if 1
+						if(signal_info_data[signal_id].oracleFlag[0]== 0 )
+						{
+							//printf("wei  NULL !!!!!!!!!!!!!!!!!!!!!!!!!!");
+							if(i!= signal_number-1) //ȥ������Ķ����źŻ�
+								continue;
+							else //�����һ�������źŻ��滻Ϊ���ߵ�
+								signal_id = signal_id_online;
+						}
+						else
+							signal_info_data[signal_id].oracleFlag[0] = 0;
+	#endif
+				//		if(signal_info_data[signal_id].l_online_alarm == 0)
+					if(strcmp(signal_info_data[signal_id].device_type,"TC100") == 0)
+					{
+						tc100flag= 1;
+						signal_id_online = signal_id;
+						 stmt_tc100->setString(1,signal_info_data[signal_id].phase_lht);
+						 stmt_tc100->setString(2,signal_info_data[signal_id].detect_status);
+						 stmt_tc100->setString(3,signal_info_data[signal_id].detect_data_status);
+						 stmt_tc100->setString(4,signal_info_data[signal_id].detect_urgent_status);
+						 stmt_tc100->setString(5,signal_info_data[signal_id].detect_pri_status);
+						 stmt_tc100->setString(6,signal_info_data[signal_id].door_status);
+						 stmt_tc100->setString(7,signal_info_data[signal_id].board_state);
+						 stmt_tc100->setString(8,signal_info_data[signal_id].update_time);
+						 stmt_tc100->setNumber(9,signal_info_data[signal_id].signal_id);
+						//printf("update TC100 real status,id=%d\n",signal_info_data[signal_id].signal_id);
+					//	printf("signal_time :: %s\n",signal_info_data[signal_id].update_time);
+						//stmt_tc100->executeUpdate();
+						if (i !=signal_number-1)
+							stmt_tc100->addIteration();
+
+					}
+					else if(strcmp(signal_info_data[signal_id].device_type,"ITC100") == 0)
 					{
 						itc100flag= 1;
 						signal_id_online = signal_id;

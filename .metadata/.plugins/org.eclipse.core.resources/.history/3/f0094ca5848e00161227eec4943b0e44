@@ -1,0 +1,20 @@
+/*
+ * Queue.cpp
+ *
+ * Created on: 2016年10月10日
+ * Author: LIRUIJIE
+ */
+
+#include "include.h"
+void InitQueue()
+{
+	int i;
+	for(i = 0;i< QueueNum-1;i++)
+	{
+		Queue[i].Next = &Queue[i+1];
+	}
+	Queue[i].Next = &Queue[0];
+	QueueTail = QueueHead = &Queue[0];
+
+}
+

@@ -1,0 +1,33 @@
+/*
+ * PublicDefine.h
+ *
+ * Created on: 2016年10月9日
+ * Author: LIRUIJIE
+ */
+
+#ifndef PUBLICDEFINE_H_
+#define PUBLICDEFINE_H_
+
+
+struct DeviceRealData
+{
+		unsigned long DeviceTime;
+
+		char line_number[20];				//公交车次
+		char plate_number[20];				//车牌号
+		char RFID[30];							//RFID卡编号
+		unsigned long detect_time;			//检测时间
+
+
+		//是否优先：01 为优先（01为已优先，00为没优先）
+		//优先级：01 （1~9）
+		//优先时间：04 为优先4秒
+		//控制板输出端口：00 01 为1号端口
+		//检测方向：01 代表东方向（1代表东，2代表西，3代表南，4代表北）
+		//路口编号：00 03
+		//请求时间：4F DC 68 2E 表示该报文的上报时间距1970年0时0分0秒的秒数为1339844654s
+
+};
+
+
+#endif /* PUBLICDEFINE_H_ */

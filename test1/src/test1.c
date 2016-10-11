@@ -11,23 +11,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define Test  test(7,'a','c');
-
-void test(int x,char y ,char z)
-{
-	printf("%d\t%c\t%c\n",x,y,z);
-}
-void Print(char *p)
-{
-	//puts(p);
-}
 int main(void)
 {
-	int i =5;
-	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
-	Test
 
-	printf("%c",(i+0x30));
+	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
+
+	unsigned int a = 6;
+	int b = -20;
+	int c=a+b;
+	unsigned int d= a+b;
+	(a+b > 6) ? puts("> 6") : puts("<= 6");
+	printf("c=%d,d=%u\n",c,d);
 	return EXIT_SUCCESS;
 }
 
