@@ -22,17 +22,29 @@ int main(void)
 {
 	puts("!!!Hello World!!!"); /* prints !!!Hello World!!! */
 	char chinese[]="运通105";
+
+
+	char tempbuf[100];
+
 	unsigned char OutText[MaxLen*2];
 	int OutLen;
 	unsigned char OutText1[MaxLen*2];
 	//int OutLen1;
 	unsigned char Text_ASC[MaxLen*4];
 	int i;
-	OutLen = UTF8_2_GBK((char *)chinese,sizeof(chinese),(char *)(OutText),MaxLen*2);
+
+	printf(chinese);
+	printf("\n");
+	for(i=0; i< strlen(chinese);i++)
+		printf("%#02X\t",chinese[i]&0xFF);
+	printf("\ni=%d\n",i);
+	memcpy(tempbuf,chinese,strlen(chinese));
+
+	OutLen = UTF8_2_GBK((char *)chinese,strlen(chinese),(char *)(OutText),MaxLen*2);
 	printf("OutLen = %d\n",OutLen);
 	for(i = 0; i<OutLen;i++)
 	{
-		printf("%#02X\t",OutText[i]);
+		printf("%#X\t",OutText[i]);
 	}
 	printf("\n\n");
 	u2g((char *)OutText,OutLen,(char *)(OutText1),MaxLen*2);

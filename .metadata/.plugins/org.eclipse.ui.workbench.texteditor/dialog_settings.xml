@@ -2,22 +2,23 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="0x31" key="selection"/>
+		<item value="stmt" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
+			<item value="_stmt"/>
+			<item value="insert into"/>
+			<item value="value"/>
+			<item value="execute"/>
+			<item value="excute"/>
+			<item value="sendto"/>
 			<item value="0x31"/>
 			<item value="OraEnviroment"/>
-			<item value="SendToServer"/>
-			<item value="CONTROL_CMD"/>
-			<item value="err_sys"/>
-			<item value="Free"/>
-			<item value="timeinfo_check"/>
-			<item value="buf"/>
 		</list>
 		<list key="replacehistory">
+			<item value="stmt"/>
 			<item value="printf"/>
 			<item value="recvbuf"/>
 			<item value="SignalRealData"/>

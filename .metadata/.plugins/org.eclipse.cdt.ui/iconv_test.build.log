@@ -1,15 +1,6 @@
-17:46:49 **** Incremental Build of configuration Debug for project iconv_test ****
+10:46:21 **** Incremental Build of configuration Debug for project iconv_test ****
 make all 
-Building file: ../src/iconv_test.c
-Invoking: GCC C Compiler
-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/iconv_test.d" -MT"src/iconv_test.o" -o "src/iconv_test.o" "../src/iconv_test.c"
-Finished building: ../src/iconv_test.c
- 
-Building target: iconv_test
-Invoking: GCC C Linker
-gcc  -o "iconv_test"  ./src/iconv_test.o   -lm -liconv
-Finished building target: iconv_test
- 
+make: 对“all”无需做任何事。
 
-17:46:49 Build Finished (took 241ms)
+10:46:21 Build Finished (took 151ms)
 

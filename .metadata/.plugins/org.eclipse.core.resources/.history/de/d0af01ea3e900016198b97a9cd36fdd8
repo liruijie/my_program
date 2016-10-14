@@ -1,0 +1,41 @@
+/*
+ ============================================================================
+ Name        : test.c
+ Author      : LIRUIJIE
+ Version     :
+ Copyright   : Your copyright notice
+ Description : Hello World in C, Ansi-style
+ ============================================================================
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <socket.h>
+#define SingleRecvMaxLen 100
+struct web_message_info
+{
+		unsigned char RecvBuf[SingleRecvMaxLen];
+		struct sockaddr_in WebServerAddr;
+};
+void test(int x,char y ,char z)
+{
+	printf("%d\t%c\t%c\n",x,y,z);
+}
+void Print(char *p)
+{
+	//puts(p);
+}
+int main(void)
+{
+	char buf[] = "hello pthread\n";
+	struct sockaddr_in myaddr;
+	myaddr.sin_family = PF_INET;
+	myaddr.sin_port = htons(ReceiveWebPort);
+	myaddr.sin_addr.s_addr = INADDR_ANY;
+	printf("%c",(i+0x30));
+	return EXIT_SUCCESS;
+}
+
+
+

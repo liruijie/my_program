@@ -1,0 +1,43 @@
+/*
+ * PublicDefine.cpp
+ *
+ * Created on: 2016年10月9日
+ * Author: LIRUIJIE
+ */
+#include "include.h"
+
+int CurrentExistDevice;
+DeviceInfo device[DeviceMaxNum];
+QueueInfo Queue[QueueNum];
+QueueInfo *QueueHead,*QueueTail;
+
+bool check_buf( unsigned char * rcv_buf)
+{
+	int rcv_len = rcv_buf[1] * 256 + rcv_buf[2];
+	int check_sum = 0;
+	int i;
+	 if (0x7e == rcv_buf[0] && 0x7d == rcv_buf[rcv_len + 1])
+        {
+
+		 for (i = 1; i < rcv_len; i++)
+		{
+			check_sum += rcv_buf[i];
+		}
+
+		if (rcv_buf[rcv_len] == (check_sum & 0xFF))
+		{
+             return true;
+		}
+		else
+		{
+			return false;
+			printf(" jiao yan cuo wu\n");
+		}
+
+         }
+	 else
+	 {
+	 	printf(" signal tou wei cuo wu\n");
+	 	return -1;
+	 }
+}

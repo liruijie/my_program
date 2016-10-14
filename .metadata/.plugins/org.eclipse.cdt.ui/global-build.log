@@ -605,3 +605,2263 @@ Invoking: GCC C Linker
 gcc  -o "iconv_test"  ./src/iconv_test.o   -lm -liconv
 Finished building target: iconv_test
  
+09:03:34 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CommunicateWithDevice.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+09:04:12 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CommunicateWithDevice.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+10:22:05 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+../src/CommunicateWithDevice.cpp: 在函数‘int Device_DetectData(unsigned char*)’中:
+../src/CommunicateWithDevice.cpp:248:86: 错误：‘code_convert’在此作用域中尚未声明
+  ret = code_convert((char *)"GBK",(char *)"UTF-8",temp_buf,buf[index],temp_outbuf,100);
+                                                                                      ^
+make: *** [src/CommunicateWithDevice.o] 错误 1
+10:22:51 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void CommunicateWithWeb()’中:
+../src/CommunicateWithWeb.cpp:16:46: 错误：‘ReceiveData_Web’在此作用域中尚未声明
+  ret = pthread_create(&pth_receive_data,NULL,ReceiveData_Web,NULL);
+                                              ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+10:31:49 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void CommunicateWithWeb()’中:
+../src/CommunicateWithWeb.cpp:16:46: 错误：‘ReceiveData_Web’在此作用域中尚未声明
+  ret = pthread_create(&pth_receive_data,NULL,ReceiveData_Web,NULL);
+                                              ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+10:32:16 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+10:38:57 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+Building file: ../src/iconv_test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/iconv_test.d" -MT"src/iconv_test.o" -o "src/iconv_test.o" "../src/iconv_test.c"
+../src/iconv_test.c: 在函数‘main’中:
+../src/iconv_test.c:39:3: 警告：格式 ‘%X’ expects a matching ‘unsigned int’ argument [-Wformat=]
+   printf("%#02X\t");
+   ^
+Finished building: ../src/iconv_test.c
+ 
+Building target: iconv_test
+Invoking: GCC C Linker
+gcc  -o "iconv_test"  ./src/iconv_test.o   -lm -liconv
+Finished building target: iconv_test
+ 
+10:39:20 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+Building file: ../src/iconv_test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/iconv_test.d" -MT"src/iconv_test.o" -o "src/iconv_test.o" "../src/iconv_test.c"
+../src/iconv_test.c: 在函数‘main’中:
+../src/iconv_test.c:39:20: 错误：‘chinise’未声明(在此函数内第一次使用)
+   printf("%#02X\t",chinise[i]);
+                    ^
+../src/iconv_test.c:39:20: 附注：每个未声明的标识符在其出现的函数内只报告一次
+make: *** [src/iconv_test.o] 错误 1
+10:39:29 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+Building file: ../src/iconv_test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/iconv_test.d" -MT"src/iconv_test.o" -o "src/iconv_test.o" "../src/iconv_test.c"
+Finished building: ../src/iconv_test.c
+ 
+Building target: iconv_test
+Invoking: GCC C Linker
+gcc  -o "iconv_test"  ./src/iconv_test.o   -lm -liconv
+Finished building target: iconv_test
+ 
+10:39:32 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+make: 对“all”无需做任何事。
+10:40:16 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+make: 对“all”无需做任何事。
+10:41:34 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+Building file: ../src/iconv_test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/iconv_test.d" -MT"src/iconv_test.o" -o "src/iconv_test.o" "../src/iconv_test.c"
+Finished building: ../src/iconv_test.c
+ 
+Building target: iconv_test
+Invoking: GCC C Linker
+gcc  -o "iconv_test"  ./src/iconv_test.o   -lm -liconv
+Finished building target: iconv_test
+ 
+10:43:39 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+Building file: ../src/iconv_test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/iconv_test.d" -MT"src/iconv_test.o" -o "src/iconv_test.o" "../src/iconv_test.c"
+Finished building: ../src/iconv_test.c
+ 
+Building target: iconv_test
+Invoking: GCC C Linker
+gcc  -o "iconv_test"  ./src/iconv_test.o   -lm -liconv
+Finished building target: iconv_test
+ 
+10:45:00 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+Building file: ../src/iconv_test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/iconv_test.d" -MT"src/iconv_test.o" -o "src/iconv_test.o" "../src/iconv_test.c"
+Finished building: ../src/iconv_test.c
+ 
+Building target: iconv_test
+Invoking: GCC C Linker
+gcc  -o "iconv_test"  ./src/iconv_test.o   -lm -liconv
+Finished building target: iconv_test
+ 
+10:45:24 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+Building file: ../src/iconv_test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/iconv_test.d" -MT"src/iconv_test.o" -o "src/iconv_test.o" "../src/iconv_test.c"
+Finished building: ../src/iconv_test.c
+ 
+Building target: iconv_test
+Invoking: GCC C Linker
+gcc  -o "iconv_test"  ./src/iconv_test.o   -lm -liconv
+Finished building target: iconv_test
+ 
+10:45:27 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+make: 对“all”无需做任何事。
+10:45:46 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+Building file: ../src/iconv_test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/iconv_test.d" -MT"src/iconv_test.o" -o "src/iconv_test.o" "../src/iconv_test.c"
+Finished building: ../src/iconv_test.c
+ 
+Building target: iconv_test
+Invoking: GCC C Linker
+gcc  -o "iconv_test"  ./src/iconv_test.o   -lm -liconv
+Finished building target: iconv_test
+ 
+10:45:49 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+make: 对“all”无需做任何事。
+10:46:17 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+Building file: ../src/iconv_test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/iconv_test.d" -MT"src/iconv_test.o" -o "src/iconv_test.o" "../src/iconv_test.c"
+Finished building: ../src/iconv_test.c
+ 
+Building target: iconv_test
+Invoking: GCC C Linker
+gcc  -o "iconv_test"  ./src/iconv_test.o   -lm -liconv
+Finished building target: iconv_test
+ 
+10:46:21 **** Incremental Build of configuration Debug for project iconv_test ****
+make all 
+make: 对“all”无需做任何事。
+15:42:28 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+In file included from ../src/include.h:37:0,
+                 from ../src/CodeConvert.cpp:17:
+../src/Queue.h:12:1: 错误：expected identifier before ‘void’
+ void InitQueue();
+ ^
+../src/Queue.h:12:17: 错误：invalid type in declaration before ‘;’ token
+ void InitQueue();
+                 ^
+../src/Queue.h:12:17: 错误：‘InitQueue’的声明指定了两个以上的数据类型
+make: *** [src/CodeConvert.o] 错误 1
+15:44:27 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+In file included from ../src/include.h:37:0,
+                 from ../src/CodeConvert.cpp:17:
+../src/Queue.h:12:1: 错误：expected identifier before ‘void’
+ void InitQueue();
+ ^
+../src/Queue.h:12:17: 错误：invalid type in declaration before ‘;’ token
+ void InitQueue();
+                 ^
+../src/Queue.h:12:17: 错误：‘InitQueue’的声明指定了两个以上的数据类型
+make: *** [src/CodeConvert.o] 错误 1
+15:45:07 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:131:10: 错误：‘sockfd’在此作用域中尚未声明
+    close(sockfd);
+          ^
+../src/CommunicateWithWeb.cpp:190:8: 错误：‘sockfd’在此作用域中尚未声明
+  close(sockfd);
+        ^
+../src/CommunicateWithWeb.cpp:119:6: 警告：未使用的变量‘sin_size_1’ [-Wunused-variable]
+  int sin_size_1=sizeof(struct sockaddr_in);    //sin_size值需要初始化，否则在第一次接受数据时将无法获得对方的地址信息
+      ^
+../src/CommunicateWithWeb.cpp: 在函数‘void Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:215:58: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].dBm = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                          ^
+../src/CommunicateWithWeb.cpp:216:66: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].zigbee_addr = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                  ^
+../src/CommunicateWithWeb.cpp:217:79: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].transport_priority_relay = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                               ^
+../src/CommunicateWithWeb.cpp:218:79: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].emergency_priority_relay = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                               ^
+../src/CommunicateWithWeb.cpp:219:70: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].detection_range = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                      ^
+../src/CommunicateWithWeb.cpp:225:4: 错误：‘OraEnviroment’在此作用域中尚未声明
+    OraEnviroment->terminateConnection(conn);
+    ^
+../src/CommunicateWithWeb.cpp: 在函数‘int ReceiveDeviceReply(int, sockaddr_in, unsigned char*, int)’中:
+../src/CommunicateWithWeb.cpp:285:1: 警告：在有返回值的函数中，控制流程到达函数尾 [-Wreturn-type]
+ }
+ ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+15:45:37 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:118:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+../src/CommunicateWithWeb.cpp:119:6: 警告：未使用的变量‘sin_size_1’ [-Wunused-variable]
+  int sin_size_1=sizeof(struct sockaddr_in);    //sin_size值需要初始化，否则在第一次接受数据时将无法获得对方的地址信息
+      ^
+../src/CommunicateWithWeb.cpp: 在函数‘void Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:215:58: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].dBm = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                          ^
+../src/CommunicateWithWeb.cpp:216:66: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].zigbee_addr = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                  ^
+../src/CommunicateWithWeb.cpp:217:79: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].transport_priority_relay = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                               ^
+../src/CommunicateWithWeb.cpp:218:79: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].emergency_priority_relay = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                               ^
+../src/CommunicateWithWeb.cpp:219:70: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].detection_range = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                      ^
+../src/CommunicateWithWeb.cpp:225:4: 错误：‘OraEnviroment’在此作用域中尚未声明
+    OraEnviroment->terminateConnection(conn);
+    ^
+../src/CommunicateWithWeb.cpp: 在函数‘int ReceiveDeviceReply(int, sockaddr_in, unsigned char*, int)’中:
+../src/CommunicateWithWeb.cpp:285:1: 警告：在有返回值的函数中，控制流程到达函数尾 [-Wreturn-type]
+ }
+ ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+15:47:36 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:118:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+../src/CommunicateWithWeb.cpp: 在函数‘void Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:215:58: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].dBm = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                          ^
+../src/CommunicateWithWeb.cpp:216:66: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].zigbee_addr = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                  ^
+../src/CommunicateWithWeb.cpp:217:79: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].transport_priority_relay = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                               ^
+../src/CommunicateWithWeb.cpp:218:79: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].emergency_priority_relay = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                               ^
+../src/CommunicateWithWeb.cpp:219:70: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].detection_range = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                      ^
+../src/CommunicateWithWeb.cpp:225:4: 错误：‘OraEnviroment’在此作用域中尚未声明
+    OraEnviroment->terminateConnection(conn);
+    ^
+../src/CommunicateWithWeb.cpp: 在函数‘int ReceiveDeviceReply(int, sockaddr_in, unsigned char*, int)’中:
+../src/CommunicateWithWeb.cpp:285:1: 警告：在有返回值的函数中，控制流程到达函数尾 [-Wreturn-type]
+ }
+ ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+15:48:16 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:118:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+../src/CommunicateWithWeb.cpp: 在函数‘void Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:215:58: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].dBm = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                          ^
+../src/CommunicateWithWeb.cpp:216:66: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].zigbee_addr = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                  ^
+../src/CommunicateWithWeb.cpp:217:79: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].transport_priority_relay = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                               ^
+../src/CommunicateWithWeb.cpp:218:79: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].emergency_priority_relay = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                               ^
+../src/CommunicateWithWeb.cpp:219:70: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].detection_range = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                      ^
+../src/CommunicateWithWeb.cpp:225:4: 错误：‘OraEnviroment’在此作用域中尚未声明
+    OraEnviroment->terminateConnection(conn);
+    ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+15:49:49 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:120:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+../src/CommunicateWithWeb.cpp: 在函数‘void Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:217:58: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].dBm = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                          ^
+../src/CommunicateWithWeb.cpp:218:66: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].zigbee_addr = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                  ^
+../src/CommunicateWithWeb.cpp:219:79: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].transport_priority_relay = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                               ^
+../src/CommunicateWithWeb.cpp:220:79: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].emergency_priority_relay = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                               ^
+../src/CommunicateWithWeb.cpp:221:70: 警告：‘i’上的运算结果可能是未定义的 [-Wsequence-point]
+    cardreader[j].detection_range = (Rec_buf[i++] << 8 | Rec_buf[i++]);
+                                                                      ^
+../src/CommunicateWithWeb.cpp:199:31: 警告：variable ‘cardreader’ set but not used [-Wunused-but-set-variable]
+  struct Device_CardReaderInfo cardreader[8];
+                               ^
+../src/CommunicateWithWeb.cpp:205:33: 警告：此函数中的‘conn’在使用前未初始化 [-Wuninitialized]
+  if(GetConnectFromPool(conn,stmt) == false)
+                                 ^
+../src/CommunicateWithWeb.cpp:205:33: 警告：此函数中的‘stmt’在使用前未初始化 [-Wuninitialized]
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+15:57:44 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:120:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+../src/CommunicateWithWeb.cpp: 在函数‘void Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:199:31: 警告：variable ‘cardreader’ set but not used [-Wunused-but-set-variable]
+  struct Device_CardReaderInfo cardreader[8];
+                               ^
+../src/CommunicateWithWeb.cpp:205:33: 警告：此函数中的‘conn’在使用前未初始化 [-Wuninitialized]
+  if(GetConnectFromPool(conn,stmt) == false)
+                                 ^
+../src/CommunicateWithWeb.cpp:205:33: 警告：此函数中的‘stmt’在使用前未初始化 [-Wuninitialized]
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+15:59:04 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:120:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+../src/CommunicateWithWeb.cpp: 在函数‘void Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:199:31: 警告：variable ‘cardreader’ set but not used [-Wunused-but-set-variable]
+  struct Device_CardReaderInfo cardreader[8];
+                               ^
+../src/CommunicateWithWeb.cpp:205:34: 警告：此函数中的‘conn’在使用前未初始化 [-Wuninitialized]
+  if(GetConnectFromPool(conn,_stmt) == false)
+                                  ^
+../src/CommunicateWithWeb.cpp:205:34: 警告：此函数中的‘_stmt’在使用前未初始化 [-Wuninitialized]
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+16:00:21 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:120:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+../src/CommunicateWithWeb.cpp: 在函数‘void Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:199:31: 警告：variable ‘cardreader’ set but not used [-Wunused-but-set-variable]
+  struct Device_CardReaderInfo cardreader[8];
+                               ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+17:36:15 **** Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+17:37:10 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+17:37:15 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+make: 对“all”无需做任何事。
+17:38:09 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+17:38:43 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+17:38:48 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+make: 对“all”无需做任何事。
+17:39:32 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+make: 对“all”无需做任何事。
+17:40:14 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+make: 对“all”无需做任何事。
+17:40:39 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+17:57:40 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+17:57:54 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+17:58:51 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+18:02:05 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+18:03:13 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+18:04:32 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+18:05:23 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+18:05:38 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+18:05:59 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+18:06:20 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+18:07:17 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+18:08:19 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+18:09:35 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+../src/occi_batch_insert.cpp: 在函数‘int main()’中:
+../src/occi_batch_insert.cpp:62:7: 警告：未使用的变量‘i’ [-Wunused-variable]
+   int i = 10;
+       ^
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+18:09:40 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+make: 对“all”无需做任何事。
+08:37:47 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+../src/occi_batch_insert.cpp: 在函数‘int main()’中:
+../src/occi_batch_insert.cpp:62:7: 警告：未使用的变量‘i’ [-Wunused-variable]
+   int i = 10;
+       ^
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+08:37:53 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+make: 对“all”无需做任何事。
+08:39:13 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+08:40:27 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+08:41:30 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+make: 对“all”无需做任何事。
+08:42:41 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+../src/occi_batch_insert.cpp: 在函数‘int main()’中:
+../src/occi_batch_insert.cpp:62:7: 警告：未使用的变量‘i’ [-Wunused-variable]
+   int i = 10;
+       ^
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+08:42:49 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+make: 对“all”无需做任何事。
+08:43:32 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+../src/occi_batch_insert.cpp: 在函数‘int main()’中:
+../src/occi_batch_insert.cpp:62:7: 警告：未使用的变量‘i’ [-Wunused-variable]
+   int i = 10;
+       ^
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+08:43:39 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+make: 对“all”无需做任何事。
+08:49:37 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+08:50:11 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+make: 对“all”无需做任何事。
+08:54:59 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+08:55:10 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+make: 对“all”无需做任何事。
+08:56:34 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+09:17:33 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+../src/CommunicateWithDevice.cpp: 在函数‘void* UpdateStatus_Device(void*)’中:
+../src/CommunicateWithDevice.cpp:223:13: 警告：converting ‘false’ to pointer type ‘void*’ [-Wconversion-null]
+      return false;
+             ^
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:120:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+../src/CommunicateWithWeb.cpp: 在函数‘void Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:264:4: 错误：‘stmt_device’在此作用域中尚未声明
+    stmt_device->executeUpdate();
+    ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+09:17:54 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:120:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+09:18:20 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:120:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+../src/CommunicateWithWeb.cpp: 在函数‘void Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:207:35: 警告：此函数中的‘_conn’在使用前未初始化 [-Wuninitialized]
+  if(GetConnectFromPool(_conn,_stmt) == false)
+                                   ^
+../src/CommunicateWithWeb.cpp:207:35: 警告：此函数中的‘_stmt’在使用前未初始化 [-Wuninitialized]
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+09:18:51 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:120:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+09:50:49 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+../src/CommunicateWithDevice.cpp: 在函数‘void* UpdateStatus_Device(void*)’中:
+../src/CommunicateWithDevice.cpp:223:13: 警告：converting ‘false’ to pointer type ‘void*’ [-Wconversion-null]
+      return false;
+             ^
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:120:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+../src/CommunicateWithWeb.cpp:121:6: 警告：未使用的变量‘ret’ [-Wunused-variable]
+  int ret;
+      ^
+../src/CommunicateWithWeb.cpp: 在函数‘int Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:196:94: 错误：对‘int Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’的新声明
+ int  Quest_DevicePara_0x03(int sockfd,struct sockaddr_in DeviceAddr,unsigned char * send_data)
+                                                                                              ^
+In file included from ../src/include.h:39:0,
+                 from ../src/CommunicateWithWeb.cpp:7:
+../src/CommunicateWithWeb.h:16:6: 错误：使旧的声明‘void Quest_DevicePara_0x03(int, sockaddr_in, unsigned char*)’出现歧义
+ void Quest_DevicePara_0x03(int sockfd,struct sockaddr_in DeviceAddr,unsigned char * send_data);
+      ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+09:57:39 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+../src/CommunicateWithDevice.cpp: 在函数‘void* UpdateStatus_Device(void*)’中:
+../src/CommunicateWithDevice.cpp:223:13: 警告：converting ‘false’ to pointer type ‘void*’ [-Wconversion-null]
+      return false;
+             ^
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:120:21: 警告：variable ‘DeviceAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in DeviceAddr;
+                     ^
+../src/CommunicateWithWeb.cpp:121:6: 警告：未使用的变量‘ret’ [-Wunused-variable]
+  int ret;
+      ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+12:45:02 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+../src/CommunicateWithDevice.cpp: 在函数‘void* UpdateStatus_Device(void*)’中:
+../src/CommunicateWithDevice.cpp:223:13: 警告：converting ‘false’ to pointer type ‘void*’ [-Wconversion-null]
+      return false;
+             ^
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void SendToWeb(int, unsigned char*, int)’中:
+../src/CommunicateWithWeb.cpp:105:9: 错误：too few arguments to function ‘ssize_t sendto(int, const void*, size_t, int, const sockaddr*, socklen_t)’
+  sendto()
+         ^
+In file included from /usr/include/netinet/in.h:24:0,
+                 from ../src/include.h:22,
+                 from ../src/CommunicateWithWeb.cpp:7:
+/usr/include/sys/socket.h:164:16: 附注：在此声明
+ extern ssize_t sendto (int __fd, const void *__buf, size_t __n,
+                ^
+../src/CommunicateWithWeb.cpp:106:1: 错误：expected ‘;’ before ‘}’ token
+ }
+ ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+12:46:32 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:138:21: 警告：variable ‘WebServerAddr’ set but not used [-Wunused-but-set-variable]
+  struct sockaddr_in WebServerAddr = web_message.WebServerAddr;
+                     ^
+../src/CommunicateWithWeb.cpp:137:51: 警告：此函数中的‘data’在使用前未初始化 [-Wuninitialized]
+  memcpy(data,web_message.RecvBuf,SingleRecvMaxLen);
+                                                   ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+12:49:29 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+../src/CommunicateWithDevice.cpp: 在函数‘void* UpdateStatus_Device(void*)’中:
+../src/CommunicateWithDevice.cpp:223:13: 警告：converting ‘false’ to pointer type ‘void*’ [-Wconversion-null]
+      return false;
+             ^
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+12:49:54 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+14:01:46 **** Incremental Build of configuration Debug for project test2 ****
+make all 
+Building file: ../src/test2.c
+Invoking: Cross GCC Compiler
+arm-none-linux-gnueabi-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test2.d" -MT"src/test2.o" -o "src/test2.o" "../src/test2.c"
+../src/test2.c: In function 'test':
+../src/test2.c:47:40: warning: argument to 'sizeof' in 'memcpy' call is the same pointer type 'unsigned char *' as the destination; expected 'unsigned char' or an explicit length [-Wsizeof-pointer-memaccess]
+  memcpy(web_message.RecvBuf,data,sizeof(data));
+                                        ^
+Finished building: ../src/test2.c
+ 
+Building target: test2
+Invoking: Cross GCC Linker
+arm-none-linux-gnueabi-gcc  -o "test2"  ./src/test2.o   
+./src/test2.o: In function `test':
+/home/eclipseprogram/test2/Debug/../src/test2.c:50: undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+make: *** [test2] 错误 1
+14:03:02 **** Incremental Build of configuration Debug for project test2 ****
+make all 
+Building file: ../src/test2.c
+Invoking: Cross GCC Compiler
+arm-none-linux-gnueabi-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test2.d" -MT"src/test2.o" -o "src/test2.o" "../src/test2.c"
+../src/test2.c: In function 'test':
+../src/test2.c:47:40: warning: argument to 'sizeof' in 'memcpy' call is the same pointer type 'unsigned char *' as the destination; expected 'unsigned char' or an explicit length [-Wsizeof-pointer-memaccess]
+  memcpy(web_message.RecvBuf,data,sizeof(data));
+                                        ^
+Finished building: ../src/test2.c
+ 
+Building target: test2
+Invoking: Cross GCC Linker
+arm-none-linux-gnueabi-gcc  -o "test2"  ./src/test2.o   -lpthread
+Finished building target: test2
+ 
+14:03:12 **** Incremental Build of configuration Debug for project test2 ****
+make all 
+Building file: ../src/test2.c
+Invoking: Cross GCC Compiler
+arm-none-linux-gnueabi-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test2.d" -MT"src/test2.o" -o "src/test2.o" "../src/test2.c"
+Finished building: ../src/test2.c
+ 
+Building target: test2
+Invoking: Cross GCC Linker
+arm-none-linux-gnueabi-gcc  -o "test2"  ./src/test2.o   -lpthread
+Finished building target: test2
+ 
+14:03:21 **** Incremental Build of configuration Debug for project occi_batch_insert ****
+make all 
+Building file: ../src/occi_batch_insert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_batch_insert.d" -MT"src/occi_batch_insert.o" -o "src/occi_batch_insert.o" "../src/occi_batch_insert.cpp"
+Finished building: ../src/occi_batch_insert.cpp
+ 
+Building target: occi_batch_insert
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "occi_batch_insert"  ./src/occi_batch_insert.o   -locci -lnsl -lclntsh -lm -lpthread
+Finished building target: occi_batch_insert
+ 
+14:05:31 **** Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:05:40 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void* Handle_Pthread(void*)’中:
+../src/CommunicateWithWeb.cpp:229:1: 错误：跳转至标号‘report_result’ [-fpermissive]
+ report_result:
+ ^
+../src/CommunicateWithWeb.cpp:160:8: 错误：从这里 [-fpermissive]
+   goto report_result;
+        ^
+../src/CommunicateWithWeb.cpp:163:6: 错误：跳过了‘int on’的初始化
+  int on=1;
+      ^
+../src/CommunicateWithWeb.cpp: 在函数‘int Request_DeviceSystemParam_0x03()’中:
+../src/CommunicateWithWeb.cpp:338:1: 警告：在有返回值的函数中未发现 return 语句 [-Wreturn-type]
+ }
+ ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+14:07:04 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:07:34 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:08:09 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:08:55 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:09:48 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:09:55 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:10:25 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:10:53 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:12:10 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+../src/pthread_arg.c: 在函数‘pth_ttt’中:
+../src/pthread_arg.c:37:39: 错误：在非结构或联合中请求成员‘WebServerAddr’
+  struct sockaddr_in addr = web_message.WebServerAddr;
+                                       ^
+../src/pthread_arg.c:38:25: 错误：在非结构或联合中请求成员‘RecvBuf’
+  memcpy(data,web_message.RecvBuf,100);
+                         ^
+../src/pthread_arg.c:35:27: 警告：变量‘web_message’被设定但未被使用 [-Wunused-but-set-variable]
+  struct web_message_info *web_message = (struct web_message_info *)arg;
+                           ^
+make: *** [src/pthread_arg.o] 错误 1
+14:12:41 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:12:45 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:15:15 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:17:46 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+../src/pthread_arg.c: 在函数‘pth_ttt’中:
+../src/pthread_arg.c:35:27: 警告：未使用的变量‘web_message’ [-Wunused-variable]
+  struct web_message_info *web_message;// = (struct web_message_info *)arg;
+                           ^
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:17:52 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:19:06 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+../src/pthread_arg.c: 在函数‘pth_ttt’中:
+../src/pthread_arg.c:37:21: 警告：此函数中的‘web_message’在使用前未初始化 [-Wuninitialized]
+  struct sockaddr_in addr = web_message->WebServerAddr;
+                     ^
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:19:24 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:19:27 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:20:10 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:20:13 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:20:59 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:21:03 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:22:09 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:22:12 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:22:25 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:23:04 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:23:08 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:24:10 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:24:13 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:25:21 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:25:26 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:25:37 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:26:24 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+../src/pthread_arg.c: 在函数‘pth_ttt’中:
+../src/pthread_arg.c:37:42: 错误：‘->’参数类型无效(有‘struct web_message_info’)
+  struct sockaddr_in addr = pthweb_message->WebServerAddr;
+                                          ^
+../src/pthread_arg.c:38:28: 错误：‘->’参数类型无效(有‘struct web_message_info’)
+  memcpy(data,pthweb_message->RecvBuf,100);
+                            ^
+make: *** [src/pthread_arg.o] 错误 1
+14:26:38 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:26:41 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:26:50 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:26:54 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:27:18 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:27:33 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:28:00 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:28:12 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:28:47 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:29:18 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:30:15 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:30:29 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:39:01 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:39:04 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:41:24 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:41:29 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:41:57 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:43:25 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:45:47 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:47:36 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:47:42 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:49:11 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:49:17 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:50:06 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:50:09 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:52:13 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:53:03 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:53:18 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:53:54 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+14:54:01 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+14:54:47 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+15:00:04 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+15:06:39 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+15:06:50 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+15:21:10 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+15:21:20 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+15:25:30 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+15:31:58 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+../src/pthread_arg.c: 在函数‘pth_ttt’中:
+../src/pthread_arg.c:42:2: 警告：隐式声明函数‘phtread_detach’ [-Wimplicit-function-declaration]
+  phtread_detach(pthread_self());
+  ^
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+./src/pthread_arg.o：在函数‘pth_ttt’中：
+/home/eclipseprogram/pthread_arg/Debug/../src/pthread_arg.c:42：对‘phtread_detach’未定义的引用
+collect2: 错误：ld 返回 1
+make: *** [pthread_arg] 错误 1
+15:34:19 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+./src/pthread_arg.o：在函数‘pth_ttt’中：
+/home/eclipseprogram/pthread_arg/Debug/../src/pthread_arg.c:42：对‘phtread_detach’未定义的引用
+collect2: 错误：ld 返回 1
+make: *** [pthread_arg] 错误 1
+15:36:54 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+15:37:04 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+make: 对“all”无需做任何事。
+15:44:34 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+15:49:30 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void ParsingData_Web(unsigned char*, sockaddr_in)’中:
+../src/CommunicateWithWeb.cpp:120:72: 错误：从类型‘void*’到类型‘web_message_info*’的转换无效 [-fpermissive]
+  struct web_message_info *web_message = malloc(sizeof(web_message_info));
+                                                                        ^
+../src/CommunicateWithWeb.cpp: 在函数‘int Request_DeviceSystemParam_0x03()’中:
+../src/CommunicateWithWeb.cpp:342:1: 警告：在有返回值的函数中未发现 return 语句 [-Wreturn-type]
+ }
+ ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+15:50:34 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘int Request_DeviceSystemParam_0x03()’中:
+../src/CommunicateWithWeb.cpp:342:1: 警告：在有返回值的函数中未发现 return 语句 [-Wreturn-type]
+ }
+ ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+17:24:55 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘int Request_DeviceSystemParam_0x04(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:343:32: 警告：未使用的变量‘cardreader’ [-Wunused-variable]
+   struct Device_CardReaderInfo cardreader[8];
+                                ^
+../src/CommunicateWithWeb.cpp:349:7: 警告：未使用的变量‘j’ [-Wunused-variable]
+   int j = 0;    //结构体下标
+       ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+17:25:13 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+17:25:49 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+17:30:36 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘int Request_DeviceSystemParam_0x04(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:351:57: 错误：从类型‘int’到类型‘const void*’的转换无效 [-fpermissive]
+   sendto(sockfd, ((( send_data[1] << 8 ) | send_data[2])+3), 22, 0, (struct sockaddr *)&DeviceAddr, sizeof(struct sockaddr));
+                                                         ^
+In file included from /usr/include/netinet/in.h:24:0,
+                 from ../src/include.h:22,
+                 from ../src/CommunicateWithWeb.cpp:7:
+/usr/include/sys/socket.h:164:16: 错误：  初始化‘ssize_t sendto(int, const void*, size_t, int, const sockaddr*, socklen_t)’的实参 2 [-fpermissive]
+ extern ssize_t sendto (int __fd, const void *__buf, size_t __n,
+                ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+17:31:04 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+14:24:39 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+16:26:58 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
+10:38:09 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘int Request_DeviceCard_0x08(int, sockaddr_in, unsigned char*)’中:
+../src/CommunicateWithWeb.cpp:876:16: 错误：将‘int’赋值给‘long unsigned int [4]’时类型不兼容
+   card[j].RFID = ( (Rec_buf[i] << 24) | (Rec_buf[i+1] << 16) | (Rec_buf[i+2] << 8) | Rec_buf[i+3]);
+                ^
+../src/CommunicateWithWeb.cpp:932:47: 错误：对重载的‘Number(long unsigned int [4])’的调用有歧义
+     Number temp_num = Number(card[temp_t].RFID);
+                                               ^
+../src/CommunicateWithWeb.cpp:932:47: 附注：备选是：
+In file included from /usr/include/oracle/12.1/client64/occi.h:43:0,
+                 from ../src/include.h:28,
+                 from ../src/CommunicateWithWeb.cpp:7:
+/usr/include/oracle/12.1/client64/occiData.h:524:3: 附注：oracle::occi::Number::Number(unsigned char) <就近匹配>
+   Number(unsigned char val) ;
+   ^
+/usr/include/oracle/12.1/client64/occiData.h:524:3: 附注：  no known conversion for argument 1 from ‘long unsigned int [4]’ to ‘unsigned char’
+/usr/include/oracle/12.1/client64/occiData.h:523:3: 附注：oracle::occi::Number::Number(short unsigned int) <就近匹配>
+   Number(unsigned short val) ;
+   ^
+/usr/include/oracle/12.1/client64/occiData.h:523:3: 附注：  no known conversion for argument 1 from ‘long unsigned int [4]’ to ‘short unsigned int’
+/usr/include/oracle/12.1/client64/occiData.h:522:3: 附注：oracle::occi::Number::Number(unsigned int) <就近匹配>
+   Number(unsigned int val) ;
+   ^
+/usr/include/oracle/12.1/client64/occiData.h:522:3: 附注：  no known conversion for argument 1 from ‘long unsigned int [4]’ to ‘unsigned int’
+/usr/include/oracle/12.1/client64/occiData.h:521:3: 附注：oracle::occi::Number::Number(long unsigned int) <就近匹配>
+   Number(unsigned long val) ;
+   ^
+/usr/include/oracle/12.1/client64/occiData.h:521:3: 附注：  no known conversion for argument 1 from ‘long unsigned int [4]’ to ‘long unsigned int’
+/usr/include/oracle/12.1/client64/occiData.h:520:3: 附注：oracle::occi::Number::Number(signed char) <就近匹配>
+   Number(signed char val);
+   ^
+/usr/include/oracle/12.1/client64/occiData.h:520:3: 附注：  no known conversion for argument 1 from ‘long unsigned int [4]’ to ‘signed char’
+/usr/include/oracle/12.1/client64/occiData.h:519:3: 附注：oracle::occi::Number::Number(char) <就近匹配>
+   Number(char val) ;
+   ^
+/usr/include/oracle/12.1/client64/occiData.h:519:3: 附注：  no known conversion for argument 1 from ‘long unsigned int [4]’ to ‘char’
+/usr/include/oracle/12.1/client64/occiData.h:518:3: 附注：oracle::occi::Number::Number(short int) <就近匹配>
+   Number(short val) ;
+   ^
+/usr/include/oracle/12.1/client64/occiData.h:518:3: 附注：  no known conversion for argument 1 from ‘long unsigned int [4]’ to ‘short int’
+/usr/include/oracle/12.1/client64/occiData.h:517:3: 附注：oracle::occi::Number::Number(int) <就近匹配>
+   Number(int val) ;
+   ^
+/usr/include/oracle/12.1/client64/occiData.h:517:3: 附注：  no known conversion for argument 1 from ‘long unsigned int [4]’ to ‘int’
+/usr/include/oracle/12.1/client64/occiData.h:516:3: 附注：oracle::occi::Number::Number(long int) <就近匹配>
+   Number(long val) ;
+   ^
+/usr/include/oracle/12.1/client64/occiData.h:516:3: 附注：  no known conversion for argument 1 from ‘long unsigned int [4]’ to ‘long int’
+/usr/include/oracle/12.1/client64/occiData.h:512:3: 附注：oracle::occi::Number::Number(const oracle::occi::Number&) <就近匹配>
+   Number(const Number &srcNum);
+   ^
+/usr/include/oracle/12.1/client64/occiData.h:512:3: 附注：  no known conversion for argument 1 from ‘long unsigned int [4]’ to ‘const oracle::occi::Number&’
+../src/CommunicateWithWeb.cpp:925:8: 警告：未使用的变量‘temp_i’ [-Wunused-variable]
+    int temp_i;
+        ^
+make: *** [src/CommunicateWithWeb.o] 错误 1
+10:39:41 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
+Building file: ../src/CommunicateWithDevice.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 

@@ -1,0 +1,21 @@
+/*
+ * CommunicateWithWeb.h
+ *
+ * Created on: 2016年10月11日
+ * Author: LIRUIJIE
+ */
+
+#ifndef COMMUNICATEWITHWEB_H_
+#define COMMUNICATEWITHWEB_H_
+
+void * ReceiveData_Web(void *arg);
+void ParsingData_Web(unsigned char *data);
+void * Handle_Pthread(void *arg);
+
+
+void Quest_DevicePara_0x03(struct sockaddr_in DeviceAddr,int index);
+
+
+
+int ReceiveDeviceReply(int sockfd,struct sockaddr_in DeviceAddr,unsigned char * data,int timeout_s)
+#endif /* COMMUNICATEWITHWEB_H_ */

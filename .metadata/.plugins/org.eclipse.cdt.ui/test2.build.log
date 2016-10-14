@@ -1,6 +1,15 @@
-14:54:16 **** Incremental Build of configuration Debug for project test2 ****
+14:03:12 **** Incremental Build of configuration Debug for project test2 ****
 make all 
-make: 对“all”无需做任何事。
+Building file: ../src/test2.c
+Invoking: Cross GCC Compiler
+arm-none-linux-gnueabi-gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test2.d" -MT"src/test2.o" -o "src/test2.o" "../src/test2.c"
+Finished building: ../src/test2.c
+ 
+Building target: test2
+Invoking: Cross GCC Linker
+arm-none-linux-gnueabi-gcc  -o "test2"  ./src/test2.o   -lpthread
+Finished building target: test2
+ 
 
-14:54:16 Build Finished (took 153ms)
+14:03:13 Build Finished (took 171ms)
 

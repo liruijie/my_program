@@ -1,17 +1,45 @@
-15:06:01 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+10:39:41 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
 make all 
+Building file: ../src/CodeConvert.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CodeConvert.d" -MT"src/CodeConvert.o" -o "src/CodeConvert.o" "../src/CodeConvert.cpp"
+Finished building: ../src/CodeConvert.cpp
+ 
 Building file: ../src/CommunicateWithDevice.cpp
 Invoking: GCC C++ Compiler
 g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithDevice.d" -MT"src/CommunicateWithDevice.o" -o "src/CommunicateWithDevice.o" "../src/CommunicateWithDevice.cpp"
-../src/CommunicateWithDevice.cpp: 在函数‘void* UpdateStatus_Device(void*)’中:
-../src/CommunicateWithDevice.cpp:177:7: 警告：未使用的变量‘sqlbuf’ [-Wunused-variable]
-  char sqlbuf[] = "update table set name1 = :x1 where name3 = x2";
-       ^
-../src/CommunicateWithDevice.cpp: 在函数‘int Device_Time(unsigned char*)’中:
-../src/CommunicateWithDevice.cpp:203:32: 错误：将‘int’赋值给‘char [30]’时类型不兼容
-  device[i].realdata.DeviceTime = (buf[12]<<24) | (buf[13]<<16) | (buf[14]<<8) | buf[15];
-                                ^
-make: *** [src/CommunicateWithDevice.o] 错误 1
+Finished building: ../src/CommunicateWithDevice.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/PublicDefine.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicDefine.d" -MT"src/PublicDefine.o" -o "src/PublicDefine.o" "../src/PublicDefine.cpp"
+Finished building: ../src/PublicDefine.cpp
+ 
+Building file: ../src/PublicTransportPriority.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
+Finished building: ../src/PublicTransportPriority.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/oracle.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/oracle.d" -MT"src/oracle.o" -o "src/oracle.o" "../src/oracle.cpp"
+Finished building: ../src/oracle.cpp
+ 
+Building target: PublicTransportPriority
+Invoking: GCC C++ Linker
+g++ -L/usr/lib/oracle/12.1/client64/lib -o "PublicTransportPriority"  ./src/CodeConvert.o ./src/CommunicateWithDevice.o ./src/CommunicateWithWeb.o ./src/PublicDefine.o ./src/PublicTransportPriority.o ./src/Queue.o ./src/oracle.o   -lnsl -liconv -lclntsh -locci -lpthread -lm
+Finished building target: PublicTransportPriority
+ 
 
-15:06:01 Build Finished (took 194ms)
+10:39:44 Build Finished (took 3s.125ms)
 

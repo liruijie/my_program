@@ -1,0 +1,15 @@
+15:44:34 **** Incremental Build of configuration Debug for project pthread_arg ****
+make all 
+Building file: ../src/pthread_arg.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/pthread_arg.d" -MT"src/pthread_arg.o" -o "src/pthread_arg.o" "../src/pthread_arg.c"
+Finished building: ../src/pthread_arg.c
+ 
+Building target: pthread_arg
+Invoking: GCC C Linker
+gcc  -o "pthread_arg"  ./src/pthread_arg.o   -lpthread
+Finished building target: pthread_arg
+ 
+
+15:44:34 Build Finished (took 280ms)
+
