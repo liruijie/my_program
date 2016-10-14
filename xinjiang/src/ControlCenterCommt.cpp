@@ -118,7 +118,7 @@ void *TcpCommunicate(void *arg)
 	//char buf[1000];
 	int ret;
 
-
+	pthread_detach(pthread_self());
 	ret = InitTCPLink(ThreadNum);
 	if(ret == fail)
 		pthread_exit(NULL);
