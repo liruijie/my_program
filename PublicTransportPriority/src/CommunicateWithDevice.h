@@ -17,4 +17,6 @@ int Device_Time(unsigned char *buf);
 int Device_DetectData(unsigned char *buf);
 int Device_Fault(unsigned char *buf);
 
+bool check_buf( unsigned char * rcv_buf);
+int makecheck(unsigned char * rcv_buf);
 #endif /* COMMUNICATEWITHDEVICE_H_ */

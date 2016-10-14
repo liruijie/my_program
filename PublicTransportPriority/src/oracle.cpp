@@ -64,7 +64,9 @@ int OCCI_Open()
 
   return 0;
 }
-
+/*
+ * 从连接池中获取一个连接   成功返回true，失败返回false
+ */
 int GetConnectFromPool(Connection *new_conn,Statement *new_stmt)
 {
 	try

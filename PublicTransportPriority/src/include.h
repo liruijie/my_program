@@ -26,6 +26,7 @@
 #include <errno.h>
 
 #include <occi.h>
+#include "iconv.h"
 
 using namespace oracle::occi;
 using namespace std;
@@ -34,4 +35,7 @@ using namespace std;
 #include "CommunicateWithDevice.h"
 #include "PublicDefine.h"
 #include "Queue.h"
+#include "CodeConvert.h"
+#include "CommunicateWithWeb.h"
+
 #endif /* INCLUDE_H_ */

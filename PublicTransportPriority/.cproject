@@ -38,8 +38,9 @@
 								<option id="gnu.cpp.link.option.paths.890423170" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/usr/lib/oracle/12.1/client64/lib"/>
 								</option>
-								<option id="gnu.cpp.link.option.libs.1243317543" superClass="gnu.cpp.link.option.libs" valueType="libs">
+								<option id="gnu.cpp.link.option.libs.1243317543" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="nsl"/>
+									<listOptionValue builtIn="false" value="iconv"/>
 									<listOptionValue builtIn="false" value="clntsh"/>
 									<listOptionValue builtIn="false" value="occi"/>
 									<listOptionValue builtIn="false" value="pthread"/>

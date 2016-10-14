@@ -11,15 +11,15 @@
 #define DeviceMaxNum			1024
 #define SingleRecvMaxLen 	1000
 #define QueueNum 50000
-
+#define CardMaxNum			5000
 struct DeviceRealData
 {
 		char  DeviceTime[30];
 
 
-		char line_number[20];				//公交车次
-		char plate_number[20];				//车牌号
-		char RFID[40];							//RFID卡编号
+		char line_number[30];				//公交车次
+		char plate_number[30];				//车牌号
+		char RFID[10];							//RFID卡编号
 		unsigned long detect_time;			//检测时间
 		bool is_priority;						//是否优先：01 为优先（01为已优先，00为没优先）
 		char priority_level;					//优先级：01 （1~9）
@@ -42,13 +42,14 @@ struct Device_CardReaderInfo
 		int transport_priority_relay;		//公交优先对应的继电器编号：00 05
 		int emergency_priority_relay;		//紧急优先对应的继电器编号：00 06
 		int detection_range;					//检测器检测范围：00 07
-		int cross_id;							//路口编号：00 08
+		//int cross_id;							//路口编号：00 08
 };
 
 struct DeviceInfo
 {
 		int id;
 		int status;
+		unsigned long last_report_time;
 		char ip[20];
 		char mask[20];
 		char gateway[20];
@@ -56,16 +57,63 @@ struct DeviceInfo
 		int center_port;
 		int control_uart;
 		int wireless_uart;
-		struct Device_CardReaderInfo cardreader[8];
+		//struct Device_CardReaderInfo cardreader[8];
 		struct DeviceRealData realdata;
 
 };
 extern DeviceInfo device[DeviceMaxNum];
 
-struct QueueInfo
+struct Device_Strategy
 {
-	unsigned char buf[SingleRecvMaxLen];
-	struct QueueInfo *Next;
+		int strategy_id;
+		int sequence_num;
+		unsigned char direction;					//优先方向
+		unsigned char level;							//优先级别
+		int param1;
+		int param2;
+		int param3;
+		int param4;
+		unsigned char threshold;					//优先申请阈值
+		unsigned char interval;						//统计间隔
+		unsigned char max_time_allowed;			//优先申请权保留时间
+		unsigned int card_live_time;          	//数据保存时间
 };
+
+struct Device_StrategyTime
+{
+		int time_table_id;
+		unsigned char start_time[2];
+		unsigned char end_time[2];
+		int strategy_id;
+};
+
+struct Device_Schedule
+{
+		int id;
+		unsigned char type;
+		unsigned char priority_level;
+		unsigned char week_value;
+		unsigned int month_value;
+		unsigned long day_value;
+		unsigned char time_table_id;
+};
+
+struct Device_CardInfo
+{
+//			RFID卡号	车牌号				车牌颜色	优先申请阈值	安装时间	路次				所属运营公司
+//			4字节		ASCII码16进制		1字节		1字节			4字节		ASCII码16进制		ASCII码16进制
+		unsigned long  RFID;
+		unsigned char plate_num[50];
+		unsigned char plate_color;
+		unsigned char threshold;
+		unsigned long install_time;
+		unsigned char line_num[30];
+		unsigned char company[50];
+};
+
+
+
+
+
 
 #endif /* PUBLICDEFINE_H_ */
