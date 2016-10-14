@@ -983,7 +983,9 @@ int ReceiveDeviceReply(int sockfd,struct sockaddr_in DeviceAddr,unsigned char * 
 	struct timeval 	timeVal;
 	int ret;
 	int numbytes;
+	unsigned char Rec_buf[SingleRecvMaxLen];
 	int sin_size_1=sizeof(struct sockaddr_in);
+	sendto(sockfd, data, 22, 0, (struct sockaddr *)&DeviceAddr, sizeof(struct sockaddr));
 	timeVal.tv_sec = timeout_s;
 	timeVal.tv_usec= 0;
 	fd_set  Rec_fdSet;
@@ -1001,8 +1003,8 @@ int ReceiveDeviceReply(int sockfd,struct sockaddr_in DeviceAddr,unsigned char * 
 	}
 	else          //select success
 	{
-		memset(data,'\0',SingleRecvMaxLen);
-		if ((numbytes=recvfrom(sockfd,  data,  SingleRecvMaxLen,  0,  (struct sockaddr *)&DeviceAddr, (socklen_t *) &sin_size_1))==-1)
+		memset(Rec_buf,'\0',SingleRecvMaxLen);
+		if ((numbytes=recvfrom(sockfd,  Rec_buf,  SingleRecvMaxLen,  0,  (struct sockaddr *)&DeviceAddr, (socklen_t *) &sin_size_1))==-1)
 		 {
 			perror("recv ");
 			return 0;
@@ -1013,8 +1015,8 @@ int ReceiveDeviceReply(int sockfd,struct sockaddr_in DeviceAddr,unsigned char * 
 		}
 		else if(numbytes >5)           //头   长度_H   长度_L   校验    尾         至少5个
 		{
-			data[numbytes] = '\0';
-			if( check_buf( (unsigned char *) data) == true)
+			Rec_buf[numbytes] = '\0';
+			if( check_buf( (unsigned char *) Rec_buf) == true)
 			{
 				return numbytes;
 			}
