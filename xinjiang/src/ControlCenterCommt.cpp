@@ -154,13 +154,13 @@ void *TcpCommunicate(void *arg)
 
 int TCPService_Data_Receive(int Rec_fd,char *Rec_buf)
 {
-	struct timeval 	Rec_timeVal;
+//	struct timeval 	Rec_timeVal;
 	fd_set  Rec_fdSet;
 	int ret,numbytes;
 
 	//printf("here is TCPService_Data_Receive process,process ID %d,commt_fd = %d\n",getpid(),Rec_fd);
-	Rec_timeVal.tv_sec = 60;
-	Rec_timeVal.tv_usec = 0;
+//	Rec_timeVal.tv_sec = 60;
+//	Rec_timeVal.tv_usec = 0;
 
 	FD_ZERO(&Rec_fdSet);
 	FD_SET(Rec_fd, &Rec_fdSet);

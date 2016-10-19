@@ -49,5 +49,4 @@ using namespace std;
 #include "ControlSignal.h"
 #include "KeepConnectAlive.h"
 
-
 #endif /* INCLUDE_H_ */
