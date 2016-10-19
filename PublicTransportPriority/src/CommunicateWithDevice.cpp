@@ -21,6 +21,7 @@ void CommunicateWithDevice()
 	//init oracle link
 
 	ret = GetConnectFromPool(conn_device,stmt_device);
+	stmt_device->setAutoCommit(true);
 	if(ret == false)
 		return;
 	//init queue
@@ -236,9 +237,9 @@ int Device_Time(unsigned char *buf)
 }
 int Device_DetectData(unsigned char *buf)
 {
-	char temp_buf[50];
-	char temp_outbuf[100];
-	int ret;
+	//char temp_buf[50];
+	//char temp_outbuf[100];
+	//int ret;
 	int i =GetDeviceIndex(buf);
 	if(i < 0)
 		return false;
@@ -249,25 +250,25 @@ int Device_DetectData(unsigned char *buf)
 	//7E 00 14 00 01 FF FF 00 02 40 01 01 07 D4 CB CD A8 31 30 35   08 BE A9 41 4B 53 38 38 37   04 31 30 30 31 4F DC 68 2E 01 01 04 00 01 01 00 03 4F DC 68 2E 6D 7D
 
 	//memcpy(device[i].realdata.line_number , buf + index + 1 , buf[index]);
-	memset(temp_buf,'\0',sizeof(temp_buf));
-	memset(temp_outbuf,'\0',sizeof(temp_outbuf));
-	memcpy(temp_buf , buf + index + 1 , buf[index]);
+	//memset(temp_buf,'\0',sizeof(temp_buf));
+	//memset(temp_outbuf,'\0',sizeof(temp_outbuf));
+	//memcpy(temp_buf , buf + index + 1 , buf[index]);
 //	ret = code_convert((char *)"GBK",(char *)"UTF-8",temp_buf,buf[index],temp_outbuf,100);
 //	if(ret == 0)
 //		return false;
 	memset(device[i].realdata.line_number,'\0',sizeof(device[i].realdata.line_number));
-	memcpy(device[i].realdata.line_number , temp_outbuf , ret);
+	memcpy(device[i].realdata.line_number , buf + index + 1 , buf[index]);
 	index = index + buf[index] +1;
 
 	//memcpy(device[i].realdata.plate_number , buf + index + 1 , buf[index]);
-	memset(temp_buf,'\0',sizeof(temp_buf));
-	memset(temp_outbuf,'\0',sizeof(temp_outbuf));
-	memcpy(temp_buf , buf + index + 1 , buf[index]);
+//	memset(temp_buf,'\0',sizeof(temp_buf));
+//	memset(temp_outbuf,'\0',sizeof(temp_outbuf));
+//	memcpy(temp_buf , buf + index + 1 , buf[index]);
 //	ret = code_convert((char *)"GBK",(char *)"UTF-8",temp_buf,buf[index],temp_outbuf,100);
 //	if(ret == 0)
 //		return false;
 	memset(device[i].realdata.plate_number,'\0',sizeof(device[i].realdata.plate_number));
-	memcpy(device[i].realdata.plate_number , temp_outbuf , ret);
+	memcpy(device[i].realdata.plate_number , buf + index + 1 , buf[index]);
 	index = index + buf[index] +1;
 
 	memcpy(device[i].realdata.RFID , buf + index + 1 , buf[index]);
@@ -348,13 +349,12 @@ bool check_buf( unsigned char * rcv_buf)
 			printf(" jiao yan cuo wu\n");
 			return false;
 		}
-
-		}
-		else
-		{
-			printf(" signal tou wei cuo wu\n");
-			return false;
-		}
+	}
+	else
+	{
+		printf(" signal tou wei cuo wu\n");
+		return false;
+	}
 }
 int makecheck(unsigned char * rcv_buf)
 {

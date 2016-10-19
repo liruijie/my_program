@@ -75,7 +75,7 @@ int GetConnectFromPool(Connection *new_conn,Statement *new_stmt)
 		if(new_conn)
 		{
 			new_stmt = new_conn->createStatement();
-			new_stmt->setAutoCommit(true);
+			//new_stmt->setAutoCommit(true);
 			cout << "Connect oracle"<<endl;
 			return true;
 		}
