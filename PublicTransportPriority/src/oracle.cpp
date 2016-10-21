@@ -96,9 +96,9 @@ int GetConnectFromPool(Connection *new_conn,Statement *new_stmt)
 
 
 
-int GetDeviceInfo()
+int InitDeviceInfo()
 {
-	char sqlbuf[] = "select t.signal_id from SIGNAL_CONFIG_INFO t order by to_number( t.signal_id)";
+	char sqlbuf[] = "select t.INTERSECTION_ID, INTERSECTION_IP from SYSTEM_CONFIG t order by to_number( t.INTERSECTION_ID)";
 	ResultSet *Result;
 	int i=0;
 	try
@@ -108,10 +108,10 @@ int GetDeviceInfo()
 
 		while(Result->next() != 0)                //cun zai
 		{
-			//SignalRealData[i].CrossID = Result->getInt(1);
-			//SignalRealData[i].SignalState = Offline;
+			device[i].id = Result->getInt(1);
+			sprintf(device[i].ip,Result->getString(2).c_str());
+			device[i].status = 0;
 			i++;
-
 		}
 		stmt->closeResultSet(Result);
 	}
@@ -122,12 +122,28 @@ int GetDeviceInfo()
 		return false;
 	}
 	CurrentExistDevice = i;
-//	for(;i<SignalMaxNum;i++)                //将剩下的信号机ID置成负数
-//	{
-//		SignalRealData[i].CrossID = -1;
-//	}
+	for(;i<DeviceMaxNum;i++)                //将剩下的信号机ID置成负数
+	{
+		device[i].id = -1;
+	}
 	return true;
 }
+int InitDeviceStatus()
+{
+	char sqlbuf[] = "update UNIT_CUR_STATE set CONTROL_MODE = 4";
+	try
+	{
+		stmt->execute(sqlbuf);
+		return true;
+	}
+	catch(SQLException &sqlExcp)
+	{
+		cout << " Error Number : "<< sqlExcp.getErrorCode() << endl; //获得异常代码
+		cout << sqlExcp.getMessage() << endl; //获得异常信息
+		return false;
+	}
+}
+
 
 int JudgeIsExist(char *sqlbuf)
 {

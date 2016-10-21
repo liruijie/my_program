@@ -37,5 +37,6 @@ using namespace std;
 #include "Queue.h"
 #include "CodeConvert.h"
 #include "CommunicateWithWeb.h"
+#include "CommunicateWithHiCON.h"
 
 #endif /* INCLUDE_H_ */

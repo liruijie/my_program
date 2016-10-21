@@ -165,11 +165,11 @@ void * UpdateStatus_Device(void *arg)
 {
 	int i,device_num;
 	time_t time_now;
-	char temp_buf[100];
-	char sqlbuf[] = "update table set name1 = :x1 where name3 = x2";
+	char sqlbuf[] = "update UNIT_CUR_STATE set CONTROL_MODE = :x1 ,DATA_UPDATE_TIME = to_date(:x2,'yyyy-mm-dd hh24:mi:ss')where UNIT_ID = :x3";
 	stmt_device->setSQL(sqlbuf);
 	stmt_device->setMaxIterations(CurrentExistDevice);
-	stmt_device->setMaxParamSize(1,30);
+	stmt_device->setMaxParamSize(1,sizeof(int));
+	stmt_device->setMaxParamSize(2,30);
 	stmt_device->setMaxParamSize(2,sizeof(int));
 
 	while(1)
@@ -180,31 +180,40 @@ void * UpdateStatus_Device(void *arg)
 			device_num = 0;
 			for(i = 0; i < CurrentExistDevice;i++)
 			{
-				if(device[i].status == 0)    //设备状态是离线，查询实时数据中的时间是否更新，如果已经更新就认为是在线
+				if(device[i].status == 0)    //设备状态是离线，判断最后上报时间是否更新，如果已经更新就认为是在线
 				{
 					if((time_now - device[i].last_report_time) < 5)
 					{
 						device[i].status = 1;
-						sprintf(temp_buf,"update ");
-						//stmt_device->execute(temp_buf);
-					}
-					else //设备状态确实是离线的
-					{
+						if(device_num != 0)
+							stmt_device->addIteration();
+						stmt_device->setInt(1,1);
+						stmt_device->setString(2,device[i].realdata.DeviceTime);
+						stmt_device->setInt(3,device[i].id);
+						device_num = device_num + 1;
 						continue;
 					}
 				}
-				else if((time_now - device[i].last_report_time) > 10) //设备状态是在线，但是已经10秒没有上报时间,认为已经离线
+				else  //设备状态是在线
 				{
-					device[i].status = 0;
-					sprintf(temp_buf,"update ");
-					//stmt_device->execute(temp_buf);
+					if(device_num != 0)
+						stmt_device->addIteration();
+					//但是已经10秒没有上报时间,认为已经离线
+					if((time_now - device[i].last_report_time) > 10)
+					{
+						device[i].status = 0;
+						stmt_device->setInt(1,4);
+					}
+					else			//设备状态是正常的
+					{
+						stmt_device->setInt(1,1);
+					}
+					stmt_device->setString(2,device[i].realdata.DeviceTime);
+					stmt_device->setInt(3,device[i].id);
+					device_num = device_num + 1;
 					continue;
 				}
-				if(device_num != 0)
-					stmt_device->addIteration();
-				stmt_device->setString(1,device[i].realdata.DeviceTime);
-				stmt_device->setInt(2,device[i].id);
-				device_num = device_num + 1;
+
 			}
 			if(device_num !=0 )
 				stmt_device->executeUpdate();
@@ -226,9 +235,6 @@ int Device_Time(unsigned char *buf)
 	int i = GetDeviceIndex(buf);
 	if(i < 0)
 		return false;
-	time_t _time_;
-	time(&_time_);
-	device[i].last_report_time = _time_;
 	time_t time_s = (buf[12]<<24) | (buf[13]<<16) | (buf[14]<<8) | buf[15];
 	struct tm *time_now = localtime(&time_s);
 	memset(device[i].realdata.DeviceTime,'\0',sizeof(device[i].realdata.DeviceTime));
@@ -240,44 +246,33 @@ int Device_DetectData(unsigned char *buf)
 	//char temp_buf[50];
 	//char temp_outbuf[100];
 	//int ret;
+	char sqlbuf[500];
+	ResultSet *Result;
+	char Record_ID[25];
 	int i =GetDeviceIndex(buf);
 	if(i < 0)
 		return false;
-	time_t time_now;
-	time(&time_now);
-	device[i].last_report_time = time_now;
-	int index = 12;
-	//7E 00 14 00 01 FF FF 00 02 40 01 01 07 D4 CB CD A8 31 30 35   08 BE A9 41 4B 53 38 38 37   04 31 30 30 31 4F DC 68 2E 01 01 04 00 01 01 00 03 4F DC 68 2E 6D 7D
 
-	//memcpy(device[i].realdata.line_number , buf + index + 1 , buf[index]);
-	//memset(temp_buf,'\0',sizeof(temp_buf));
-	//memset(temp_outbuf,'\0',sizeof(temp_outbuf));
-	//memcpy(temp_buf , buf + index + 1 , buf[index]);
-//	ret = code_convert((char *)"GBK",(char *)"UTF-8",temp_buf,buf[index],temp_outbuf,100);
-//	if(ret == 0)
-//		return false;
+	int index = 12;
+
 	memset(device[i].realdata.line_number,'\0',sizeof(device[i].realdata.line_number));
 	memcpy(device[i].realdata.line_number , buf + index + 1 , buf[index]);
 	index = index + buf[index] +1;
 
-	//memcpy(device[i].realdata.plate_number , buf + index + 1 , buf[index]);
-//	memset(temp_buf,'\0',sizeof(temp_buf));
-//	memset(temp_outbuf,'\0',sizeof(temp_outbuf));
-//	memcpy(temp_buf , buf + index + 1 , buf[index]);
-//	ret = code_convert((char *)"GBK",(char *)"UTF-8",temp_buf,buf[index],temp_outbuf,100);
-//	if(ret == 0)
-//		return false;
 	memset(device[i].realdata.plate_number,'\0',sizeof(device[i].realdata.plate_number));
 	memcpy(device[i].realdata.plate_number , buf + index + 1 , buf[index]);
 	index = index + buf[index] +1;
 
-	memcpy(device[i].realdata.RFID , buf + index + 1 , buf[index]);
-	index = index + buf[index] +1;
+	device[i].realdata.RFID = (buf[index]<<24) | (buf[index + 1]<<16) | (buf[index + 2]<<8) | buf[index + 3];
+	index = index +4;
 
 	device[i].realdata.detect_time = (buf[index]<<24) | (buf[index + 1]<<16) | (buf[index + 2]<<8) | buf[index + 3];
 	index = index + 4;
 
 	device[i].realdata.is_priority = buf[index];
+	index++;
+
+	device[i].realdata.priority_level = buf[index];
 	index++;
 
 	device[i].realdata.priority_time = buf[index];
@@ -289,25 +284,135 @@ int Device_DetectData(unsigned char *buf)
 	device[i].realdata.detect_direction = buf[index];
 	index++;
 
-	device[i].realdata.cross_number = (buf[index] << 8) | buf[index+1];
-	index += 2;
-
 	device[i].realdata.request_time = (buf[index]<<24) | (buf[index + 1]<<16) | (buf[index + 2]<<8) | buf[index + 3];
+	index= index + 4;
+	device[i].realdata.IsLeave = buf[index];
+
+
+	struct tm *request_time = gmtime( &(device[i].realdata.request_time));//(long *)
+	char time_buf[30];
+	sprintf(time_buf,"%d-%02d-%02d %02d:%02d:02%d",request_time->tm_year+1900,request_time->tm_mon+1,
+	request_time->tm_mday,request_time->tm_hour,request_time->tm_min,request_time->tm_sec);
+	sprintf(sqlbuf,"select RECORD_ID FROM REAL_TIME_REQUEST_INFO where RFID_ID = %ld",device[i].realdata.RFID);
+	try
+	{
+		Result = stmt_device->execute(sqlbuf);
+		if(Result->next() != 0)							//数据库中存在记录
+		{
+			sprintf(Record_ID,Result->getString(1).c_str());
+			stmt_device->closeResultSet(Result);
+			if(device[i].realdata.IsLeave == 0)		//数据库中存在记录，但是车辆已经离开检测范围，应该删除记录
+			{
+				sprintf(sqlbuf,"delete from REAL_TIME_REQUEST_INFO where RECORD_ID = %s",Record_ID);
+				stmt_device->execute(sqlbuf);
+				sprintf(sqlbuf,"delete from REAL_TIME_REQUEST where RECORD_ID = %s",Record_ID);
+				stmt_device->execute(sqlbuf);
+			}
+			else												//数据库中存在记录，但是车辆还在检测范围，应该更新记录
+			{
+				sprintf(sqlbuf,"update REAL_TIME_REQUEST_INFO set REQUEST_TIME = to_date('%s','yyyy-mm-dd hh24:mi:ss'),PRIORITY = %d,"
+						"CONTROL_BOARD_OUTPUT = %d,PRIORITY_TIME = %d,IS_PASS = %d,DIRECTION = %d where RECORD_ID = %s",
+						time_buf,device[i].realdata.priority_level,device[i].realdata.output_port,device[i].realdata.priority_time,
+						device[i].realdata.is_priority,device[i].realdata.detect_direction,Record_ID);
+				stmt_device->execute(sqlbuf);
+			}
+		}
+		else													//数据库中不存在记录，应该插入记录
+		{
+			time_t time_now;
+			time(&time_now);
+			sprintf(Record_ID,"%ld%010ld",time_now,device[i].realdata.RFID);
+			sprintf(sqlbuf,"insert into REAL_TIME_REQUEST(RECORD_ID,INTERSECTION_ID,REQUEST_TIME,PRIORITY,CONTROL_BOARD_OUTPUT,PRIORITY_TIME,IS_PASS,DIRECTION) "
+					"values(%s,%d,to_date('%s','yyyy-mm-dd hh24:mi:ss'),%d,%d,%d,%d,%d)",Record_ID,device[i].id,time_buf,device[i].realdata.priority_level,
+					device[i].realdata.output_port,device[i].realdata.priority_time,device[i].realdata.is_priority,device[i].realdata.detect_direction);
+			stmt_device->execute(sqlbuf);
+			request_time = gmtime( &(device[i].realdata.detect_time));
+			sprintf(time_buf,"%d-%02d-%02d %02d:%02d:02%d",request_time->tm_year+1900,request_time->tm_mon+1,
+									request_time->tm_mday,request_time->tm_hour,request_time->tm_min,request_time->tm_sec);
+			sprintf(sqlbuf,"insert into REAL_TIME_REQUEST_INFO(RECORD_ID,PLATE_ID,REQUEST_TIME,BUS_CLASS,RFID_ID) "
+							"values(%s,'%s',to_date('%s','yyyy-mm-dd hh24:mi:ss'),'%s',%d)",
+							Record_ID,device[i].realdata.plate_number,time_buf,device[i].realdata.line_number,device[i].realdata.RFID);
+			stmt_device->execute(sqlbuf);
+		}
+	}
+	catch (SQLException &sqlExcp)
+	{
+	   sqlExcp.getErrorCode();
+	   string strinfo=sqlExcp.getMessage();
+	   cout<<strinfo;
+	   return false;
+	}
 
 	return true;
 }
 
 int Device_Fault(unsigned char *buf)
 {
+	char sqlbuf[500];
+	ResultSet *Result;
+	char fault_id[30];
 	int i =GetDeviceIndex(buf);
 	if(i < 0)
 		return false;
-	time_t time_now;
-	time(&time_now);
-	device[i].last_report_time = time_now;
+	char time_buf[30];
+	char fault_info[100];
+	char recover_info[100];
 	device[i].realdata.fault_type = buf[12];
 	device[i].realdata.fault_number = (buf[13] << 8) | buf[14];
 	device[i].realdata.fault_time = (buf[15]<<24) | (buf[16]<<16) | (buf[17]<<8) | buf[18];
+	switch(device[i].realdata.fault_type)
+	{
+		case 0x02:
+			sprintf(fault_info,"检测器故障: %d",device[i].realdata.fault_number);
+			break;
+		case 0x03:
+			sprintf(fault_info,"主板zigbee故障",device[i].realdata.fault_number);
+			break;
+		case 0x04:
+			sprintf(fault_info,"从板zigbee故障: %d",device[i].realdata.fault_number);
+			break;
+		case 0x12:
+			sprintf(fault_info,"检测器故障: %d",device[i].realdata.fault_number);
+			sprintf(recover_info,"检测器故障恢复: %d",device[i].realdata.fault_number);
+			break;
+		case 0x13:
+			sprintf(fault_info,"主板zigbee故障",device[i].realdata.fault_number);
+			sprintf(recover_info,"主板zigbee故障恢复",device[i].realdata.fault_number);
+			break;
+		case 0x14:
+			sprintf(fault_info,"从板zigbee故障: %d",device[i].realdata.fault_number);
+			sprintf(recover_info,"从板zigbee故障恢复: %d",device[i].realdata.fault_number);
+			break;
+		default:
+			break;
+	}
+	struct tm *fault_time = gmtime( &(device[i].realdata.fault_time));
+	sprintf(time_buf,"%d-%02d-%02d %02d:%02d:02%d",fault_time->tm_year+1900,fault_time->tm_mon+1,
+			fault_time->tm_mday,fault_time->tm_hour,fault_time->tm_min,fault_time->tm_sec);
+	if(device[i].realdata.fault_type < 0x10)			//故障报文
+	{
+		sprintf(sqlbuf,"seletc ID from REAL_FAULT_RECORD where UNIT_ID = %d and FALT_TYPE = %d and FAULT_INFO = '%s'",device[i].id,device[i].realdata.fault_type,fault_info);
+		Result = stmt_device->execute(sqlbuf);
+		if(Result->next() != 0)
+		{
+			//sprintf(fault_id,Result->getString(1).c_str());
+			stmt_device->closeResultSet(Result);
+		}
+		else
+		{
+			sprintf(sqlbuf,"insert into REAL_FAULT_RECORD(UNIT_ID,FAULT_TIME,FALT_TYPE,FAULT_INFO) values(%d,to_date(%s,'yyyy-mm-dd hh24:mi:ss'),%d,%s)",
+																	device[i].id,time_buf,device[i].realdata.fault_type,fault_info);
+			stmt_device->execute(sqlbuf);
+		}
+	}
+	else														//故障恢复报文
+	{
+		sprintf(sqlbuf,"delete from REAL_FAULT_RECORD where UNIT_ID = %d and FALT_TYPE = %d and FAULT_INFO = '%s'",device[i].id,device[i].realdata.fault_type,fault_info);
+		stmt_device->execute(sqlbuf);
+		sprintf(sqlbuf,"insert into HIS_FAULT_RECORD(UNIT_ID,FAULT_TIME,FALT_TYPE,FAULT_INFO) values(%d,to_date(%s,'yyyy-mm-dd hh24:mi:ss'),%d,%s)",
+																	device[i].id,time_buf,device[i].realdata.fault_type,recover_info);
+		stmt_device->execute(sqlbuf);
+	}
 	return true;
 }
 /*
@@ -320,7 +425,12 @@ int GetDeviceIndex(unsigned char *buf)
 	for(i = 0; i< DeviceMaxNum; i++)
 	{
 		if(device_id == device[i].id)
+		{
+			time_t time_now;
+			time(&time_now);
+			device[i].last_report_time = time_now;
 			break;
+		}
 	}
 	if(i == DeviceMaxNum)
 		return -1;

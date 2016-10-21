@@ -21,21 +21,21 @@ struct DeviceRealData
 		char  DeviceTime[30];				//设备时间
 		char line_number[30];				//公交车次
 		char plate_number[30];				//车牌号
-		char RFID[10];							//RFID卡编号
-		unsigned long detect_time;			//检测时间
+		unsigned long RFID;							//RFID卡编号
+		long detect_time;			//检测时间
 		bool is_priority;						//是否优先：01 为优先（01为已优先，00为没优先）
 		char priority_level;					//优先级：01 （1~9）
 		unsigned char priority_time;		//优先时间：04 为优先4秒
 		int output_port;						//控制板输出端口：00 01 为1号端口
 		char detect_direction;				//检测方向：01 代表东方向（1代表东，2代表西，3代表南，4代表北）
-		int cross_number;						//路口编号：00 03
-		unsigned long request_time;		//请求时间：4F DC 68 2E 表示该报文的上报时间距1970年0时0分0秒的秒数为1339844654s
+		long int request_time;		//请求时间：4F DC 68 2E 表示该报文的上报时间距1970年0时0分0秒的秒数为1339844654s
+		unsigned char IsLeave;
 
 //		数据编号	故障类型	故障设备编号	时间信息
 //		0x01		1个字节		2字节			4个字节
 		char fault_type;						//故障类型
 		int fault_number;						//故障设备编号
-		unsigned long fault_time;			//时间信息
+		long fault_time;			//时间信息
 };
 /*
  * 读卡器设备信息
@@ -138,7 +138,14 @@ struct Device_CardInfo
 		unsigned char company[50];			//所属运营公司
 };
 
+struct HiCON_Info
+{
+		char user[20];
+		char passwd[20];
+		char ip[20];
+		int port;
 
+};
 
 
 

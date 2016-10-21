@@ -772,12 +772,12 @@ int Request_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 				_stmt->setMaxParamSize(2,sizeof(int));
 				_stmt->setMaxParamSize(3,sizeof(int));
 				_stmt->setMaxParamSize(4,sizeof(int));
-				_stmt->setMaxParamSize(5,100);
-				_stmt->setMaxParamSize(6,100);
-				_stmt->setMaxParamSize(7,100);
+				_stmt->setMaxParamSize(5,500);
+				_stmt->setMaxParamSize(6,500);
+				_stmt->setMaxParamSize(7,500);
 				_stmt->setMaxParamSize(8,sizeof(int));
 				int temp_t;
-				char temp_buf[10],temp_value[100];
+				char temp_buf[500],temp_value[100];
 				int temp_i;
 				for(temp_t = 0;temp_t < j;temp_t++)
 				{
@@ -1209,7 +1209,7 @@ int Set_DeviceSystemParam_0x04(int sockfd,struct sockaddr_in DeviceAddr,unsigned
 	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);
 	if( (recv_len>0 ) && (Rec_buf[12] == 0x00) )
 	{
-		GetDeviceInfo();
+		InitDeviceInfo();
 		_conn->terminateStatement(_stmt);
 		OraEnviroment->terminateConnection(_conn);
 		return true;

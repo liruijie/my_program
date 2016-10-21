@@ -18,12 +18,14 @@ int GetConfige();
 int main()
 {
 	//int ret;
-	GetConfige();
-	OCCI_Open();
-	GetDeviceInfo();
+	CommunicateWithHiCON();
+//	GetConfige();
+//	OCCI_Open();
+//	InitDeviceInfo();
+//	InitDeviceStatus();
 	//pthread_t pth_CommunicateWithDevice;
 	//ret = pthread_create(&pth_CommunicateWithDevice,NULL,NULL,NULL);
-
+	while(1);
 	return 0;
 }
 
