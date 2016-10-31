@@ -8,6 +8,7 @@
 #ifndef COMMUNICATEWITHDEVICE_H_
 #define COMMUNICATEWITHDEVICE_H_
 
+int CommunicateWithDevice();
 void * ReceiveData_Device(void *arg);
 void * ParsingData_Device(void *arg);
 void * UpdateStatus_Device(void *arg);

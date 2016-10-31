@@ -1,4 +1,7 @@
-oracle_username=atc
-oracle_password=atc
+oracle_username=busp
+oracle_password=busp
 oracle_connectstring=192.168.1.81:1521/oracle
 ITC_ServerIP=192.168.1.24
+HiCON_IP=192.168.1.55
+HiCON_Port=10010
+

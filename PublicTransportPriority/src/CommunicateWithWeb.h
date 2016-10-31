@@ -8,6 +8,7 @@
 #ifndef COMMUNICATEWITHWEB_H_
 #define COMMUNICATEWITHWEB_H_
 
+int CommunicateWithWeb();
 void * ReceiveData_Web(void *arg);
 void SendToWeb(struct sockaddr_in WebAddr,unsigned char *buf,int len);
 void ParsingData_Web(unsigned char *data,struct sockaddr_in WebAddr);

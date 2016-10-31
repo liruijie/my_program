@@ -9,8 +9,9 @@
 #define ORACLE_H_
 
 int OCCI_Open();
-int GetConnectFromPool(Connection *new_conn,Statement *new_stmt);
+int GetConnectFromPool(Connection **new_conn,Statement **new_stmt);
 int JudgeIsExist(char *sqlbuf);
+int InitSignalInfo();
 int InitDeviceInfo();
 int InitDeviceStatus();
 

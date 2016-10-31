@@ -9,10 +9,12 @@
 #define PUBLICDEFINE_H_
 
 #define DeviceMaxNum			1024
-#define SingleRecvMaxLen 	10000
-#define QueueNum 50000
+#define SingleRecvMaxLen 	5000
+#define QueueNum 10000
 #define CardMaxNum			5000
-
+#define SignalMaxNum			200
+#define SignalMaxPhase		64
+extern StatelessConnectionPool *pConnPool;
 /*
  * 设备实时状态
  */
@@ -23,7 +25,7 @@ struct DeviceRealData
 		char plate_number[30];				//车牌号
 		unsigned long RFID;							//RFID卡编号
 		long detect_time;			//检测时间
-		bool is_priority;						//是否优先：01 为优先（01为已优先，00为没优先）
+		int is_priority;						//是否优先：01 为优先（01为已优先，00为没优先）
 		char priority_level;					//优先级：01 （1~9）
 		unsigned char priority_time;		//优先时间：04 为优先4秒
 		int output_port;						//控制板输出端口：00 01 为1号端口
@@ -142,11 +144,52 @@ struct HiCON_Info
 {
 		char user[20];
 		char passwd[20];
-		char ip[20];
+		char ip[30];
 		int port;
 
 };
+extern struct HiCON_Info HiCON;
 
+struct Signal_Phase
+{
+		int red;			//当前是否红灯。1：是，0：否
+		int yellow;		//当前是否黄灯。1：是，0：否
+		int green;		//当前是否绿灯。1：是，0：否
+};
+struct Signal_Priority
+{
+		//公交优先请求发生时间
+		unsigned long time;
+
+		//公交优先号，取值范围 5 ~ 8
+		int PreemptNo;
+
+		//公交优先请求相位号，共8个相位，长度16，每2位代表一个相位号，取值 1 ~ 16
+		char PreemptPhaseNo[16];
+
+/*		公交优先类型，共8个相位，长度16，每2位代表一个相位的优先类型，每一个字节取值如下：
+ *		0-无优先申请，1-绿灯延长，
+ *		2-绿灯提前起亮，3-直接通过。
+ */
+		char PreemptType[16];
+
+//		公交优先时间，共8个相位，长度16，每2位代表一个相位的优先时间，每一个字节取值范围 0 ~ 255秒
+		char PreemptTime[16];
+};
+struct HiCON_Signal_Info
+{
+		int signal_id;											//信号机ID
+		int signal_status;									//信号机联机状态
+		int subscribe_signal_status;						//是否订阅信号机联机状态   0:否  1：是
+		int subscribe_phase_status;						//是否订阅信号机相位状态   0:否  1：是
+		int subscribe_priority_status;					//是否订阅信号机优先状态   0:否  1：是
+
+		int phases_count;										//报文中的相位个数
+		struct Signal_Phase phase[SignalMaxPhase];	//相位状态
+		int priority_count;									//报文中优先的个数
+		struct Signal_Priority	priority[255];			//优先信息
+};
+extern HiCON_Signal_Info Signal[SignalMaxNum];
 
 
 

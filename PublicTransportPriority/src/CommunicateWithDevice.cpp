@@ -14,19 +14,17 @@ extern int CurrentExistDevice;
 Connection *conn_device;
 Statement *stmt_device;
 
-void CommunicateWithDevice()
+int CommunicateWithDevice()
 {
 	int ret;
 
 	//init oracle link
 
-	ret = GetConnectFromPool(conn_device,stmt_device);
-	stmt_device->setAutoCommit(true);
+	ret = GetConnectFromPool(&conn_device,&stmt_device);
 	if(ret == false)
-		return;
-	//init queue
+		return false;
+	stmt_device->setAutoCommit(true);
 	InitQueue();
-	//creat receive pthread
 	pthread_t pth_receive_data;
 	ret = pthread_create(&pth_receive_data,NULL,ReceiveData_Device,NULL);
 	if(ret != 0)
@@ -50,6 +48,7 @@ void CommunicateWithDevice()
 		perror("Fail to create device updte status pthread\n");
 		exit(EXIT_FAILURE);
 	}
+	return true;
 }
 
 
@@ -63,6 +62,8 @@ void * ReceiveData_Device(void *arg)
 	char Rec_buf[SingleRecvMaxLen];
 	fd_set  Rec_fdSet;
 	int ret,numbytes;
+	cout << "receive device data pthread\n"<<endl;
+	prctl(PR_SET_NAME, (unsigned long)"ReceiveData_Device");
 	if ((sockfd_device = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
 	{
 		perror("fail to socket");
@@ -129,6 +130,8 @@ void * ReceiveData_Device(void *arg)
 void * ParsingData_Device(void *arg)
 {
 	unsigned char data[SingleRecvMaxLen];
+	cout << "parsing device data pthread \n"<<endl;
+	prctl(PR_SET_NAME, (unsigned long)"ParsingData_Device");
 	while(1)
 	{
 		if(IsQueueEmpty() ==  true)    //队列为空
@@ -163,15 +166,28 @@ void * ParsingData_Device(void *arg)
 
 void * UpdateStatus_Device(void *arg)
 {
+	Connection *conn_update;
+	Statement *stmt_update;
 	int i,device_num;
 	time_t time_now;
-	char sqlbuf[] = "update UNIT_CUR_STATE set CONTROL_MODE = :x1 ,DATA_UPDATE_TIME = to_date(:x2,'yyyy-mm-dd hh24:mi:ss')where UNIT_ID = :x3";
-	stmt_device->setSQL(sqlbuf);
-	stmt_device->setMaxIterations(CurrentExistDevice);
-	stmt_device->setMaxParamSize(1,sizeof(int));
-	stmt_device->setMaxParamSize(2,30);
-	stmt_device->setMaxParamSize(2,sizeof(int));
-
+	int ret;
+	ret = GetConnectFromPool(&conn_update,&stmt_update);
+	if(ret == false)
+		return (void *) 0;
+	stmt_update->setAutoCommit(true);
+	cout << "update device status pthread\n"<<endl;
+	prctl(PR_SET_NAME, (unsigned long)"UpdateStatus_Device");
+	char sqlbuf[] = "update UNIT_CUR_STAUS set CONTROL_MODE = :x1 ,DATA_UPDATE_TIME = sysdate,device_time = to_date(:x2,'yyyy-mm-dd hh24:mi:ss') where UNIT_ID = :x3";
+	stmt_update->setSQL(sqlbuf);
+	stmt_update->setMaxIterations(CurrentExistDevice);
+	stmt_update->setMaxParamSize(1,sizeof(int));
+	stmt_update->setMaxParamSize(2,30);
+	stmt_update->setMaxParamSize(3,sizeof(int));
+	char temp_buf[10];
+	char time_buf[30];
+	struct tm *fault_time;
+	ResultSet *Result;
+	char fault_id[30];
 	while(1)
 	{
 		time(&time_now);
@@ -186,43 +202,95 @@ void * UpdateStatus_Device(void *arg)
 					{
 						device[i].status = 1;
 						if(device_num != 0)
-							stmt_device->addIteration();
-						stmt_device->setInt(1,1);
-						stmt_device->setString(2,device[i].realdata.DeviceTime);
-						stmt_device->setInt(3,device[i].id);
+							stmt_update->addIteration();
+						sprintf(temp_buf,"1");
+						stmt_update->setString(1,temp_buf);
+						stmt_update->setString(2,device[i].realdata.DeviceTime);
+						sprintf(temp_buf,"%d",device[i].id);
+						stmt_update->setString(3,temp_buf);
 						device_num = device_num + 1;
+
+						//删除实时故障表里的故障数据   在历史故障表插入恢复信息
+						sprintf(sqlbuf,"select ID from REAL_FAULT_RECORD where UNIT_ID = %d and FAULT_TYPE = 1 and FAULT_INFO = '设备离线'",device[i].id);
+						Result = stmt_device->executeQuery(sqlbuf);
+						if(Result->next() != 0)
+						{
+
+							sprintf(sqlbuf,"delete from REAL_FAULT_RECORD where ID = %s ",Result->getString(1).c_str());
+							stmt_device->execute(sqlbuf);
+							stmt_device->closeResultSet(Result);
+							fault_time = localtime(&time_now);
+							sprintf(fault_id,"%ld%05d1700",time_now,device[i].id);
+							sprintf(time_buf,"%d-%02d-%02d %02d:%02d:%02d",fault_time->tm_year+1900,fault_time->tm_mon+1,
+													fault_time->tm_mday,fault_time->tm_hour,fault_time->tm_min,fault_time->tm_sec);
+							sprintf(sqlbuf,"insert into HIS_FAULT_RECORD(ID,UNIT_ID,update_time,FALT_TYPE,FAULT_INFO) values(%s,%d,to_date('%s','yyyy-mm-dd hh24:mi:ss'),17,'通讯恢复')",
+													fault_id,device[i].id,time_buf);
+							stmt_device->execute(sqlbuf);
+						}
 						continue;
 					}
 				}
 				else  //设备状态是在线
 				{
 					if(device_num != 0)
-						stmt_device->addIteration();
+						stmt_update->addIteration();
 					//但是已经10秒没有上报时间,认为已经离线
 					if((time_now - device[i].last_report_time) > 10)
 					{
 						device[i].status = 0;
-						stmt_device->setInt(1,4);
+						sprintf(temp_buf,"4");
+
+						//插入设备离线故障
+						try
+						{
+							sprintf(sqlbuf,"select ID from REAL_FAULT_RECORD where UNIT_ID = %d and FAULT_TYPE = 1 and FAULT_INFO = '设备离线'",device[i].id);
+							Result = stmt_device->executeQuery(sqlbuf);
+							if(Result->next() != 0)
+							{
+								stmt_device->closeResultSet(Result);
+							}
+							else
+							{
+								fault_time = localtime(&time_now);
+								sprintf(fault_id,"%ld%05d0100",time_now,device[i].id);
+								sprintf(time_buf,"%d-%02d-%02d %02d:%02d:%02d",fault_time->tm_year+1900,fault_time->tm_mon+1,
+										fault_time->tm_mday,fault_time->tm_hour,fault_time->tm_min,fault_time->tm_sec);
+								sprintf(sqlbuf,"insert into REAL_FAULT_RECORD(ID,UNIT_ID,FAULT_TIME,FAULT_TYPE,FAULT_INFO) values(%s,%d,to_date('%s','yyyy-mm-dd hh24:mi:ss'),1,'设备离线')",
+													fault_id,device[i].id,time_buf);
+								stmt_device->execute(sqlbuf);
+							}
+						}
+						catch(SQLException &Excp)
+						{
+							Excp.getErrorCode();
+							cout << Excp.getMessage() <<endl;
+							printf("%s\n",sqlbuf);
+							cout <<__FUNCTION__<< __LINE__ <<endl;
+						}
 					}
 					else			//设备状态是正常的
 					{
-						stmt_device->setInt(1,1);
+						sprintf(temp_buf,"1");
 					}
-					stmt_device->setString(2,device[i].realdata.DeviceTime);
-					stmt_device->setInt(3,device[i].id);
+					stmt_update->setString(1,temp_buf);
+					stmt_update->setString(2,device[i].realdata.DeviceTime);
+					sprintf(temp_buf,"%d",device[i].id);
+					stmt_update->setString(3,temp_buf);
 					device_num = device_num + 1;
 					continue;
 				}
-
 			}
 			if(device_num !=0 )
-				stmt_device->executeUpdate();
+			{
+				stmt_update->executeUpdate();
+			}
 		}
 		catch (SQLException &sqlExcp)
 		{
 		   sqlExcp.getErrorCode();
-		   string strinfo=sqlExcp.getMessage();
-		   cout<<strinfo;
+		   cout << sqlExcp.getMessage() <<endl;
+		   printf("%s\n",sqlbuf);
+		   cout <<__FUNCTION__<< __LINE__ <<endl;
 		}
 		sleep(1);
 	}
@@ -236,9 +304,9 @@ int Device_Time(unsigned char *buf)
 	if(i < 0)
 		return false;
 	time_t time_s = (buf[12]<<24) | (buf[13]<<16) | (buf[14]<<8) | buf[15];
-	struct tm *time_now = localtime(&time_s);
+	struct tm *time_now = gmtime(&time_s);
 	memset(device[i].realdata.DeviceTime,'\0',sizeof(device[i].realdata.DeviceTime));
-	sprintf(device[i].realdata.DeviceTime,"%d-%02d-%02d %02d:%02d:%02d",time_now->tm_year+1900,time_now->tm_mon+1,time_now->tm_yday,time_now->tm_hour,time_now->tm_min,time_now->tm_sec);
+	sprintf(device[i].realdata.DeviceTime,"%d-%02d-%02d %02d:%02d:%02d",time_now->tm_year+1900,time_now->tm_mon+1,time_now->tm_mday,time_now->tm_hour,time_now->tm_min,time_now->tm_sec);
 	return true;
 }
 int Device_DetectData(unsigned char *buf)
@@ -291,27 +359,27 @@ int Device_DetectData(unsigned char *buf)
 
 	struct tm *request_time = gmtime( &(device[i].realdata.request_time));//(long *)
 	char time_buf[30];
-	sprintf(time_buf,"%d-%02d-%02d %02d:%02d:02%d",request_time->tm_year+1900,request_time->tm_mon+1,
+	sprintf(time_buf,"%d-%02d-%02d %02d:%02d:%02d",request_time->tm_year+1900,request_time->tm_mon+1,
 	request_time->tm_mday,request_time->tm_hour,request_time->tm_min,request_time->tm_sec);
-	sprintf(sqlbuf,"select RECORD_ID FROM REAL_TIME_REQUEST_INFO where RFID_ID = %ld",device[i].realdata.RFID);
+	sprintf(sqlbuf,"select RECORD_ID FROM REAL_TIME_REQUEST_INFO where RFID_ID = '%ld'",device[i].realdata.RFID);
 	try
 	{
-		Result = stmt_device->execute(sqlbuf);
+		Result = stmt_device->executeQuery(sqlbuf);
 		if(Result->next() != 0)							//数据库中存在记录
 		{
 			sprintf(Record_ID,Result->getString(1).c_str());
 			stmt_device->closeResultSet(Result);
 			if(device[i].realdata.IsLeave == 0)		//数据库中存在记录，但是车辆已经离开检测范围，应该删除记录
 			{
-				sprintf(sqlbuf,"delete from REAL_TIME_REQUEST_INFO where RECORD_ID = %s",Record_ID);
+				sprintf(sqlbuf,"delete from REAL_TIME_REQUEST_INFO where RECORD_ID = '%s'",Record_ID);
 				stmt_device->execute(sqlbuf);
-				sprintf(sqlbuf,"delete from REAL_TIME_REQUEST where RECORD_ID = %s",Record_ID);
+				sprintf(sqlbuf,"delete from REAL_TIME_REQUEST where RECORD_ID = '%s'",Record_ID);
 				stmt_device->execute(sqlbuf);
 			}
 			else												//数据库中存在记录，但是车辆还在检测范围，应该更新记录
 			{
-				sprintf(sqlbuf,"update REAL_TIME_REQUEST_INFO set REQUEST_TIME = to_date('%s','yyyy-mm-dd hh24:mi:ss'),PRIORITY = %d,"
-						"CONTROL_BOARD_OUTPUT = %d,PRIORITY_TIME = %d,IS_PASS = %d,DIRECTION = %d where RECORD_ID = %s",
+				sprintf(sqlbuf,"update REAL_TIME_REQUEST set REQUEST_TIME = to_date('%s','yyyy-mm-dd hh24:mi:ss'),PRIORITY = '%d',"
+						"CONTROL_BOARD_OUTPUT = '%d',PRIORITY_TIME = '%d',IS_PASS = '%d',DIRECTION = '%d' where RECORD_ID = '%s'",
 						time_buf,device[i].realdata.priority_level,device[i].realdata.output_port,device[i].realdata.priority_time,
 						device[i].realdata.is_priority,device[i].realdata.detect_direction,Record_ID);
 				stmt_device->execute(sqlbuf);
@@ -321,16 +389,17 @@ int Device_DetectData(unsigned char *buf)
 		{
 			time_t time_now;
 			time(&time_now);
+			//记录ID为当前时间+10位卡号
 			sprintf(Record_ID,"%ld%010ld",time_now,device[i].realdata.RFID);
 			sprintf(sqlbuf,"insert into REAL_TIME_REQUEST(RECORD_ID,INTERSECTION_ID,REQUEST_TIME,PRIORITY,CONTROL_BOARD_OUTPUT,PRIORITY_TIME,IS_PASS,DIRECTION) "
-					"values(%s,%d,to_date('%s','yyyy-mm-dd hh24:mi:ss'),%d,%d,%d,%d,%d)",Record_ID,device[i].id,time_buf,device[i].realdata.priority_level,
+					"values('%s',%d,to_date('%s','yyyy-mm-dd hh24:mi:ss'),'%d','%d','%d','%d','%d')",Record_ID,device[i].id,time_buf,device[i].realdata.priority_level,
 					device[i].realdata.output_port,device[i].realdata.priority_time,device[i].realdata.is_priority,device[i].realdata.detect_direction);
 			stmt_device->execute(sqlbuf);
 			request_time = gmtime( &(device[i].realdata.detect_time));
-			sprintf(time_buf,"%d-%02d-%02d %02d:%02d:02%d",request_time->tm_year+1900,request_time->tm_mon+1,
+			sprintf(time_buf,"%d-%02d-%02d %02d:%02d:%02d",request_time->tm_year+1900,request_time->tm_mon+1,
 									request_time->tm_mday,request_time->tm_hour,request_time->tm_min,request_time->tm_sec);
 			sprintf(sqlbuf,"insert into REAL_TIME_REQUEST_INFO(RECORD_ID,PLATE_ID,REQUEST_TIME,BUS_CLASS,RFID_ID) "
-							"values(%s,'%s',to_date('%s','yyyy-mm-dd hh24:mi:ss'),'%s',%d)",
+							"values('%s','%s',to_date('%s','yyyy-mm-dd hh24:mi:ss'),'%s','%ld')",
 							Record_ID,device[i].realdata.plate_number,time_buf,device[i].realdata.line_number,device[i].realdata.RFID);
 			stmt_device->execute(sqlbuf);
 		}
@@ -340,6 +409,8 @@ int Device_DetectData(unsigned char *buf)
 	   sqlExcp.getErrorCode();
 	   string strinfo=sqlExcp.getMessage();
 	   cout<<strinfo;
+	   puts(sqlbuf);
+	   cout <<__FUNCTION__<< __LINE__ <<endl;
 	   return false;
 	}
 
@@ -351,6 +422,8 @@ int Device_Fault(unsigned char *buf)
 	char sqlbuf[500];
 	ResultSet *Result;
 	char fault_id[30];
+	time_t time_now;
+	bool IsFaultExist = false;
 	int i =GetDeviceIndex(buf);
 	if(i < 0)
 		return false;
@@ -362,57 +435,80 @@ int Device_Fault(unsigned char *buf)
 	device[i].realdata.fault_time = (buf[15]<<24) | (buf[16]<<16) | (buf[17]<<8) | buf[18];
 	switch(device[i].realdata.fault_type)
 	{
+		case 0x12:
+			sprintf(recover_info,"检测器故障恢复: %d",device[i].realdata.fault_number);
 		case 0x02:
 			sprintf(fault_info,"检测器故障: %d",device[i].realdata.fault_number);
 			break;
+
+		case 0x13:
+			sprintf(recover_info,"主板zigbee故障恢复");
 		case 0x03:
-			sprintf(fault_info,"主板zigbee故障",device[i].realdata.fault_number);
+			sprintf(fault_info,"主板zigbee故障");
 			break;
+
+		case 0x14:
+			sprintf(recover_info,"从板zigbee故障恢复: %d",device[i].realdata.fault_number);
 		case 0x04:
 			sprintf(fault_info,"从板zigbee故障: %d",device[i].realdata.fault_number);
 			break;
-		case 0x12:
-			sprintf(fault_info,"检测器故障: %d",device[i].realdata.fault_number);
-			sprintf(recover_info,"检测器故障恢复: %d",device[i].realdata.fault_number);
-			break;
-		case 0x13:
-			sprintf(fault_info,"主板zigbee故障",device[i].realdata.fault_number);
-			sprintf(recover_info,"主板zigbee故障恢复",device[i].realdata.fault_number);
-			break;
-		case 0x14:
-			sprintf(fault_info,"从板zigbee故障: %d",device[i].realdata.fault_number);
-			sprintf(recover_info,"从板zigbee故障恢复: %d",device[i].realdata.fault_number);
-			break;
+
 		default:
-			break;
+			return false;
 	}
+	time(&time_now);
+	//故障id 为  时间+5位信号机ID+2位故障类型+2位故障编号
+	sprintf(fault_id,"%ld%05d%02d%02d",time_now,device[i].id,device[i].realdata.fault_type,device[i].realdata.fault_number);
 	struct tm *fault_time = gmtime( &(device[i].realdata.fault_time));
-	sprintf(time_buf,"%d-%02d-%02d %02d:%02d:02%d",fault_time->tm_year+1900,fault_time->tm_mon+1,
+	sprintf(time_buf,"%d-%02d-%02d %02d:%02d:%02d",fault_time->tm_year+1900,fault_time->tm_mon+1,
 			fault_time->tm_mday,fault_time->tm_hour,fault_time->tm_min,fault_time->tm_sec);
-	if(device[i].realdata.fault_type < 0x10)			//故障报文
+
+	//先判断实时故障表是否有相同故障
+	try
 	{
-		sprintf(sqlbuf,"seletc ID from REAL_FAULT_RECORD where UNIT_ID = %d and FALT_TYPE = %d and FAULT_INFO = '%s'",device[i].id,device[i].realdata.fault_type,fault_info);
-		Result = stmt_device->execute(sqlbuf);
+		sprintf(sqlbuf,"select ID from REAL_FAULT_RECORD where UNIT_ID = %d and FAULT_TYPE = %d and FAULT_INFO = '%s'",device[i].id,(device[i].realdata.fault_type & 0x0F),fault_info);
+		Result = stmt_device->executeQuery(sqlbuf);
 		if(Result->next() != 0)
 		{
-			//sprintf(fault_id,Result->getString(1).c_str());
+			//数据库中存在相同故障
 			stmt_device->closeResultSet(Result);
+			IsFaultExist = true;
 		}
-		else
+
+		if(device[i].realdata.fault_type < 0x10)			//故障报文
 		{
-			sprintf(sqlbuf,"insert into REAL_FAULT_RECORD(UNIT_ID,FAULT_TIME,FALT_TYPE,FAULT_INFO) values(%d,to_date(%s,'yyyy-mm-dd hh24:mi:ss'),%d,%s)",
-																	device[i].id,time_buf,device[i].realdata.fault_type,fault_info);
-			stmt_device->execute(sqlbuf);
+			// 有就不不处理  没有就插入
+			if(IsFaultExist == false)
+			{
+				sprintf(sqlbuf,"insert into REAL_FAULT_RECORD(ID,UNIT_ID,FAULT_TIME,FAULT_TYPE,FAULT_INFO) values(%s,%d,to_date('%s','yyyy-mm-dd hh24:mi:ss'),%d,'%s')",
+									fault_id,device[i].id,time_buf,device[i].realdata.fault_type,fault_info);
+				stmt_device->execute(sqlbuf);
+			}
+		}
+		else														//故障恢复报文
+		{
+			//实时故障表里有故障
+			if(IsFaultExist == true)
+			{
+				//删除实时故障表里的故障数据   在历史故障表插入恢复信息
+				sprintf(sqlbuf,"delete from REAL_FAULT_RECORD where UNIT_ID = %d and FAULT_TYPE = %d and FAULT_INFO = '%s'",device[i].id,(device[i].realdata.fault_type & 0x0F),fault_info);
+				stmt_device->execute(sqlbuf);
+
+				sprintf(sqlbuf,"insert into HIS_FAULT_RECORD(ID,UNIT_ID,UPDATE_TIME,FALT_TYPE,FAULT_INFO) values(%s,%d,to_date('%s','yyyy-mm-dd hh24:mi:ss'),%d,'%s')",
+										fault_id,device[i].id,time_buf,device[i].realdata.fault_type,recover_info);
+				stmt_device->execute(sqlbuf);
+			}
 		}
 	}
-	else														//故障恢复报文
+	catch (SQLException &sqlExcp)
 	{
-		sprintf(sqlbuf,"delete from REAL_FAULT_RECORD where UNIT_ID = %d and FALT_TYPE = %d and FAULT_INFO = '%s'",device[i].id,device[i].realdata.fault_type,fault_info);
-		stmt_device->execute(sqlbuf);
-		sprintf(sqlbuf,"insert into HIS_FAULT_RECORD(UNIT_ID,FAULT_TIME,FALT_TYPE,FAULT_INFO) values(%d,to_date(%s,'yyyy-mm-dd hh24:mi:ss'),%d,%s)",
-																	device[i].id,time_buf,device[i].realdata.fault_type,recover_info);
-		stmt_device->execute(sqlbuf);
+	   sqlExcp.getErrorCode();
+	   cout<<sqlExcp.getMessage();
+	   printf("%s\n",sqlbuf);
+	   cout <<__FUNCTION__<< __LINE__ <<endl;
+	   return false;
 	}
+
 	return true;
 }
 /*

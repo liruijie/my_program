@@ -24,7 +24,14 @@
 #include <sys/wait.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <sys/prctl.h>
 
+#include <libxml/parser.h>
+#include <libxml/xmlreader.h>
+#include <libxml/tree.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlerror.h>
+#include <libxml/xpath.h>
 #include <occi.h>
 #include "iconv.h"
 
@@ -38,5 +45,6 @@ using namespace std;
 #include "CodeConvert.h"
 #include "CommunicateWithWeb.h"
 #include "CommunicateWithHiCON.h"
+
 
 #endif /* INCLUDE_H_ */

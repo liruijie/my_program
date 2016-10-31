@@ -16,17 +16,21 @@ struct web_message_info
 		unsigned char RecvBuf[SingleRecvMaxLen];
 		struct sockaddr_in WebServerAddr;
 };
-void CommunicateWithWeb()
+
+
+
+int CommunicateWithWeb()
 {
 	int ret;
 	pthread_t pth_receive_data;
-	pthread_mutex_init(&WebSend_Mutex,NULL);		//初始化更新实时数据时用的互斥锁
+	pthread_mutex_init(&WebSend_Mutex,NULL);
 	ret = pthread_create(&pth_receive_data,NULL,ReceiveData_Web,NULL);
 	if(ret != 0)
 	{
 		perror("Fail to create device receive data pthread\n");
 		exit(EXIT_FAILURE);
 	}
+	return true;
 }
 void * ReceiveData_Web(void *arg)
 {
@@ -36,7 +40,9 @@ void * ReceiveData_Web(void *arg)
 	int ret,numbytes;
 	unsigned char recvbuf[SingleRecvMaxLen];
 	int sin_size_1=sizeof(struct sockaddr_in);
-	cout <<"creat ReceiveData_Web pthread"<<endl;
+	cout <<"creat ReceiveData_Web pthread\n"<<endl;
+	prctl(PR_SET_NAME, (unsigned long)"ReceiveData_Web");
+
 	if ((WebSockfd = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
 	{
 		perror("fail to socket");
@@ -87,7 +93,7 @@ void * ReceiveData_Web(void *arg)
 			{
 				continue;
 			}
-			else if(numbytes >7)           //头   长度_H   长度_L   校验    尾         至少5个
+			else if(numbytes >7)
 			{
 				recvbuf[numbytes] = '\0';
 				if( check_buf( recvbuf ) == true)
@@ -117,15 +123,20 @@ void ParsingData_Web(unsigned char *data,struct sockaddr_in WebAddr)
 	if(i < 0)
 		return ;
 	pthread_t pth_handle;
+	pthread_attr_t attr;
+	int detachstate;
+	pthread_attr_init(&attr);
+	pthread_attr_getdetachstate(&attr,&detachstate);
+	if(detachstate==PTHREAD_CREATE_JOINABLE)
+	{
+		pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);//设置为线程分离属性设置为分离
+	}
 	struct web_message_info *web_message = (struct web_message_info *)malloc(sizeof(web_message_info));
 	memcpy(web_message->RecvBuf,data,SingleRecvMaxLen);
 	web_message->WebServerAddr = WebAddr;
-	int ret = pthread_create(&pth_handle,NULL,Handle_Pthread,web_message);
-	if(ret != 0)
-	{
-		printf("Fail to create parse web data pthread::file=%s,line=%d\n",__FILE__,__LINE__);
-		return;
-	}
+	pthread_create(&pth_handle,&attr,Handle_Pthread,web_message);
+	pthread_attr_destroy(&attr);					//回收分配给属性的资源
+
 }
 
 /*
@@ -134,13 +145,14 @@ void ParsingData_Web(unsigned char *data,struct sockaddr_in WebAddr)
 void * Handle_Pthread(void *arg)
 {
 	unsigned char data[SingleRecvMaxLen];
+	pthread_detach(pthread_self());
 	struct web_message_info web_message = *(struct web_message_info *)arg;
 	memcpy(&web_message,arg,sizeof(web_message_info));
 	free(arg);
 	struct sockaddr_in WebAddr = web_message.WebServerAddr;
 	memcpy(data,web_message.RecvBuf,SingleRecvMaxLen);
-	pthread_detach(pthread_self());
-	printf("Web pthread ,addr:%s,port:%d",inet_ntoa(WebAddr.sin_addr),ntohs(WebAddr.sin_port));
+
+	printf("Web pthread ,addr:%s,port:%d\n",inet_ntoa(WebAddr.sin_addr),ntohs(WebAddr.sin_port));
 	int udp_sockfd;
 	struct sockaddr_in DeviceAddr;
 	int CrossID = (data[7] << 8) | data[8];
@@ -228,20 +240,20 @@ void * Handle_Pthread(void *arg)
 				case 0x08:  //车辆信息表
 					ret = Set_DeviceCard_0x08(udp_sockfd,DeviceAddr,data);
 					break;
+				case 0x09:	//设置时间
+					ret = Set_DeviceTime(udp_sockfd,CrossID, DeviceAddr);
+					break;
+				case 0x0A:	//重启设备
+					ret = Se_tDeviceReboot(udp_sockfd,CrossID,DeviceAddr);
+					break;
+				case 0x0B:	//设置优先
+					ret = Se_tDevicePriority(udp_sockfd,DeviceAddr,data);
+					break;
 				default:
 					break;
 			}
 			break;
 		}
-		case 0x09:
-			ret = Set_DeviceTime(udp_sockfd,CrossID, DeviceAddr);
-			break;
-		case 0x0A:
-			ret = Se_tDeviceReboot(udp_sockfd,CrossID,DeviceAddr);
-			break;
-		case 0x0B:
-			ret = Se_tDevicePriority(udp_sockfd,DeviceAddr,data);
-			break;
 		default:
 			break;
 	}
@@ -258,7 +270,7 @@ report_result:
 	}
 	reply_buf[13] = makecheck(reply_buf);
 	SendToWeb(WebAddr,reply_buf,sizeof(reply_buf));
-	return (void * ) 0;
+	pthread_exit((void * ) 0 );
 }
 
 
@@ -276,7 +288,7 @@ int Request_DeviceParam_0x03(int sockfd,struct sockaddr_in DeviceAddr,unsigned c
 	int recv_len,i;
 	int j = 0;				//结构体下标
 
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("查询设备参数,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
@@ -350,7 +362,7 @@ int Request_DeviceParam_0x03(int sockfd,struct sockaddr_in DeviceAddr,unsigned c
 			{
 				try
 				{
-					_conn->cancel();
+					_conn->rollback();
 				}
 				catch(SQLException &sqlExcp1)
 				{
@@ -383,7 +395,7 @@ int Request_DeviceSystemParam_0x04(int sockfd,struct sockaddr_in DeviceAddr,unsi
 	int CrossID = ( send_data[7] << 8 ) | send_data[8];
 	char sqlbuf[500];
 	int recv_len;
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("查询设备系统信息,连接数据库失败,cross_id = %d\n",CrossID);
 		return false;
@@ -442,7 +454,7 @@ int Request_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 	int recv_len,i;
 	int j = 0;				//结构体下标
 
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("查询设备策略时间表,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
@@ -599,7 +611,7 @@ int Request_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,uns
 	int recv_len,i;
 	int j = 0;				//结构体下标
 
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("查询设备策略时间表,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
@@ -729,7 +741,7 @@ int Request_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 	int recv_len,i;
 	int j = 0;				//结构体下标
 
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("查询设备调度表,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
@@ -829,7 +841,7 @@ int Request_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 			{
 				try
 				{
-					_conn->cancel();
+					_conn->rollback();
 				}
 				catch(SQLException &sqlExcp1)
 				{
@@ -863,9 +875,9 @@ int Request_DeviceCard_0x08(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 	int recv_len,i;
 	int j = 0;				//结构体下标
 
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
-		printf("查询设备调度表,连接数据库失败,cross_id= %d\n",CrossID);
+		printf("查询车辆信息表,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
 	}
 	_stmt->setAutoCommit(false);
@@ -974,7 +986,7 @@ _receive_loop:
 		{
 			try
 			{
-				_conn->cancel();
+				_conn->rollback();
 			}
 			catch(SQLException &sqlExcp1)
 			{
@@ -989,7 +1001,7 @@ _receive_loop:
 _error:
 	_conn->terminateStatement(_stmt);
 	OraEnviroment->terminateConnection(_conn);
-	printf("查询设备调度表失败,cross_id= %d\n",CrossID);
+	printf("查询车辆信息表失败,cross_id= %d\n",CrossID);
 	return false;
 }
 /*
@@ -1008,7 +1020,7 @@ int Set_DeviceParam_0x03(int sockfd,struct sockaddr_in DeviceAddr,unsigned char 
 	int recv_len,i;
 	int j = 0;				//结构体下标
 
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("设置设备参数,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
@@ -1041,6 +1053,7 @@ int Set_DeviceParam_0x03(int sockfd,struct sockaddr_in DeviceAddr,unsigned char 
 	}
 	if(j == 0)
 		goto _error;
+	memset(send_buf,'\0',SingleRecvMaxLen);
 	memcpy(send_buf,web_data,11);
 	send_buf[11] = (j & 0xFF);
 	i = 12;
@@ -1093,7 +1106,7 @@ int Set_DeviceSystemParam_0x04(int sockfd,struct sockaddr_in DeviceAddr,unsigned
 	char sqlbuf[500];
 	int recv_len,i;
 
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("设置设备系统参数,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
@@ -1237,7 +1250,7 @@ int Set_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 	int recv_len,i;
 	int j = 0;				//结构体下标
 	char strategy_id = 0;
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("设置优先策略,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
@@ -1276,6 +1289,7 @@ int Set_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 	}
 	if(j == 0)
 		goto _error;
+	memset(send_buf,'\0',SingleRecvMaxLen);
 	memcpy(send_buf,web_data,11);
 	send_buf[11] = 0;
 	i = 12;
@@ -1347,7 +1361,7 @@ int Set_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 	int j = 0;				//结构体下标
 
 	int timetable_id=0;
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("设置设备策略时间表,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
@@ -1377,9 +1391,12 @@ int Set_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 	}
 	if(j == 0)
 		goto _error;
-	i = 12;
+
 	int temp_i;
 	unsigned char *time_id_count;
+	memset(send_buf,'\0',SingleRecvMaxLen);
+	memcpy(send_buf,web_data,11);
+	i = 12;
 	for(temp_i = 0; temp_i < j; temp_i++)
 	{
 		if(timetable_id != StrategyTime[temp_i].time_table_id)
@@ -1434,7 +1451,7 @@ int Set_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 	int recv_len,i;
 	int j = 0;				//结构体下标
 
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("设置设备调度表,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
@@ -1506,12 +1523,15 @@ int Set_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 	}
 	if(j == 0)
 		goto _error;
-	memcpy(send_buf,web_data,11);
-	send_buf[11] = (j & 0xFF);
-	i = 12;
+
 	int temp_i;
 	for(temp_i = 0; temp_i < j; temp_i++)
 	{
+
+		memset(send_buf,'\0',SingleRecvMaxLen);
+		memcpy(send_buf,web_data,11);
+		send_buf[11] = (j & 0xFF);
+		i = 12;
 		send_buf[i++] = schedule[temp_i].id;
 		send_buf[i++] = schedule[temp_i].type;
 		send_buf[i++] = schedule[temp_i].priority_level;
@@ -1558,7 +1578,7 @@ int Set_DeviceCard_0x08(int sockfd,struct sockaddr_in DeviceAddr,unsigned char *
 	int recv_len,i;
 	int j = 0;				//结构体下标
 
-	if(GetConnectFromPool(_conn,_stmt) == false)
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("设置设备调度表,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
@@ -1569,7 +1589,7 @@ int Set_DeviceCard_0x08(int sockfd,struct sockaddr_in DeviceAddr,unsigned char *
 	struct tm timeinfo;
 	try
 	{
-		sprintf(sqlbuf,"select CARD_ID, BUS_CLASS, BUS_PLATE, PLATE_COLOR, INSTALL_TIME, COMPANY, CAR_PRIORITY from BUSP_CARD");
+		sprintf(sqlbuf,"select CARD_ID, BUS_CLASS, BUS_PLATE, PLATE_COLOR, to_char(INSTALL_TIME,'yyyy-mm-dd hh24:mi:ss'), COMPANY, CAR_PRIORITY from BUSP_CARD");
 		Result = _stmt->executeQuery(sqlbuf);
 		while(Result->next()!=0)
 		{
@@ -1581,11 +1601,13 @@ int Set_DeviceCard_0x08(int sockfd,struct sockaddr_in DeviceAddr,unsigned char *
 			if (strptime(temp_buf, time_fmt, &timeinfo) != NULL)
 			{
 				card[j].install_time = mktime(&timeinfo);
+
 			}
 			else
 			{
 				time((long int *) &(card[j].install_time));
 			}
+			card[j].install_time = card[j].install_time + (8 * 60 *60);
 			sprintf((char *)card[j].company,Result->getString(6).c_str());
 			card[j].threshold = Result->getInt(7);
 			j++;
@@ -1602,15 +1624,18 @@ int Set_DeviceCard_0x08(int sockfd,struct sockaddr_in DeviceAddr,unsigned char *
 	if(j == 0)
 		goto _error;
 
-	i = 12;
+
 	int temp_i,temp_j;
 	for(temp_i = 0; temp_i < j; temp_i++)
 	{
+		i = 12;
 		memset(send_buf,'\0',SingleRecvMaxLen);
 		memcpy(send_buf,web_data,11);
 		send_buf[11] = (temp_i & 0xFF);
+		send_buf[i++] = (j & 0x0FF00)>>8;
 		send_buf[i++] = (j & 0xFF);
-		send_buf[i++] = temp_i+1;
+		send_buf[i++] = ((temp_i+1)& 0x0FF00)>>8;
+		send_buf[i++] = ((temp_i+1)& 0xFF);
 		send_buf[i++] = (card[temp_i].RFID & 0xFF000000) >> 24;
 		send_buf[i++] = (card[temp_i].RFID & 0xFF0000)>>16;
 		send_buf[i++] = (card[temp_i].RFID & 0xFF00) >> 8;
@@ -1622,10 +1647,13 @@ int Set_DeviceCard_0x08(int sockfd,struct sockaddr_in DeviceAddr,unsigned char *
 		}
 		send_buf[i++] = card[temp_i].plate_color;
 		send_buf[i++] = card[temp_i].threshold;
+
 		send_buf[i++] = (card[temp_i].install_time & 0xFF000000) >> 24;
 		send_buf[i++] = (card[temp_i].install_time & 0xFF0000)>>16;
 		send_buf[i++] = (card[temp_i].install_time & 0xFF00) >> 8;
 		send_buf[i++] = (card[temp_i].install_time & 0xFF);
+//		struct tm *temp_time = localtime((long *)&(card[temp_i].install_time));
+//		printf("%d-%02d-%02d %02d:%02d:%02d\n",temp_time->tm_year+1900,temp_time->tm_mon+1,temp_time->tm_mday,temp_time->tm_hour,temp_time->tm_min,temp_time->tm_sec);
 		send_buf[i++] = strlen((char *)card[temp_i].line_num);
 		for(temp_j = 0;temp_j< (int)strlen((char *)card[temp_i].line_num);temp_j++)
 		{
@@ -1663,11 +1691,12 @@ _error:
 int Set_DeviceTime(int sockfd,int CrossID,struct sockaddr_in DeviceAddr)
 {
 	//0x7E	2字节	2字节	2字节	2字节	0x20	0x09	0x00	4字节	1字节	0x7D
-	unsigned char Rec_buf[30];
+	unsigned char Rec_buf[SingleRecvMaxLen];
 	int recv_len;
 	unsigned char buf[18] = {0x7E,0x00,0x10,0x00,0x01,0xFF,0xFF,0x00,0x00,0x20,0x09,0x00,0x00,0x00,0x00,0x00,0x00,0x7D};
 	time_t time_now;
 	time(&time_now);
+	time_now = time_now + (8*60*60);				//设备中的时区为0时区   为了让上报的时间和现实一致  所以下发是要加上8个小时
 	buf[7] = (CrossID & 0xFF00)>>8;
 	buf[8] = (CrossID & 0xFF);
 	buf[12] = (time_now & 0xFF000000) >> 24;
@@ -1682,17 +1711,14 @@ int Set_DeviceTime(int sockfd,int CrossID,struct sockaddr_in DeviceAddr)
 	{
 		return true;
 	}
-	else
-	{
-		return false;
-	}
 
+	return false;
 }
 
 int Se_tDeviceReboot(int sockfd,int CrossID,struct sockaddr_in DeviceAddr)
 {
 	//0x7E	2字节	2字节	2字节	2字节	0x20	0x09	0x00	4字节	1字节	0x7D
-	unsigned char Rec_buf[30];
+	unsigned char Rec_buf[SingleRecvMaxLen];
 	int recv_len;
 	unsigned char buf[15] = {0x7E,0x00,0x0D,0x00,0x01,0xFF,0xFF,0x00,0x00,0x20,0x0A,0x00,0x00,0x00,0x7D};
 	buf[7] = (CrossID & 0xFF00)>>8;
@@ -1713,7 +1739,7 @@ int Se_tDeviceReboot(int sockfd,int CrossID,struct sockaddr_in DeviceAddr)
 
 int Se_tDevicePriority(int sockfd,struct sockaddr_in DeviceAddr,unsigned char * send_data)
 {
-	unsigned char Rec_buf[30];
+	unsigned char Rec_buf[SingleRecvMaxLen];
 	int recv_len;
 	sendto(sockfd, send_data, ((( send_data[1] << 8 ) | send_data[2])+2), 0, (struct sockaddr *)&DeviceAddr, sizeof(struct sockaddr));
 	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);

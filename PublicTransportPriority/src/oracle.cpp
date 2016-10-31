@@ -56,10 +56,11 @@ int OCCI_Open()
                sqlExcp.getErrorCode();
                string strinfo=sqlExcp.getMessage();
                cout<<strinfo;
+               printf("oracle open fail\n");
+					sleep(1);
                return false;
             }
-			printf("oracle open fail\n");
-			sleep(1);
+
         }
 
   return 0;
@@ -67,16 +68,15 @@ int OCCI_Open()
 /*
  * 从连接池中获取一个连接   成功返回true，失败返回false
  */
-int GetConnectFromPool(Connection *new_conn,Statement *new_stmt)
+int GetConnectFromPool(Connection **new_conn,Statement **new_stmt)
 {
 	try
 	{
-		new_conn=pConnPool->getConnection();
-		if(new_conn)
+		*new_conn=pConnPool->getConnection();
+		if(*new_conn)
 		{
-			new_stmt = new_conn->createStatement();
-			//new_stmt->setAutoCommit(true);
-			cout << "Connect oracle"<<endl;
+			*new_stmt = (*new_conn)->createStatement();
+//			cout << "Connect oracle"<<endl;
 			return true;
 		}
 		else
@@ -94,7 +94,10 @@ int GetConnectFromPool(Connection *new_conn,Statement *new_stmt)
 
 }
 
-
+int InitSignalInfo()
+{
+	return 0;
+}
 
 int InitDeviceInfo()
 {
@@ -130,9 +133,10 @@ int InitDeviceInfo()
 }
 int InitDeviceStatus()
 {
-	char sqlbuf[] = "update UNIT_CUR_STATE set CONTROL_MODE = 4";
+	char sqlbuf[] = "update UNIT_CUR_STAUS set CONTROL_MODE = '4'";
 	try
 	{
+		cout << "init device status" <<endl;
 		stmt->execute(sqlbuf);
 		return true;
 	}
