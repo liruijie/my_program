@@ -8,13 +8,16 @@
 #ifndef PUBLICDEFINE_H_
 #define PUBLICDEFINE_H_
 
-#define DeviceMaxNum			1024
-#define SingleRecvMaxLen 	5000
-#define QueueNum 10000
-#define CardMaxNum			5000
-#define SignalMaxNum			200
-#define SignalMaxPhase		64
+#define DeviceMaxNum			1024				//公交优先设备最大数
+#define SingleRecvMaxLen 	2000				//单条报文最大字节数
+#define QueueNum 				10000				//报文存储队列个数
+#define CardMaxNum			5000				//公交卡个数
+#define SignalMaxNum			200				//海信信号机最大个数
+#define SignalMaxPhase		64					//信号机最大相位数
+#define ONLINE					1					//设备在线
+#define OFFLINE				0					//设备离线
 extern StatelessConnectionPool *pConnPool;
+extern int CurrentExistDevice;
 /*
  * 设备实时状态
  */
@@ -23,21 +26,21 @@ struct DeviceRealData
 		char  DeviceTime[30];				//设备时间
 		char line_number[30];				//公交车次
 		char plate_number[30];				//车牌号
-		unsigned long RFID;							//RFID卡编号
-		long detect_time;			//检测时间
+		unsigned long RFID;					//RFID卡编号
+		long detect_time;						//检测时间
 		int is_priority;						//是否优先：01 为优先（01为已优先，00为没优先）
 		char priority_level;					//优先级：01 （1~9）
 		unsigned char priority_time;		//优先时间：04 为优先4秒
 		int output_port;						//控制板输出端口：00 01 为1号端口
 		char detect_direction;				//检测方向：01 代表东方向（1代表东，2代表西，3代表南，4代表北）
-		long int request_time;		//请求时间：4F DC 68 2E 表示该报文的上报时间距1970年0时0分0秒的秒数为1339844654s
+		long int request_time;				//请求时间：4F DC 68 2E 表示该报文的上报时间距1970年0时0分0秒的秒数为1339844654s
 		unsigned char IsLeave;
 
 //		数据编号	故障类型	故障设备编号	时间信息
-//		0x01		1个字节		2字节			4个字节
+//		0x01		1个字节		2字节				4个字节
 		char fault_type;						//故障类型
 		int fault_number;						//故障设备编号
-		long fault_time;			//时间信息
+		long fault_time;						//时间信息
 };
 /*
  * 读卡器设备信息
@@ -62,16 +65,16 @@ struct DeviceInfo
 //		4字节	4字节		4字节	4字节		2字节			2字节				2字节
 
 
-		int id;									//设备ID
-		int status;								//设备状态  是否在线
+		unsigned int id;									//设备ID
+		unsigned int status;								//设备状态  是否在线
 		unsigned long last_report_time;	//设备上次上报时间
 		char ip[20];                  	//设备IP   192.168.1.100
 		char mask[20];							//设备掩码	  255.255.255.0
 		char gateway[20];						//设备网关   192.168.1.100
 		char center_ip[20];					//中心（通讯服务器）IP	  	192.168.1.200
 		int center_port;						//中心（通讯服务器）端口		10086
-		int control_uart;						//控制板对应串口
-		int wireless_uart;					//无线模块对应串口
+		unsigned int control_uart;						//控制板对应串口
+		unsigned int wireless_uart;					//无线模块对应串口
 		struct DeviceRealData realdata;
 };
 extern DeviceInfo device[DeviceMaxNum];
@@ -85,10 +88,10 @@ struct Device_Strategy
 		int sequence_num;								//方向序号
 		unsigned char direction;					//优先方向
 		unsigned char level;							//优先级别
-		int param1;
-		int param2;
-		int param3;
-		int param4;
+		int param1;										//参数1(保留)
+		int param2;										//参数2(保留)
+		int param3;										//参数3(保留)
+		int param4;										//参数4(保留)
 		unsigned char threshold;					//优先申请阈值
 		unsigned char interval;						//统计间隔
 		unsigned char max_time_allowed;			//优先申请权保留时间

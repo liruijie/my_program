@@ -8,7 +8,6 @@
 
 #define ReceiveWebPort	10084
 #define TimeOut_S			5
-extern oracle::occi::Environment *OraEnviroment;
 static int WebSockfd;
 pthread_mutex_t WebSend_Mutex;
 struct web_message_info
@@ -124,17 +123,18 @@ void ParsingData_Web(unsigned char *data,struct sockaddr_in WebAddr)
 		return ;
 	pthread_t pth_handle;
 	pthread_attr_t attr;
-	int detachstate;
+	int ret;
 	pthread_attr_init(&attr);
-	pthread_attr_getdetachstate(&attr,&detachstate);
-	if(detachstate==PTHREAD_CREATE_JOINABLE)
-	{
-		pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);//设置为线程分离属性设置为分离
-	}
+	pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);//设置为线程分离属性设置为分离
+
 	struct web_message_info *web_message = (struct web_message_info *)malloc(sizeof(web_message_info));
 	memcpy(web_message->RecvBuf,data,SingleRecvMaxLen);
 	web_message->WebServerAddr = WebAddr;
-	pthread_create(&pth_handle,&attr,Handle_Pthread,web_message);
+	ret = pthread_create(&pth_handle,&attr,Handle_Pthread,web_message);
+	if(ret != 0)		//创建线程失败  释放内存
+	{
+		free(web_message);
+	}
 	pthread_attr_destroy(&attr);					//回收分配给属性的资源
 
 }
@@ -158,7 +158,7 @@ void * Handle_Pthread(void *arg)
 	int CrossID = (data[7] << 8) | data[8];
 	int ret;
 	int on=1;
-	unsigned char reply_buf[15] = {0x7E,0x00,0x0C,0x00,0x00,0xFF,0xFF,0x00,0x00,0x30,0x00,0x00,0x00,0x00,0x7D};
+	unsigned char reply_buf[15] = {0x7E,0x00,0x0D,0x00,0x00,0xFF,0xFF,0x00,0x00,0x30,0x00,0x00,0x00,0x00,0x7D};
 	//协议版本
 	reply_buf[3] = data[3];
 	reply_buf[4] = data[4];
@@ -169,6 +169,11 @@ void * Handle_Pthread(void *arg)
 	reply_buf[10] = data[10];	//数据编码
 	reply_buf[11] = data[11];	//数据编号
 	int i =GetDeviceIndex(data);
+	if(device[i].status == OFFLINE)
+	{
+		ret =  false;
+		goto report_result;
+	}
 	//创建一个和设备通讯的socket
 	if ((udp_sockfd = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
 	{
@@ -354,29 +359,35 @@ int Request_DeviceParam_0x03(int sockfd,struct sockaddr_in DeviceAddr,unsigned c
 				}
 				_stmt->executeUpdate();
 				_conn->commit();
-				_conn->terminateStatement(_stmt);
-				OraEnviroment->terminateConnection(_conn);
+//				_conn->terminateStatement(_stmt);
+//				OraEnviroment->terminateConnection(_conn);
+				DisconnectOracle(&_conn,&_stmt);
 				return true;
 			}
 			catch (SQLException &sqlExcp)
 			{
+				cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+				printf("%s\n",sqlbuf);
+			   sqlExcp.getErrorCode();
+			   cout<<sqlExcp.getMessage() <<endl;
 				try
 				{
 					_conn->rollback();
 				}
 				catch(SQLException &sqlExcp1)
 				{
-
+					cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+					printf("%s\n",sqlbuf);
+				   sqlExcp1.getErrorCode();
+				   cout<<sqlExcp1.getMessage() <<endl;
 				}
-				cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
-			   sqlExcp.getErrorCode();
-			   string strinfo=sqlExcp.getMessage();
-			   cout<<strinfo;
+
 			}
 		}
 	}
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
 	printf("查询设备参数失败,cross_id= %d\n",CrossID);
 	return false;
 }
@@ -402,7 +413,7 @@ int Request_DeviceSystemParam_0x04(int sockfd,struct sockaddr_in DeviceAddr,unsi
 	}
 	_stmt->setAutoCommit(true);
 	sendto(sockfd, send_data, ((( send_data[1] << 8 ) | send_data[2])+3), 0, (struct sockaddr *)&DeviceAddr, sizeof(struct sockaddr));
-	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, 10);
+	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);
 	if(recv_len>0)
 	{
 		sprintf(device[index].ip,"%d.%d.%d.%d",Rec_buf[13],Rec_buf[14],Rec_buf[15],Rec_buf[16]);
@@ -416,24 +427,26 @@ int Request_DeviceSystemParam_0x04(int sockfd,struct sockaddr_in DeviceAddr,unsi
 		{
 			sprintf(sqlbuf,"update SYSTEM_CONFIG set INTERSECTION_IP = '%s',"
 					"NETMASK = '%s',GATEWAY_ADDRESS = '%s',FORWARD_SERVER_IP = '%s',"
-					"FORWARD_SERVER_PORT = '%d',CONTROL_COM_NAME = '%d',READER_COM_NAME = '%d' where intersection_id ='%d')",
+					"FORWARD_SERVER_PORT = '%d',CONTROL_COM_NAME = '%d',READER_COM_NAME = '%d' where intersection_id ='%d'",
 					device[index].ip,device[index].mask,device[index].gateway,device[index].center_ip,
 					device[index].center_port,device[index].control_uart,device[index].wireless_uart,CrossID);
 			_stmt->execute(sqlbuf);
-			_conn->terminateStatement(_stmt);
-			OraEnviroment->terminateConnection(_conn);
+//			_conn->terminateStatement(_stmt);
+//			OraEnviroment->terminateConnection(_conn);
+			DisconnectOracle(&_conn,&_stmt);
 			return true;
 		}
 		catch (SQLException &sqlExcp)
 		{
 			cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+			puts(sqlbuf);
 		   sqlExcp.getErrorCode();
-		   string strinfo=sqlExcp.getMessage();
-		   cout<<strinfo;
+		   cout<<sqlExcp.getMessage();
 		}
 	}
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
 	printf("查询设备系统信息失败,cross_id = %d\n",CrossID);
 	return false;
 }
@@ -456,12 +469,12 @@ int Request_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 
 	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
-		printf("查询设备策略时间表,连接数据库失败,cross_id= %d\n",CrossID);
+		printf("查询设备优先策略表,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
 	}
 	_stmt->setAutoCommit(false);        //设置为手动提交
 	sendto(sockfd, send_data, ((( send_data[1] << 8 ) | send_data[2])+3), 0, (struct sockaddr *)&DeviceAddr, sizeof(struct sockaddr));
-	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, 10);
+	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);
 	i = 13; 						//数据开始的下标
 
 	int data_num,dir_num;//  数据编号  方向序号
@@ -567,31 +580,34 @@ int Request_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 				}
 				_stmt->executeUpdate();
 				_conn->commit();
-				_conn->terminateStatement(_stmt);
-				OraEnviroment->terminateConnection(_conn);
+//				_conn->terminateStatement(_stmt);
+//				OraEnviroment->terminateConnection(_conn);
+				DisconnectOracle(&_conn,&_stmt);
 				return true;
 			}
 			catch (SQLException &sqlExcp)
 			{
+				cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+			   sqlExcp.getErrorCode();
+			   cout << sqlExcp.getMessage();
 				try
 				{
 					_conn->rollback();
 				}
 				catch (SQLException &sqlExcp1)
 				{
-
+					cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+				   sqlExcp1.getErrorCode();
+				   cout << sqlExcp1.getMessage();
 				}
-				cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
-			   sqlExcp.getErrorCode();
-			   string strinfo=sqlExcp.getMessage();
-			   cout<<strinfo;
 			}
 		}
 	}
 _error:
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
-	printf("查询设备参数失败,cross_id= %d",CrossID);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
+	printf("查询设备优先策略表,cross_id= %d",CrossID);
 	return false;
 }
 
@@ -618,7 +634,7 @@ int Request_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,uns
 	}
 	_stmt->setAutoCommit(false);        //设置为手动提交
 	sendto(sockfd, send_data, ((( send_data[1] << 8 ) | send_data[2])+2), 0, (struct sockaddr *)&DeviceAddr, sizeof(struct sockaddr));
-	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, 10);
+	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);
 	i = 13; 						//数据开始的下标
 
 	int timetable_num,time_num;//  时间表编号  时间表中时间序号
@@ -701,28 +717,33 @@ int Request_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,uns
 			}
 			catch (SQLException &sqlExcp)
 			{
+				cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+				puts(sqlbuf);
+			   sqlExcp.getErrorCode();
+			   cout<<sqlExcp.getMessage();
+
 				try
 				{
 					_conn->rollback();
 				}
 				catch (SQLException &sqlExcp1)
 				{
-
+					cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+				   sqlExcp.getErrorCode();
+				   cout<<sqlExcp.getMessage();
 				}
-				cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
-			   sqlExcp.getErrorCode();
-			   string strinfo=sqlExcp.getMessage();
-			   cout<<strinfo;
 			   goto _error;
 			}
 		}
-		_conn->terminateStatement(_stmt);
-		OraEnviroment->terminateConnection(_conn);
+//		_conn->terminateStatement(_stmt);
+//		OraEnviroment->terminateConnection(_conn);
+		DisconnectOracle(&_conn,&_stmt);
 		return true;
 	}
 _error:
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
 	printf("查询设备策略时间表失败,cross_id= %d",CrossID);
 	return false;
 }
@@ -833,30 +854,35 @@ int Request_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 				}
 				_stmt->executeUpdate();
 				_conn->commit();
-				_conn->terminateStatement(_stmt);
-				OraEnviroment->terminateConnection(_conn);
+//				_conn->terminateStatement(_stmt);
+//				OraEnviroment->terminateConnection(_conn);
+				DisconnectOracle(&_conn,&_stmt);
 				return true;
 			}
 			catch (SQLException &sqlExcp)
 			{
+				cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+				puts(sqlbuf);
+			   sqlExcp.getErrorCode();
+			   cout<<sqlExcp.getMessage();
 				try
 				{
 					_conn->rollback();
 				}
 				catch(SQLException &sqlExcp1)
 				{
-
+					cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+				   sqlExcp1.getErrorCode();
+				   cout<<sqlExcp1.getMessage();
 				}
-				cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
-			   sqlExcp.getErrorCode();
-			   string strinfo=sqlExcp.getMessage();
-			   cout<<strinfo;
+
 			}
 		}
 	}
 _error:
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
 	printf("查询设备调度表失败,cross_id= %d\n",CrossID);
 	return false;
 }
@@ -978,12 +1004,16 @@ _receive_loop:
 			}
 			_stmt->executeUpdate();
 			_conn->commit();
-			_conn->terminateStatement(_stmt);
-			OraEnviroment->terminateConnection(_conn);
+//			_conn->terminateStatement(_stmt);
+//			OraEnviroment->terminateConnection(_conn);
+			DisconnectOracle(&_conn,&_stmt);
 			return true;
 		}
 		catch (SQLException &sqlExcp)
 		{
+			cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+		   sqlExcp.getErrorCode();
+		   cout<<sqlExcp.getMessage();
 			try
 			{
 				_conn->rollback();
@@ -992,15 +1022,13 @@ _receive_loop:
 			{
 
 			}
-			cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
-		   sqlExcp.getErrorCode();
-		   string strinfo=sqlExcp.getMessage();
-		   cout<<strinfo;
+
 		}
 	}
 _error:
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
 	printf("查询车辆信息表失败,cross_id= %d\n",CrossID);
 	return false;
 }
@@ -1061,18 +1089,18 @@ int Set_DeviceParam_0x03(int sockfd,struct sockaddr_in DeviceAddr,unsigned char 
 	for(temp_i = 0; temp_i < j; temp_i++)
 	{
 		send_buf[i++] = temp_i+1;
-		send_buf[i++] = (cardreader[j].id & 0xFF);
-		send_buf[i++] = (cardreader[j].direction & 0xFF);
-		send_buf[i++] = (cardreader[j].dBm & 0xFF00) >> 8;
-		send_buf[i++] = (cardreader[j].dBm & 0xFF);
-		send_buf[i++] = (cardreader[j].zigbee_addr & 0xFF00) >> 8;
-		send_buf[i++] = (cardreader[j].zigbee_addr & 0xFF);
-		send_buf[i++] = (cardreader[j].transport_priority_relay & 0xFF00) >> 8;
-		send_buf[i++] = (cardreader[j].transport_priority_relay & 0xFF);
-		send_buf[i++] = (cardreader[j].emergency_priority_relay & 0xFF00) >> 8;
-		send_buf[i++] = (cardreader[j].emergency_priority_relay & 0xFF);
-		send_buf[i++] = (cardreader[j].detection_range & 0xFF00) >> 8;
-		send_buf[i++] = (cardreader[j].detection_range & 0xFF);
+		send_buf[i++] = (cardreader[temp_i].id & 0xFF);
+		send_buf[i++] = (cardreader[temp_i].direction & 0xFF);
+		send_buf[i++] = (cardreader[temp_i].dBm & 0xFF00) >> 8;
+		send_buf[i++] = (cardreader[temp_i].dBm & 0xFF);
+		send_buf[i++] = (cardreader[temp_i].zigbee_addr & 0xFF00) >> 8;
+		send_buf[i++] = (cardreader[temp_i].zigbee_addr & 0xFF);
+		send_buf[i++] = (cardreader[temp_i].transport_priority_relay & 0xFF00) >> 8;
+		send_buf[i++] = (cardreader[temp_i].transport_priority_relay & 0xFF);
+		send_buf[i++] = (cardreader[temp_i].emergency_priority_relay & 0xFF00) >> 8;
+		send_buf[i++] = (cardreader[temp_i].emergency_priority_relay & 0xFF);
+		send_buf[i++] = (cardreader[temp_i].detection_range & 0xFF00) >> 8;
+		send_buf[i++] = (cardreader[temp_i].detection_range & 0xFF);
 	}
 	send_buf[1] = (0xFF & i) >> 8;
 	send_buf[2] = (0XFF & i);
@@ -1082,13 +1110,15 @@ int Set_DeviceParam_0x03(int sockfd,struct sockaddr_in DeviceAddr,unsigned char 
 	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);
 	if( (recv_len>0 ) && (Rec_buf[12] == 0x00) )
 	{
-		_conn->terminateStatement(_stmt);
-		OraEnviroment->terminateConnection(_conn);
+//		_conn->terminateStatement(_stmt);
+//		OraEnviroment->terminateConnection(_conn);
+		DisconnectOracle(&_conn,&_stmt);
 		return true;
 	}
 _error:
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
 	return false;
 }
 
@@ -1125,8 +1155,6 @@ int Set_DeviceSystemParam_0x04(int sockfd,struct sockaddr_in DeviceAddr,unsigned
 		char *result;
 		if(Result->next() != 0)
 		{
-
-
 
 			memset(temp_buf,'\0',50);
 			sprintf(temp_buf,Result->getString(1).c_str());
@@ -1223,13 +1251,16 @@ int Set_DeviceSystemParam_0x04(int sockfd,struct sockaddr_in DeviceAddr,unsigned
 	if( (recv_len>0 ) && (Rec_buf[12] == 0x00) )
 	{
 		InitDeviceInfo();
-		_conn->terminateStatement(_stmt);
-		OraEnviroment->terminateConnection(_conn);
+//		_conn->terminateStatement(_stmt);
+//		OraEnviroment->terminateConnection(_conn);
+		DisconnectOracle(&_conn,&_stmt);
 		return true;
 	}
 _error:
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
+	printf("设置设备系统参数,cross_id= %d\n",CrossID);
 	return false;
 
 }
@@ -1260,7 +1291,7 @@ int Set_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 		_stmt->setAutoCommit(true);
 		sprintf(sqlbuf,"select STRATEGY_ID,SEQUENCE_NUMBER,PRIORITY_DIRECTION,PRIORITY_LEVEL,PARAMETER1,"
 				"PARAMETER2,PARAMETER3,PARAMETER4,THRESHOLD,PROCESS_INTERVAL,MAX_TIME_ALLOWED,CARD_LIVE_TIME "
-				"from STRATEGY_CONFIG_INFO t  where t.INTERSECTION_ID = '%d' order by STRATEGY_ID and SEQUENCE_NUMBER",CrossID);
+				"from STRATEGY_CONFIG_INFO t  where t.INTERSECTION_ID = '%d' order by STRATEGY_ID ,SEQUENCE_NUMBER",CrossID);
 		Result = _stmt->executeQuery(sqlbuf);
 		while(Result->next() != 0)
 		{
@@ -1333,13 +1364,16 @@ int Set_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);
 	if( (recv_len>0 ) && (Rec_buf[12] == 0x00) )
 	{
-		_conn->terminateStatement(_stmt);
-		OraEnviroment->terminateConnection(_conn);
+//		_conn->terminateStatement(_stmt);
+//		OraEnviroment->terminateConnection(_conn);
+		DisconnectOracle(&_conn,&_stmt);
 		return true;
 	}
 _error:
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
+	printf("设置优先策略,cross_id= %d\n",CrossID);
 	return false;
 
 }
@@ -1359,7 +1393,7 @@ int Set_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 	char sqlbuf[500];
 	int recv_len,i;
 	int j = 0;				//结构体下标
-
+	char temp_buf[5];
 	int timetable_id=0;
 	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
@@ -1369,14 +1403,21 @@ int Set_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 	_stmt->setAutoCommit(true);
 	try
 	{
-		sprintf(sqlbuf,"select TIME_ID,TIME_ORDER,START_TIME,END_TIME,STRATEGY_ID from TIME_CONFIG_INFO where INTERSECTION_ID = '%d' order by TIME_ID AND TIME_ORDER",CrossID);
+		sprintf(sqlbuf,"select TIME_ID,TIME_ORDER,START_TIME,END_TIME,STRATEGY_ID from TIME_CONFIG_INFO where INTERSECTION_ID = '%d' order by TIME_ID , TIME_ORDER",CrossID);
 		Result = _stmt->executeQuery(sqlbuf);
 		while(Result->next() != 0)
 		{
 			StrategyTime[j].time_table_id = Result->getInt(1);
 			StrategyTime[j].time_id = Result->getInt(2);
-			sprintf((char *)StrategyTime[j].start_time,Result->getString(3).c_str());
-			sprintf((char *)StrategyTime[j].end_time,Result->getString(4).c_str());
+			sprintf(temp_buf,Result->getString(3).c_str());
+			StrategyTime[j].start_time[0] = atoi(strtok(temp_buf,":"));
+			StrategyTime[j].start_time[1] = atoi(strtok(NULL,":"));
+			//sprintf((char *)StrategyTime[j].start_time,Result->getString(3).c_str());
+			//sprintf((char *)StrategyTime[j].end_time,Result->getString(4).c_str());
+			sprintf(temp_buf,Result->getString(4).c_str());
+			StrategyTime[j].end_time[0] = atoi(strtok(temp_buf,":"));
+			StrategyTime[j].end_time[1] = atoi(strtok(NULL,":"));
+
 			StrategyTime[j].strategy_id = Result->getInt(5);
 			j++;
 		}
@@ -1425,13 +1466,16 @@ int Set_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);
 	if( (recv_len>0 ) && (Rec_buf[12] == 0x00) )
 	{
-		_conn->terminateStatement(_stmt);
-		OraEnviroment->terminateConnection(_conn);
+//		_conn->terminateStatement(_stmt);
+//		OraEnviroment->terminateConnection(_conn);
+		DisconnectOracle(&_conn,&_stmt);
 		return true;
 	}
 _error:
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
+	printf("设置设备策略时间表,cross_id= %d\n",CrossID);
 	return false;
 }
 
@@ -1552,13 +1596,16 @@ int Set_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);
 	if( (recv_len>0 ) && (Rec_buf[12] == 0x00) )
 	{
-		_conn->terminateStatement(_stmt);
-		OraEnviroment->terminateConnection(_conn);
+//		_conn->terminateStatement(_stmt);
+//		OraEnviroment->terminateConnection(_conn);
+		DisconnectOracle(&_conn,&_stmt);
 		return true;
 	}
 _error:
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
+	printf("设置设备调度表,连接数据库失败,cross_id= %d\n",CrossID);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
 	return false;
 }
 
@@ -1580,7 +1627,7 @@ int Set_DeviceCard_0x08(int sockfd,struct sockaddr_in DeviceAddr,unsigned char *
 
 	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
-		printf("设置设备调度表,连接数据库失败,cross_id= %d\n",CrossID);
+		printf("设置车辆信息表,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
 	}
 	_stmt->setAutoCommit(true);
@@ -1601,7 +1648,6 @@ int Set_DeviceCard_0x08(int sockfd,struct sockaddr_in DeviceAddr,unsigned char *
 			if (strptime(temp_buf, time_fmt, &timeinfo) != NULL)
 			{
 				card[j].install_time = mktime(&timeinfo);
-
 			}
 			else
 			{
@@ -1678,13 +1724,16 @@ int Set_DeviceCard_0x08(int sockfd,struct sockaddr_in DeviceAddr,unsigned char *
 	}
 	if(temp_i == j)
 	{
-		_conn->terminateStatement(_stmt);
-		OraEnviroment->terminateConnection(_conn);
+//		_conn->terminateStatement(_stmt);
+//		OraEnviroment->terminateConnection(_conn);
+		DisconnectOracle(&_conn,&_stmt);
 		return true;
 	}
 _error:
-	_conn->terminateStatement(_stmt);
-	OraEnviroment->terminateConnection(_conn);
+//	_conn->terminateStatement(_stmt);
+//	OraEnviroment->terminateConnection(_conn);
+	DisconnectOracle(&_conn,&_stmt);
+	printf("设置车辆信息表,cross_id= %d\n",CrossID);
 	return false;
 }
 

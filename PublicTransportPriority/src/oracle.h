@@ -10,6 +10,7 @@
 
 int OCCI_Open();
 int GetConnectFromPool(Connection **new_conn,Statement **new_stmt);
+void DisconnectOracle(Connection **_conn,Statement **_stmt);
 int JudgeIsExist(char *sqlbuf);
 int InitSignalInfo();
 int InitDeviceInfo();

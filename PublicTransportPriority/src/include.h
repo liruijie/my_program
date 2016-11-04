@@ -19,12 +19,14 @@
 #include <wait.h>
 #include <time.h>
 #include <sys/types.h>
-#include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#include <sys/ioctl.h>
+#include <sys/prctl.h>
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <errno.h>
-#include <sys/prctl.h>
+#include <linux/hdreg.h>
 
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
@@ -42,7 +44,6 @@ using namespace std;
 #include "CommunicateWithDevice.h"
 #include "PublicDefine.h"
 #include "Queue.h"
-#include "CodeConvert.h"
 #include "CommunicateWithWeb.h"
 #include "CommunicateWithHiCON.h"
 

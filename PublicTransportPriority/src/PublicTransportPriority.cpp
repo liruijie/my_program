@@ -14,7 +14,7 @@ string oracle_connectstring;
 #define Config_PATH "/home/eclipseprogram/PublicTransportPriority/confige"
 
 int GetConfige();
-
+void CheckTime();
 int main()
 {
 	int ret;
@@ -40,8 +40,13 @@ int main()
 	//ret = CommunicateWithHiCON();
 //	if(ret== false)
 //		exit(0);
+	sleep(5);
 	while(1)
-		sleep(60*60);
+	{
+		CheckTime();
+		sleep(600);				//
+	}
+
 	return 0;
 }
 
@@ -88,14 +93,40 @@ int GetConfige()
 	printf("temp = %s,config = %s\n",tmp,config);
 	HiCON.port = atoi(config);
 
-	//  memset(config,'\0',sizeof(config));
-	//  fgets(line,64,fp);
-	//  sscanf(line,"%[^=]=%s",tmp,config);
-	//  memcpy(ITC_ServerAddr,config,strlen(config));
-	//  printf("temp = %s,config = %s\n",tmp,config);
-	//  printf("signal report timeout = %d\n",signal_report_timeout);
-
 	fclose(fp);
 	return true;
 }
 
+void CheckTime()
+{
+	int checktime_socket;
+	int i;
+	struct sockaddr_in DeviceAddr;
+	if ((checktime_socket = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
+	{
+		perror("fail to socket");
+		exit(EXIT_FAILURE);
+	}
+
+	int on=1;
+	if((setsockopt(checktime_socket,SOL_SOCKET,SO_REUSEADDR,&on,sizeof(on)))<0)
+	{
+		perror("setsockopt failed");
+		close(checktime_socket);
+		exit(EXIT_FAILURE);
+	}
+	printf("开始校准设备时间\n");
+	for(i = 0; i< CurrentExistDevice; i++)
+	{
+		if(device[i].status == OFFLINE)
+		{
+			continue;
+		}
+		memset(&DeviceAddr,'\0',sizeof(DeviceAddr));
+		DeviceAddr.sin_family = PF_INET;
+		DeviceAddr.sin_port = htons(10086);
+		DeviceAddr.sin_addr.s_addr = inet_addr(device[i].ip);
+		Set_DeviceTime(checktime_socket,device[i].id,DeviceAddr);
+	}
+	close(checktime_socket);
+}

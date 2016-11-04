@@ -14,6 +14,8 @@ struct HiCON_Info HiCON={
 #define		fail			0
 #define 		success		1
 
+#define	FrameLen			1000
+
 extern int CurrentExistSignal;
 int Sockfd_HiCON;
 
@@ -34,7 +36,7 @@ void * Connect_HiCON(void *arg)
 {
 
 	struct sockaddr_in HiCON_Addr;
-	char recv_buf[1000];
+	char recv_buf[FrameLen];
 	int ret;
 	printf("create pthread CommunicateWithHiCON\n");
 	pthread_t pth_subscribe;
@@ -103,6 +105,7 @@ void * Connect_HiCON(void *arg)
 				else if(ret > 0)
 				{
 					puts(recv_buf);
+					CreateParsePthread(recv_buf);
 				}
 			}
 		}
@@ -135,8 +138,8 @@ int InitHiCON_TCP()
 
 int Login()
 {
-	char send_buf[300] ;
-	char recv_buf[1000];
+	char send_buf[FrameLen] ;
+	char recv_buf[FrameLen];
 	int ret;
 	sprintf(send_buf,"<?xml version=\"1.0\" encoding=\"GB2312\"?>\
 							<systemScription System=\"TCIP\" Version=\"1.0\" >\
@@ -164,7 +167,8 @@ int Login()
 	}
 	else
 	{
-		//pasing data
+		//parse data
+		ParsingData(recv_buf);
 	}
 	return DISCONNECT;
 }
@@ -197,7 +201,7 @@ void * Subscribe_Pthread(void * arg)
 
 int Subscribe(int index)
 {
-	char send_buf[300] ;
+	char send_buf[FrameLen] ;
 	int ret;
 	/*
 	 * 订阅联机状态
@@ -222,13 +226,13 @@ int Subscribe(int index)
 		return ret;
 	}
 	int i=0;
-	while(i)
+	while(i)						//循环判断订阅状态
 	{
-		usleep(1000 *10);
+		usleep(1000 *10);		//10ms判断一次
 		if(Signal[index].subscribe_phase_status == 1)
 			break;
 		i++;
-		if(i> 5*100)
+		if(i> 5*100)			//判断500次   即5s
 		{
 			return false;
 		}
@@ -256,13 +260,13 @@ int Subscribe(int index)
 		return ret;
 	}
 	i=0;
-	while(i)
+	while(i)				//循环判断订阅状态
 	{
-		usleep(1000 *10);
+		usleep(1000 *10);			//10ms判断一次
 		if(Signal[index].subscribe_phase_status == 1)
 			break;
 		i++;
-		if(i> 5*100)
+		if(i> 5*100)	//判断500次   即5s
 		{
 			return false;
 		}
@@ -339,7 +343,7 @@ int Receive_HiCON(char *data,int timeout_s)
 	}
 	else          //select success
 	{
-		ret = recv(Sockfd_HiCON,data,1000,0);
+		ret = recv(Sockfd_HiCON,data,FrameLen,0);
 		if(ret==-1)
 		{
 			return DISCONNECT;
@@ -351,8 +355,32 @@ int Receive_HiCON(char *data,int timeout_s)
 		return ret;
 	}
 }
+void CreateParsePthread(char *buf)
+{
+	pthread_t pth_parse_data;
+	pthread_attr_t attr;
+	int detachstate;
+	pthread_attr_init(&attr);
+	pthread_attr_getdetachstate(&attr,&detachstate);
+	if(detachstate==PTHREAD_CREATE_JOINABLE)
+	{
+		pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);//设置为线程分离属性设置为分离
+	}
+	char *data = (char *)malloc(sizeof(char)*FrameLen);
+	memcpy(data,buf,SingleRecvMaxLen);
+	pthread_create(&pth_parse_data,&attr,Pth_ParsingData,data);
+	pthread_attr_destroy(&attr);					//回收分配给属性的资源
+}
+void *Pth_ParsingData(void *arg)
+{
+	char buf[FrameLen];
+	memcpy(buf,arg,FrameLen);
+	free(arg);
+	ParsingData(buf);
+	return (void *)0;
+}
 
-int PasingData(char *buf)
+int ParsingData(char *buf)
 {
 	xmlDocPtr pdoc;
 	xmlXPathContextPtr Xpath = NULL;    //XPATH上下文指针
@@ -395,25 +423,25 @@ int PasingData(char *buf)
 			break;
 		//登录消息
 		case 1:
-			Return = Response_Login(Xpath);
+			Return = HiCONResponse_Login(Xpath);
 			break;
 		//订阅消息
 		case 2:
-			Return = Response_Subscribe(Xpath);
+			Return = HiCONResponse_Subscribe(Xpath);
 			break;
 		//联机状态
 		case 3:
-			Response_SignalStatus(Xpath);
+			HiCON_SignalStatus(Xpath);
 			Return = success;
 			break;
 		//相位状态
 		case 10:
-			Response_Phase(Xpath);
+			HiCON_Phase(Xpath);
 			Return = success;
 			break;
 		//公交优先状态
 		case 19:
-			Response_Priority(Xpath);
+			HiCON_Priority(Xpath);
 			Return = success;
 			break;
 		default:
@@ -445,7 +473,7 @@ int CheckXmlResult(xmlXPathObjectPtr Xresult)
 }
 
 
-int Response_Login(xmlXPathContextPtr Xpath)
+int HiCONResponse_Login(xmlXPathContextPtr Xpath)
 {
 	xmlXPathObjectPtr Xresult =NULL;
 	xmlNodePtr node=NULL;
@@ -472,7 +500,7 @@ int Response_Login(xmlXPathContextPtr Xpath)
 		return fail;
 }
 
-int Response_Subscribe(xmlXPathContextPtr Xpath)
+int HiCONResponse_Subscribe(xmlXPathContextPtr Xpath)
 {
 	xmlXPathObjectPtr Xresult =NULL;
 	xmlNodePtr node=NULL;
@@ -558,7 +586,7 @@ int Response_Subscribe(xmlXPathContextPtr Xpath)
 	return success;
 }
 
-void Response_SignalStatus(xmlXPathContextPtr Xpath)
+void HiCON_SignalStatus(xmlXPathContextPtr Xpath)
 {
 	xmlXPathObjectPtr Xresult =NULL;
 	xmlNodePtr node=NULL;
@@ -618,10 +646,11 @@ void Response_SignalStatus(xmlXPathContextPtr Xpath)
 	}
 	char sqlbuf[200];
 	sprintf(sqlbuf,"update UNIT_CUR_STATE set CONTROL_MODE = %d where UNIT_ID = %d",Signal[i].signal_status,Spot);
+	puts(sqlbuf);
 	//stmt->excute(sqlbuf);
 }
 
-void Response_Phase(xmlXPathContextPtr Xpath)
+void HiCON_Phase(xmlXPathContextPtr Xpath)
 {
 	xmlXPathObjectPtr Xresult =NULL;
 	xmlNodePtr node=NULL;
@@ -669,9 +698,13 @@ void Response_Phase(xmlXPathContextPtr Xpath)
 	{
 		return ;
 	}
+	Signal[i].phases_count=0;
 	Signal[i].phases_count = atoi((char *)text);
 	xmlFree(text);
-
+	if(Signal[i].phases_count<=0)
+	{
+		return;
+	}
 	phase_child = phase_node->children;
 	xmlNodePtr red_node,yellow_node,green_node;
 	int temp_t;
@@ -715,10 +748,63 @@ void Response_Phase(xmlXPathContextPtr Xpath)
 		phase_child = phase_child->next;
 	}
 	//update sql
+	Connection *_conn = NULL;
+	Statement *_stmt = NULL;
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
+	{
+		printf("更新信号机相位状态,连接数据库失败,signal_id = %d\n",Spot);
+		return ;
+	}
+	try
+	{
+		_stmt->setAutoCommit(true);
+		char sqlbuf[100];
+		int phase_status;
+		sprintf(sqlbuf,"update SIGNAL_PHASE_STATE set LAMP_STATE = :x1,UPDATE_TIME = sysdate where UNIT_ID = :x2 and PHASE_ID = :x3");
+		_stmt->setSQL(sqlbuf);
+		_stmt->setMaxIterations(Signal[i].phases_count);
+		_stmt->setMaxParamSize(1,5);
+		_stmt->setMaxParamSize(2,5);
+		_stmt->setMaxParamSize(3,5);
+		for(temp_t=0;temp_t <Signal[i].phases_count;temp_t++)
+		{
+			if(temp_t != 0)
+			{
+				_stmt->addIteration();
+			}
+			if(Signal[i].phase[temp_t].red == 1)
+			{
+				phase_status=0;
+			}
+			else if(Signal[i].phase[temp_t].yellow == 1)
+			{
+				phase_status=1;
+			}
+			else if(Signal[i].phase[temp_t].green == 1)
+			{
+				phase_status=2;
+			}
+			else
+			{
+				phase_status=0;
+			}
+			_stmt->setNumber(1,phase_status);
+			_stmt->setInt(2,Signal[i].signal_id);
+			_stmt->setInt(3,temp_t+1);
+		}
+		_stmt->executeUpdate();
+	}
+	catch(SQLException &ex)
+	{
+		cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+		ex.getErrorCode();
+	   cout << ex.getMessage();
+	}
+	DisconnectOracle(&_conn,&_stmt);
 	return;
 }
 
-void Response_Priority(xmlXPathContextPtr Xpath)
+void HiCON_Priority(xmlXPathContextPtr Xpath)
 {
 	xmlXPathObjectPtr Xresult =NULL;
 		xmlNodePtr node=NULL;

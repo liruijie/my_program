@@ -31,7 +31,7 @@ int OCCI_Open()
                cout <<"name = " << userName    <<"  oracle_password = " <<  password <<        "    oracle_connectstring = " << connectString << endl;
                unsigned int maxConn=1000;
                unsigned int minConn=5;
-               unsigned int incrConn=2;
+               unsigned int incrConn=5;
 
                 string sql;
 
@@ -54,13 +54,11 @@ int OCCI_Open()
          catch (SQLException &sqlExcp)
             {
                sqlExcp.getErrorCode();
-               string strinfo=sqlExcp.getMessage();
-               cout<<strinfo;
+               cout<<sqlExcp.getMessage()<<endl;
                printf("oracle open fail\n");
 					sleep(1);
                return false;
             }
-
         }
 
   return 0;
@@ -87,28 +85,34 @@ int GetConnectFromPool(Connection **new_conn,Statement **new_stmt)
 	catch (SQLException &sqlExcp)
 	{
 	   sqlExcp.getErrorCode();
-	   string strinfo=sqlExcp.getMessage();
-	   cout<<strinfo;
+	   cout<<sqlExcp.getMessage() << endl;
 	   return false;
 	}
-
 }
-
-int InitSignalInfo()
+void DisconnectOracle(Connection **_conn,Statement **_stmt)
 {
-	return 0;
+	try
+	{
+		(*_conn)->terminateStatement(*_stmt);
+		OraEnviroment->terminateConnection(*_conn);
+	}
+	catch (SQLException &sqlExcp)
+	{
+	   sqlExcp.getErrorCode();
+	   cout << sqlExcp.getMessage() << endl;
+	}
 }
+
 
 int InitDeviceInfo()
 {
-	char sqlbuf[] = "select t.INTERSECTION_ID, INTERSECTION_IP from SYSTEM_CONFIG t order by to_number( t.INTERSECTION_ID)";
+	char sqlbuf[] = "select t.INTERSECTION_ID, INTERSECTION_IP from SYSTEM_CONFIG t,unit u where u.unit_id=t.intersection_id order by to_number(t.INTERSECTION_ID)";
 	ResultSet *Result;
 	int i=0;
 	try
 	{
 		stmt->setSQL(sqlbuf);
 		Result = stmt->executeQuery();
-
 		while(Result->next() != 0)                //cun zai
 		{
 			device[i].id = Result->getInt(1);
@@ -125,7 +129,7 @@ int InitDeviceInfo()
 		return false;
 	}
 	CurrentExistDevice = i;
-	for(;i<DeviceMaxNum;i++)                //将剩下的信号机ID置成负数
+	for(;i<DeviceMaxNum;i++)                //将剩下的设备ID置成负数
 	{
 		device[i].id = -1;
 	}

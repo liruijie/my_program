@@ -18,10 +18,14 @@ int Receive_HiCON(char *data,int timeout_s);
 int Send_HiCON(char *data,long len);
 int CheckXmlResult(xmlXPathObjectPtr Xresult);
 
-int Response_Login(xmlXPathContextPtr Xpath);
-int Response_Subscribe(xmlXPathContextPtr Xpath);
-void Response_SignalStatus(xmlXPathContextPtr Xpath);
-void Response_Phase(xmlXPathContextPtr Xpath);
-void Response_Priority(xmlXPathContextPtr Xpath);
+void CreateParsePthread(char *buf);
+void *Pth_ParsingData(void *arg);
+int ParsingData(char *buf);
+
+int HiCONResponse_Login(xmlXPathContextPtr Xpath);
+int HiCONResponse_Subscribe(xmlXPathContextPtr Xpath);
+void HiCON_SignalStatus(xmlXPathContextPtr Xpath);
+void HiCON_Phase(xmlXPathContextPtr Xpath);
+void HiCON_Priority(xmlXPathContextPtr Xpath);
 
 #endif /* COMMUNICATEWITHHICON_H_ */
