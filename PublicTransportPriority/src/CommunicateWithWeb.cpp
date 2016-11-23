@@ -169,11 +169,11 @@ void * Handle_Pthread(void *arg)
 	reply_buf[10] = data[10];	//数据编码
 	reply_buf[11] = data[11];	//数据编号
 	int i =GetDeviceIndex(data);
-	if(device[i].status == OFFLINE)
-	{
-		ret =  false;
-		goto report_result;
-	}
+//	if(device[i].status == OFFLINE)
+//	{
+//		ret =  false;
+//		goto report_result;
+//	}
 	//创建一个和设备通讯的socket
 	if ((udp_sockfd = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
 	{
@@ -292,14 +292,18 @@ int Request_DeviceParam_0x03(int sockfd,struct sockaddr_in DeviceAddr,unsigned c
 	char sqlbuf[500];
 	int recv_len,i;
 	int j = 0;				//结构体下标
-
+	int ret;
 	if(GetConnectFromPool(&_conn,&_stmt) == false)
 	{
 		printf("查询设备参数,连接数据库失败,cross_id= %d\n",CrossID);
 		return false;
 	}
 	_stmt->setAutoCommit(false);
-	sendto(sockfd, send_data, ((( send_data[1] << 8 ) | send_data[2])+3), 0, (struct sockaddr *)&DeviceAddr, sizeof(struct sockaddr));
+	ret = sendto(sockfd, send_data, ((( send_data[1] << 8 ) | send_data[2])+2), 0, (struct sockaddr *)&DeviceAddr, sizeof(struct sockaddr));
+	if(ret !=  ( ( ( send_data[1] << 8 ) | send_data[2])+2))
+	{
+		perror("send error\n");
+	}
 	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);
 	i = 13; 						//数据开始的下标
 	j = 0;						//
@@ -477,24 +481,25 @@ int Request_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 	recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);
 	i = 13; 						//数据开始的下标
 
-	int data_num,dir_num;//  数据编号  方向序号
-	int data_count =Rec_buf[11], dir_count;
+	int strategy_id,dir_id;//  策略编号  方向序号
+	int data_count =Rec_buf[11], dir_count;			//策略条数  方向条数
+	int temp_i;
 	if(recv_len>0)
 	{
-		for(data_num = 1;data_num<= data_count;data_num++)
+		for(temp_i = 0;temp_i< data_count;temp_i++)
 		{
-			if(data_num != Rec_buf[i])
-				goto _error;
-			i++;
-			dir_count = Rec_buf[i];
-			i++;
-			for(dir_num = 1; dir_num < dir_count;dir_num++)
+//			if(data_num != Rec_buf[i])
+//				goto _error;
+			strategy_id = Rec_buf[i++];
+			dir_count = Rec_buf[i++];
+
+			for(dir_id = 1; dir_id <= dir_count;dir_id++)
 			{
-				if(dir_num != Rec_buf[i])
+				if(dir_id != Rec_buf[i])
 					goto _error;
 				i++;
-				Strategy[j].strategy_id = data_num;
-				Strategy[j].sequence_num = dir_num;
+				Strategy[j].strategy_id = strategy_id;
+				Strategy[j].sequence_num = dir_id;
 				Strategy[j].direction = Rec_buf[i++];
 				Strategy[j].level = Rec_buf[i++];
 				Strategy[j].param1 = (Rec_buf[i] << 8 |Rec_buf[i+1]);
@@ -513,7 +518,7 @@ int Request_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 				j++;
 			}
 		}
-		if(j > 0)         //解析出有效的数据
+		if((j > 0 ) && (i< recv_len))         //解析出有效的数据
 		{
 			try
 			{
@@ -522,24 +527,30 @@ int Request_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 				_stmt->execute(sqlbuf);
 				sprintf(sqlbuf,"insert into STRATEGY_CONFIG(INTERSECTION_ID,STRATEGY_ID,UPDATE_TIME) values(:x1,:x2,sysdate)");
 				_stmt->setSQL(sqlbuf);
-				_stmt->setMaxIterations(data_num);
+				_stmt->setMaxIterations(j);
 				_stmt->setMaxParamSize(1,10);
 				_stmt->setMaxParamSize(2,sizeof(int));
 				int temp_t;
 				char temp_buf[10];
-				for(temp_t = 1; temp_t <= data_num; temp_t++)
+				sprintf(temp_buf,"%d",CrossID);
+				strategy_id = 0;
+				for(temp_t = 0; temp_t < j; temp_t++)
 				{
-					if(temp_t != 0)
-							_stmt->addIteration();
-					sprintf(temp_buf,"%d",CrossID);
-					_stmt->setString(1,temp_buf);
-					_stmt->setInt(2,temp_t);
+					if(Strategy[temp_t].strategy_id != strategy_id)
+					{
+						strategy_id = Strategy[temp_t].strategy_id;
+						if(temp_t != 0)
+								_stmt->addIteration();
+						_stmt->setString(1,temp_buf);
+						_stmt->setInt(2,strategy_id);
+					}
 				}
 				_stmt->executeUpdate();
-
+				_conn->commit();
 				/******更新优先策略详细表******/
 				sprintf(sqlbuf,"delete from STRATEGY_CONFIG_INFO where INTERSECTION_ID = '%d'",CrossID);
 				_stmt->execute(sqlbuf);
+				_conn->commit();
 				sprintf(sqlbuf,"insert into STRATEGY_CONFIG_INFO(INTERSECTION_ID,STRATEGY_ID,SEQUENCE_NUMBER,PRIORITY_DIRECTION,"
 						"PRIORITY_LEVEL,PARAMETER1,PARAMETER2,PARAMETER3,PARAMETER4,THRESHOLD,PROCESS_INTERVAL,MAX_TIME_ALLOWED,CARD_LIVE_TIME) "
 						"values(:x1,:x2,:x3,:x4,:x5,:x6,:x7,:x8,:x9,:x10,:x11,:x12,:x13)");
@@ -563,25 +574,22 @@ int Request_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 				{
 					if(temp_t != 0)
 						_stmt->addIteration();
-					sprintf(temp_buf,"%d",CrossID);
 					_stmt->setString(1,temp_buf);
-					_stmt->setInt(2,Strategy[j].strategy_id);
-					_stmt->setInt(3,Strategy[j].sequence_num);
-					_stmt->setInt(4,Strategy[j].direction);
-					_stmt->setInt(5,Strategy[j].level);
-					_stmt->setInt(6,Strategy[j].param1);
-					_stmt->setInt(7,Strategy[j].param2);
-					_stmt->setInt(8,Strategy[j].param3);
-					_stmt->setInt(9,Strategy[j].param4);
-					_stmt->setInt(10,Strategy[j].threshold);
-					_stmt->setInt(11,Strategy[j].interval);
-					_stmt->setInt(12,Strategy[j].max_time_allowed);
-					_stmt->setInt(13,Strategy[j].card_live_time);
+					_stmt->setInt(2,Strategy[temp_t].strategy_id);
+					_stmt->setInt(3,Strategy[temp_t].sequence_num);
+					_stmt->setInt(4,Strategy[temp_t].direction);
+					_stmt->setInt(5,Strategy[temp_t].level);
+					_stmt->setInt(6,Strategy[temp_t].param1);
+					_stmt->setInt(7,Strategy[temp_t].param2);
+					_stmt->setInt(8,Strategy[temp_t].param3);
+					_stmt->setInt(9,Strategy[temp_t].param4);
+					_stmt->setInt(10,Strategy[temp_t].threshold);
+					_stmt->setInt(11,Strategy[temp_t].interval);
+					_stmt->setInt(12,Strategy[temp_t].max_time_allowed);
+					_stmt->setInt(13,Strategy[temp_t].card_live_time);
 				}
 				_stmt->executeUpdate();
 				_conn->commit();
-//				_conn->terminateStatement(_stmt);
-//				OraEnviroment->terminateConnection(_conn);
 				DisconnectOracle(&_conn,&_stmt);
 				return true;
 			}
@@ -604,8 +612,6 @@ int Request_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 		}
 	}
 _error:
-//	_conn->terminateStatement(_stmt);
-//	OraEnviroment->terminateConnection(_conn);
 	DisconnectOracle(&_conn,&_stmt);
 	printf("查询设备优先策略表,cross_id= %d",CrossID);
 	return false;
@@ -639,22 +645,22 @@ int Request_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,uns
 
 	int timetable_num,time_num;//  时间表编号  时间表中时间序号
 	int timetable_count =Rec_buf[11], time_count;			//  时间表数量   时间表中时间段的数量
+	int temp_i;
 	if(recv_len>0)
 	{
-		for(timetable_num = 1;timetable_num<= timetable_count;timetable_num++)
+		for(temp_i = 0;temp_i< timetable_count;temp_i++)
 		{
-			if(timetable_num != Rec_buf[i])
-				goto _error;
-			i++;
-			time_count = Rec_buf[i];
-			i++;
-			for(time_num = 1; time_num < time_count;time_num++)
+//			if(timetable_num != Rec_buf[i])
+//				goto _error;
+			timetable_num = Rec_buf[i++];
+			time_count =  Rec_buf[i++];
+			for(time_num = 0; time_num < time_count;time_num++)
 			{
-				if(time_num != Rec_buf[i])
-					goto _error;
-				i++;
+//				if(time_num != Rec_buf[i])
+//					goto _error;
+//				i++;
 				StrategyTime[j].time_table_id = timetable_num;
-				StrategyTime[j].time_id = time_num;
+				StrategyTime[j].time_id = Rec_buf[i++];
 				StrategyTime[j].start_time[0]= Rec_buf[i++];
 				StrategyTime[j].start_time[1]= Rec_buf[i++];
 				StrategyTime[j].end_time[0]= Rec_buf[i++];
@@ -663,7 +669,7 @@ int Request_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,uns
 				j++;
 			}
 		}
-		if(j > 0)         //解析出有效的数据
+		if((j > 0) && (i<recv_len))         //解析出有效的数据
 		{
 			try
 			{
@@ -677,27 +683,34 @@ int Request_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,uns
 				_stmt->setMaxParamSize(2,sizeof(int));
 				int temp_t;
 				char temp_buf[10];
-				for(temp_t = 1; temp_t <= timetable_count; temp_t++)
+				timetable_num = 0;
+				for(temp_t = 0; temp_t <= timetable_count; temp_t++)
 				{
-					if(temp_t != 0)
-						_stmt->addIteration();
-					sprintf(temp_buf,"%d",CrossID);
-					_stmt->setString(1,temp_buf);
-					_stmt->setInt(2,temp_t);
+					if(StrategyTime[temp_t].time_table_id != timetable_num)
+					{
+						timetable_num = StrategyTime[temp_t].time_table_id;
+						if(temp_t != 0)
+							_stmt->addIteration();
+						sprintf(temp_buf,"%d",CrossID);
+						_stmt->setString(1,temp_buf);
+						_stmt->setInt(2,timetable_num);
+					}
 				}
 				_stmt->executeUpdate();
 				/********更新优先策略时间配置详细表***************************/
 				sprintf(sqlbuf,"delete from TIME_CONFIG_INFO where INTERSECTION_ID = '%d'",CrossID);
 				_stmt->execute(sqlbuf);
-				sprintf(sqlbuf,"insert into TIME_CONFIG_INFO(INTERSECTION_ID,TIME_ID,START_TIME,END_TIME,STRATEGY_ID) "
-						"values(:x1,:x2,:x3,:x4,:x5)");
+				_conn->commit();
+				sprintf(sqlbuf,"insert into TIME_CONFIG_INFO(INTERSECTION_ID,TIME_ID,TIME_ORDER,START_TIME,END_TIME,STRATEGY_ID) "
+						"values(:x1,:x2,:x3,:x4,:x5,:x6)");
 				_stmt->setSQL(sqlbuf);
 				_stmt->setMaxIterations(j);
 				_stmt->setMaxParamSize(1,10);
 				_stmt->setMaxParamSize(2,sizeof(int));
-				_stmt->setMaxParamSize(3,10);
+				_stmt->setMaxParamSize(3,sizeof(int));
 				_stmt->setMaxParamSize(4,10);
-				_stmt->setMaxParamSize(5,sizeof(int));
+				_stmt->setMaxParamSize(5,10);
+				_stmt->setMaxParamSize(6,sizeof(int));
 
 				for(temp_t = 0; temp_t < j; temp_t++)
 				{
@@ -706,11 +719,12 @@ int Request_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,uns
 					sprintf(temp_buf,"%d",CrossID);
 					_stmt->setString(1,temp_buf);
 					_stmt->setInt(2,StrategyTime[temp_t].time_table_id);
-					sprintf(temp_buf,"%d:%d",StrategyTime[temp_t].start_time[0],StrategyTime[temp_t].start_time[1]);
-					_stmt->setString(3,temp_buf);
-					sprintf(temp_buf,"%d:%d",StrategyTime[temp_t].end_time[0],StrategyTime[temp_t].end_time[1]);
+					_stmt->setInt(3,StrategyTime[temp_t].time_id);
+					sprintf(temp_buf,"%02d:%02d",StrategyTime[temp_t].start_time[0],StrategyTime[temp_t].start_time[1]);
 					_stmt->setString(4,temp_buf);
-					_stmt->setInt(5,StrategyTime[temp_t].strategy_id);
+					sprintf(temp_buf,"%02d:%02d",StrategyTime[temp_t].end_time[0],StrategyTime[temp_t].end_time[1]);
+					_stmt->setString(5,temp_buf);
+					_stmt->setInt(6,StrategyTime[temp_t].strategy_id);
 				}
 				_stmt->executeUpdate();
 				_conn->commit();
@@ -735,14 +749,10 @@ int Request_DeviceStrategyTime_0x06(int sockfd,struct sockaddr_in DeviceAddr,uns
 			   goto _error;
 			}
 		}
-//		_conn->terminateStatement(_stmt);
-//		OraEnviroment->terminateConnection(_conn);
 		DisconnectOracle(&_conn,&_stmt);
 		return true;
 	}
 _error:
-//	_conn->terminateStatement(_stmt);
-//	OraEnviroment->terminateConnection(_conn);
 	DisconnectOracle(&_conn,&_stmt);
 	printf("查询设备策略时间表失败,cross_id= %d",CrossID);
 	return false;
@@ -777,10 +787,10 @@ int Request_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 		int data_count = Rec_buf[11];
 		for(j = 0;j<data_count;j++)
 		{
-			if(Rec_buf[i] != j+1)
-			{
-				goto _error;
-			}
+//			if(Rec_buf[i] != j+1)
+//			{
+//				goto _error;
+//			}
 			schedule[j].id = Rec_buf[i++];
 			schedule[j].type = Rec_buf[i++];
 			schedule[j].priority_level = Rec_buf[i++];
@@ -791,12 +801,14 @@ int Request_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 			i = i+4;
 			schedule[j].time_table_id = Rec_buf[i++];
 		}
-		if(j > 0)         //解析出有效的数据
+		if((j > 0) && (i<recv_len))         //解析出有效的数据
 		{
+			int temp_len;
 			try
 			{
 				sprintf(sqlbuf,"delete from DISPATCH_INFO where INTERSECTION_ID = '%d'",CrossID);
 				_stmt->execute(sqlbuf);
+				_conn->commit();
 				sprintf(sqlbuf,"insert into DISPATCH_INFO(INTERSECTION_ID,DISPATCH_ID,DISPATCH_TYPE,DISPATCH_PRIORITY,WEEK_VALUE,MONTH_VALUE,DAY_VALUE,TIME_ID) "
 						"values(:x1,:x2,:x3,:x4,:x5,:x6,:x7,:x8)");
 				_stmt->setSQL(sqlbuf);
@@ -818,44 +830,49 @@ int Request_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 						_stmt->addIteration();
 					sprintf(temp_buf,"%d",CrossID);
 					_stmt->setString(1,temp_buf);
-					_stmt->setInt(2,schedule[j].id);
-					_stmt->setInt(3,schedule[j].type);
-					_stmt->setInt(4,schedule[j].priority_level);
+					_stmt->setInt(2,schedule[temp_t].id);
+					_stmt->setInt(3,schedule[temp_t].type);
+					_stmt->setInt(4,schedule[temp_t].priority_level);
+					memset(temp_value,'\0',sizeof(temp_value));
 					for(temp_i = 0;temp_i < 7;temp_i++)
 					{
-						if(schedule[j].week_value & (0x01 <<temp_i))
+						if(schedule[temp_t].week_value & (0x01 <<temp_i))
 						{
 							sprintf(temp_buf,"%d,",temp_i+1);
 							strcat(temp_value,temp_buf);
 						}
 					}
+					temp_len = strlen(temp_value);
+					temp_value[temp_len-1] = '\0';
 					_stmt->setString(5,temp_value);
 					memset(temp_value,'\0',sizeof(temp_value));
 					for(temp_i = 0;temp_i < 12;temp_i++)
 					{
-						if(schedule[j].month_value & (0x01 <<temp_i))
+						if(schedule[temp_t].month_value & (0x01 <<temp_i))
 						{
 							sprintf(temp_buf,"%d,",temp_i+1);
 							strcat(temp_value,temp_buf);
 						}
 					}
+					temp_len = strlen(temp_value);
+					temp_value[temp_len-1] = '\0';
 					_stmt->setString(6,temp_value);
 					memset(temp_value,'\0',sizeof(temp_value));
 					for(temp_i = 0;temp_i < 31;temp_i++)
 					{
-						if(schedule[j].day_value & (0x01 <<temp_i))
+						if(schedule[temp_t].day_value & (0x01 <<temp_i))
 						{
 							sprintf(temp_buf,"%d,",temp_i+1);
 							strcat(temp_value,temp_buf);
 						}
 					}
+					temp_len = strlen(temp_value);
+					temp_value[temp_len-1] = '\0';
 					_stmt->setString(7,temp_value);
-					_stmt->setInt(8,schedule[j].time_table_id);
+					_stmt->setInt(8,schedule[temp_t].time_table_id);
 				}
 				_stmt->executeUpdate();
 				_conn->commit();
-//				_conn->terminateStatement(_stmt);
-//				OraEnviroment->terminateConnection(_conn);
 				DisconnectOracle(&_conn,&_stmt);
 				return true;
 			}
@@ -879,9 +896,7 @@ int Request_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigne
 			}
 		}
 	}
-_error:
-//	_conn->terminateStatement(_stmt);
-//	OraEnviroment->terminateConnection(_conn);
+//_error:
 	DisconnectOracle(&_conn,&_stmt);
 	printf("查询设备调度表失败,cross_id= %d\n",CrossID);
 	return false;
@@ -937,8 +952,12 @@ _receive_loop:
 		card[j].RFID = ( (Rec_buf[i] << 24) | (Rec_buf[i+1] << 16) | (Rec_buf[i+2] << 8) | Rec_buf[i+3]);
 		i = i+4;
 		temp_len = Rec_buf[i++];
+		if(i+temp_len > recv_len)
+		{
+			goto _error;
+		}
 		memset(card[j].plate_num,'\0',sizeof(card[j].plate_num));
-		memcpy(card[j].plate_num,Rec_buf,temp_len);
+		memcpy(card[j].plate_num,Rec_buf+i,temp_len);
 		i = i+temp_len;
 		card[j].plate_color = Rec_buf[i++];
 		card[j].threshold = Rec_buf[i++];
@@ -946,13 +965,21 @@ _receive_loop:
 		i = i+4;
 
 		temp_len = Rec_buf[i++];
+		if(i+temp_len > recv_len)
+		{
+			goto _error;
+		}
 		memset(card[j].line_num,'\0',sizeof(card[j].line_num));
-		memcpy(card[j].line_num,Rec_buf,temp_len);
+		memcpy(card[j].line_num,Rec_buf+i,temp_len);
 		i = i+temp_len;
 
 		temp_len = Rec_buf[i++];
+		if(i+temp_len > recv_len)
+		{
+			goto _error;
+		}
 		memset(card[j].company,'\0',sizeof(card[j].company));
-		memcpy(card[j].company,Rec_buf,temp_len);
+		memcpy(card[j].company,Rec_buf+i,temp_len);
 
 		j++;
 
@@ -966,8 +993,9 @@ _receive_loop:
 	{
 		try
 		{
-			sprintf(sqlbuf,"delete from BUSP_CARD where INTERSECTION_ID = '%d'",CrossID);
+			sprintf(sqlbuf,"delete from BUSP_CARD ");
 			_stmt->execute(sqlbuf);
+
 			sprintf(sqlbuf,"insert into BUSP_CARD(CARD_ID ,CARD_TYPE,BUS_CLASS,BUS_PLATE,PLATE_COLOR,INSTALL_TIME,COMPANY,CAR_PRIORITY) "
 					"values(:x1,:x2,:x3,:x4,:x5,to_date(:x6,'yyyy-mm-dd hh24:mi:ss'),:x7,:x8)");
 			_stmt->setSQL(sqlbuf);
@@ -991,16 +1019,16 @@ _receive_loop:
 					_stmt->addIteration();
 				_stmt->setNumber(1,card[temp_t].RFID);
 				_stmt->setInt(2,1);
-				_stmt->setString(3,(char *)card[j].line_num);
-				_stmt->setString(4,(char *)card[j].plate_num);
-				_stmt->setInt(5,card[j].plate_color);
-				install_t = card[j].install_time;
+				_stmt->setString(3,(char *)card[temp_t].line_num);
+				_stmt->setString(4,(char *)card[temp_t].plate_num);
+				_stmt->setInt(5,card[temp_t].plate_color);
+				install_t = card[temp_t].install_time;
 				time_install = localtime(&install_t);
 				sprintf(temp_buf,"%d-%d-%d %02d:%02d:%02d",
 						time_install->tm_year+1900,time_install->tm_mon+1,time_install->tm_mday,time_install->tm_hour,time_install->tm_min,time_install->tm_sec);
 				_stmt->setString(6,temp_buf);
-				_stmt->setString(7,(char *)card[j].company);
-				_stmt->setInt(8,card[j].threshold);
+				_stmt->setString(7,(char *)card[temp_t].company);
+				_stmt->setInt(8,card[temp_t].threshold);
 			}
 			_stmt->executeUpdate();
 			_conn->commit();
@@ -1353,7 +1381,8 @@ int Set_DeviceStrategy_0x05(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 		send_buf[i++] = Strategy[temp_i].threshold;
 		send_buf[i++] = Strategy[temp_i].interval;
 		send_buf[i++] = Strategy[temp_i].max_time_allowed;
-		send_buf[i++] = Strategy[temp_i].card_live_time;
+		send_buf[i++] = ( Strategy[temp_i].card_live_time & 0xFF00 )>>8;
+		send_buf[i++] = ( Strategy[temp_i].card_live_time & 0xFF );
 	}
 
 	send_buf[1] = (0xFF & i) >> 8;
@@ -1517,41 +1546,41 @@ int Set_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 			schedule[j].week_value =0;
 			memset(temp_buf,'\0',100);
 			sprintf(temp_buf,Result->getString(4).c_str());
-			result = strtok( temp_buf, "." );
+			result = strtok( temp_buf, "," );
 			while( result != NULL )
 			{
 				temp_j = atoi(result);
 				if(temp_j != 0)
 				{
-					schedule[j].week_value = schedule[j].week_value | (1 << temp_j );
+					schedule[j].week_value = (schedule[j].week_value | (1 << (temp_j-1) ));
 				}
-				result = strtok( NULL, "." );
+				result = strtok( NULL, "," );
 			}
 			schedule[j].month_value =0;
 			memset(temp_buf,'\0',100);
 			sprintf(temp_buf,Result->getString(5).c_str());
-			result = strtok( temp_buf, "." );
+			result = strtok( temp_buf, "," );
 			while( result != NULL )
 			{
 				temp_j = atoi(result);
 				if(temp_j != 0)
 				{
-					schedule[j].month_value = schedule[j].month_value | (1 << temp_j );
+					schedule[j].month_value = (schedule[j].month_value | (1 << (temp_j-1) ));
 				}
-				result = strtok( NULL, "." );
+				result = strtok( NULL, "," );
 			}
 			schedule[j].day_value =0;
 			memset(temp_buf,'\0',100);
 			sprintf(temp_buf,Result->getString(6).c_str());
-			result = strtok( temp_buf, "." );
+			result = strtok( temp_buf, "," );
 			while( result != NULL )
 			{
 				temp_j = atoi(result);
 				if(temp_j != 0)
 				{
-					schedule[j].day_value = schedule[j].day_value | (1 << temp_j );
+					schedule[j].day_value = (schedule[j].day_value | (1 << (temp_j-1) ));
 				}
-				result = strtok( NULL, "." );
+				result = strtok( NULL, "," );
 			}
 			schedule[j].time_table_id = Result->getInt(7);
 			j++;
@@ -1568,14 +1597,13 @@ int Set_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 	if(j == 0)
 		goto _error;
 
+	memset(send_buf,'\0',SingleRecvMaxLen);
+	memcpy(send_buf,web_data,11);
+	send_buf[11] = (j & 0xFF);
+	i = 12;
 	int temp_i;
 	for(temp_i = 0; temp_i < j; temp_i++)
 	{
-
-		memset(send_buf,'\0',SingleRecvMaxLen);
-		memcpy(send_buf,web_data,11);
-		send_buf[11] = (j & 0xFF);
-		i = 12;
 		send_buf[i++] = schedule[temp_i].id;
 		send_buf[i++] = schedule[temp_i].type;
 		send_buf[i++] = schedule[temp_i].priority_level;
@@ -1602,7 +1630,7 @@ int Set_DeviceSchedule_0x07(int sockfd,struct sockaddr_in DeviceAddr,unsigned ch
 		return true;
 	}
 _error:
-	printf("设置设备调度表,连接数据库失败,cross_id= %d\n",CrossID);
+	printf("设置设备调度表失败,cross_id= %d\n",CrossID);
 //	_conn->terminateStatement(_stmt);
 //	OraEnviroment->terminateConnection(_conn);
 	DisconnectOracle(&_conn,&_stmt);
@@ -1717,7 +1745,7 @@ int Set_DeviceCard_0x08(int sockfd,struct sockaddr_in DeviceAddr,unsigned char *
 		send_buf[i++] = 0x7D;
 		sendto(sockfd, send_buf, i, 0, (struct sockaddr *)&DeviceAddr, sizeof(struct sockaddr));
 		recv_len = ReceiveDeviceReply( sockfd, DeviceAddr, Rec_buf, TimeOut_S);
-		if( (recv_len<=0 ) && (Rec_buf[12] != 0x00) )
+		if( (recv_len<=0 ) || (Rec_buf[12] != 0x00) )
 		{
 			goto _error;
 		}
@@ -1733,7 +1761,7 @@ _error:
 //	_conn->terminateStatement(_stmt);
 //	OraEnviroment->terminateConnection(_conn);
 	DisconnectOracle(&_conn,&_stmt);
-	printf("设置车辆信息表,cross_id= %d\n",CrossID);
+	printf("设置车辆信息表失败,cross_id= %d\n",CrossID);
 	return false;
 }
 

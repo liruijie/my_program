@@ -42,7 +42,7 @@ void * Connect_HiCON(void *arg)
 	pthread_t pth_subscribe;
 	bzero(&HiCON_Addr, sizeof(HiCON_Addr));
 	HiCON_Addr.sin_family = PF_INET;
-	HiCON_Addr.sin_port = htons(HiCON.port);
+	HiCON_Addr.sin_port = htons(10010);//htons(HiCON.port);
 	HiCON_Addr.sin_addr.s_addr = inet_addr("192.168.1.38");
 	Sockfd_HiCON=InitHiCON_TCP();
 	while(1)
@@ -922,6 +922,8 @@ void HiCON_Priority(xmlXPathContextPtr Xpath)
 
 			preempt_child = preempt_child->next;
 		}
+		char sqlbuf[200];
+		sprintf(sqlbuf,"update SIGNAL_PHASE_STATE set REQUSET_TIME = :x1,UPDATE_TIME = sysdate,PRIORITY_TYPE = :x2 where UNIT_ID = :x3 and PHASE_ID = :x4");
 		//update sql
 		return;
 }

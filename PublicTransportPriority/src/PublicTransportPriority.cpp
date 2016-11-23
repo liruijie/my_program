@@ -37,13 +37,13 @@ int main()
 	ret = CommunicateWithWeb();
 	if(ret== false)
 		exit(0);
-	//ret = CommunicateWithHiCON();
+//	ret = CommunicateWithHiCON();
 //	if(ret== false)
 //		exit(0);
 	sleep(5);
 	while(1)
 	{
-		CheckTime();
+//		CheckTime();
 		sleep(600);				//
 	}
 
@@ -55,8 +55,9 @@ int GetConfige()
 	FILE *fp = fopen(Config_PATH,"r");
 	if( fp == NULL )
 	{
-	printf("!!! Can't open file %s\n",Config_PATH);
-	return false;
+		printf("!!! Can't open file %s\n",Config_PATH);
+		perror("error");
+		return false;
 	}
 	char line[64];
 	char tmp[64];

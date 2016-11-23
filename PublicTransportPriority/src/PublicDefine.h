@@ -183,9 +183,9 @@ struct HiCON_Signal_Info
 {
 		int signal_id;											//信号机ID
 		int signal_status;									//信号机联机状态
-		int subscribe_signal_status;						//是否订阅信号机联机状态   0:否  1：是
-		int subscribe_phase_status;						//是否订阅信号机相位状态   0:否  1：是
-		int subscribe_priority_status;					//是否订阅信号机优先状态   0:否  1：是
+		volatile int subscribe_signal_status;						//是否订阅信号机联机状态   0:否  1：是
+		volatile int subscribe_phase_status;						//是否订阅信号机相位状态   0:否  1：是
+		volatile int subscribe_priority_status;					//是否订阅信号机优先状态   0:否  1：是
 
 		int phases_count;										//报文中的相位个数
 		struct Signal_Phase phase[SignalMaxPhase];	//相位状态

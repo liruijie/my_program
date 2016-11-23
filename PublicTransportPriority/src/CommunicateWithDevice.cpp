@@ -199,12 +199,13 @@ void * UpdateStatus_Device(void *arg)
 	stmt_update->setAutoCommit(false);
 	cout << "update device status pthread\n"<<endl;
 	prctl(PR_SET_NAME, (unsigned long)"UpdateStatus_Device");
-	char sqlbuf[] = "update UNIT_CUR_STAUS set CONTROL_MODE = :x1 ,DATA_UPDATE_TIME = sysdate,device_time = to_date(:x2,'yyyy-mm-dd hh24:mi:ss') where UNIT_ID = :x3";
+	char sqlbuf_status[200];
+	char sqlbuf[] = "update UNIT_CUR_STAUS set DATA_UPDATE_TIME = sysdate,device_time = to_date(:x1,'yyyy-mm-dd hh24:mi:ss') where UNIT_ID = :x2";
 	stmt_update->setSQL(sqlbuf);
 	stmt_update->setMaxIterations(CurrentExistDevice);
-	stmt_update->setMaxParamSize(1,sizeof(int));
-	stmt_update->setMaxParamSize(2,30);
-	stmt_update->setMaxParamSize(3,sizeof(int));
+
+	stmt_update->setMaxParamSize(1,30);
+	stmt_update->setMaxParamSize(2,sizeof(int));
 	char temp_buf[10];
 	char time_buf[30];
 	struct tm *fault_time;
@@ -223,14 +224,16 @@ void * UpdateStatus_Device(void *arg)
 					if((time_now - device[i].last_report_time) < 5)
 					{
 						device[i].status = ONLINE;
-						if(device_num != 0)
-							stmt_update->addIteration();
-						sprintf(temp_buf,"1");
-						stmt_update->setString(1,temp_buf);
-						stmt_update->setString(2,device[i].realdata.DeviceTime);
-						sprintf(temp_buf,"%d",device[i].id);
-						stmt_update->setString(3,temp_buf);
-						device_num = device_num + 1;
+						sprintf(sqlbuf_status,"update UNIT_CUR_STAUS set DATA_UPDATE_TIME = sysdate,CONTROL_MODE = '2' where UNIT_ID = '%d'",device[i].id);
+						stmt_device->execute(sqlbuf_status);
+//						if(device_num != 0)
+//							stmt_update->addIteration();
+//						sprintf(temp_buf,"2");
+//						stmt_update->setString(1,temp_buf);
+//						stmt_update->setString(2,device[i].realdata.DeviceTime);
+//						sprintf(temp_buf,"%d",device[i].id);
+//						stmt_update->setString(3,temp_buf);
+//						device_num = device_num + 1;
 
 						//删除实时故障表里的故障数据   在历史故障表插入恢复信息
 						try
@@ -270,7 +273,8 @@ void * UpdateStatus_Device(void *arg)
 					if((time_now - device[i].last_report_time) > 10)
 					{
 						device[i].status = OFFLINE;
-						sprintf(temp_buf,"4");
+						sprintf(sqlbuf_status,"update UNIT_CUR_STAUS set DATA_UPDATE_TIME = sysdate,CONTROL_MODE = '4' where UNIT_ID = '%d'",device[i].id);
+						stmt_device->execute(sqlbuf_status);
 
 						//插入设备离线故障
 						try
@@ -303,14 +307,12 @@ void * UpdateStatus_Device(void *arg)
 					}
 					else			//设备状态是正常的
 					{
-						sprintf(temp_buf,"1");
+						stmt_update->setString(1,device[i].realdata.DeviceTime);
+						sprintf(temp_buf,"%d",device[i].id);
+						stmt_update->setString(2,temp_buf);
+						device_num = device_num + 1;
+						continue;
 					}
-					stmt_update->setString(1,temp_buf);
-					stmt_update->setString(2,device[i].realdata.DeviceTime);
-					sprintf(temp_buf,"%d",device[i].id);
-					stmt_update->setString(3,temp_buf);
-					device_num = device_num + 1;
-					continue;
 				}
 			}
 			if(device_num !=0 )
@@ -361,9 +363,11 @@ int Device_DetectData(unsigned char *buf)
 	int i =GetDeviceIndex(buf);
 	if(i < 0)
 		return false;
-
+	time_t time_now_s;
+	time(&time_now_s);
+	device[i].last_report_time = time_now_s;
 	int index = 12;
-
+	puts("车辆检测信息\n");
 	memset(device[i].realdata.line_number,'\0',sizeof(device[i].realdata.line_number));
 	memcpy(device[i].realdata.line_number , buf + index + 1 , buf[index]);
 	index = index + buf[index] +1;
@@ -412,6 +416,7 @@ int Device_DetectData(unsigned char *buf)
 			stmt_device->closeResultSet(Result);
 			if(device[i].realdata.IsLeave == 0)		//数据库中存在记录，但是车辆已经离开检测范围，应该删除记录
 			{
+				puts("车辆离开，删除记录\n");
 				sprintf(sqlbuf,"delete from REAL_TIME_REQUEST_INFO where RECORD_ID = '%s'",Record_ID);
 				stmt_device->execute(sqlbuf);
 				sprintf(sqlbuf,"delete from REAL_TIME_REQUEST where RECORD_ID = '%s'",Record_ID);
@@ -419,6 +424,7 @@ int Device_DetectData(unsigned char *buf)
 			}
 			else												//数据库中存在记录，但是车辆还在检测范围，应该更新记录
 			{
+				puts("更新记录\n");
 				sprintf(sqlbuf,"update REAL_TIME_REQUEST set REQUEST_TIME = to_date('%s','yyyy-mm-dd hh24:mi:ss'),PRIORITY = '%d',"
 						"CONTROL_BOARD_OUTPUT = '%d',PRIORITY_TIME = '%d',IS_PASS = '%d',DIRECTION = '%d' where RECORD_ID = '%s'",
 						time_buf,device[i].realdata.priority_level,device[i].realdata.output_port,device[i].realdata.priority_time,
@@ -429,6 +435,7 @@ int Device_DetectData(unsigned char *buf)
 		}
 		else													//数据库中不存在记录，应该插入记录
 		{
+			puts("插入检测记录\n");
 			time_t time_now;
 			time(&time_now);
 			//记录ID为当前时间+10位卡号
@@ -474,6 +481,9 @@ int Device_Fault(unsigned char *buf)
 	int i =GetDeviceIndex(buf);
 	if(i < 0)
 		return false;
+	time_t time_now_s;
+	time(&time_now_s);
+	device[i].last_report_time = time_now_s;
 	char time_buf[30];
 	char fault_info[100];
 	char recover_info[100];
