@@ -4,5 +4,6 @@ ENABLED_DECORATORS=org.eclipse.cdt.ui.indexedFiles\:false,org.eclipse.cdt.manage
 PLUGINS_NOT_ACTIVATED_ON_STARTUP=
 UIActivities.org.eclipse.cdt.debug.cdigdbActivity=true
 UIActivities.org.eclipse.cdt.debug.dsfgdbActivity=true
+WORKBENCH_SAVE_INTERVAL=1
 eclipse.preferences.version=1
 org.eclipse.ui.commands=<?xml version\="1.0" encoding\="UTF-8"?>\n<org.eclipse.ui.commands/>

@@ -1,14 +1,9 @@
-09:23:16 **** Build of configuration Debug for project xinjiang ****
+13:25:18 **** Incremental Build of configuration Debug for project xinjiang ****
 make all 
-Building file: ../src/ITC_Server.cpp
+Building file: ../src/ControlCenterCommt.cpp
 Invoking: GCC C++ Compiler
-g++ -I/usr/local/include/libxml2 -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ITC_Server.d" -MT"src/ITC_Server.o" -o "src/ITC_Server.o" "../src/ITC_Server.cpp"
-Finished building: ../src/ITC_Server.cpp
- 
-Building file: ../src/Operation_Get.cpp
-Invoking: GCC C++ Compiler
-g++ -I/usr/local/include/libxml2 -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Operation_Get.d" -MT"src/Operation_Get.o" -o "src/Operation_Get.o" "../src/Operation_Get.cpp"
-Finished building: ../src/Operation_Get.cpp
+g++ -I/usr/local/include/libxml2 -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ControlCenterCommt.d" -MT"src/ControlCenterCommt.o" -o "src/ControlCenterCommt.o" "../src/ControlCenterCommt.cpp"
+Finished building: ../src/ControlCenterCommt.cpp
  
 Building target: xinjiang
 Invoking: GCC C++ Linker
@@ -16,5 +11,5 @@ g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xinjiang"  ./src/Co
 Finished building target: xinjiang
  
 
-09:23:20 Build Finished (took 3s.563ms)
+13:25:18 Build Finished (took 382ms)
 

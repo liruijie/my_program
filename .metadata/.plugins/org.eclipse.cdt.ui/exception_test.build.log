@@ -1,0 +1,15 @@
+10:51:32 **** Incremental Build of configuration Debug for project exception_test ****
+make all 
+Building file: ../src/exception_test.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/exception_test.d" -MT"src/exception_test.o" -o "src/exception_test.o" "../src/exception_test.cpp"
+Finished building: ../src/exception_test.cpp
+ 
+Building target: exception_test
+Invoking: GCC C++ Linker
+g++  -o "exception_test"  ./src/exception_test.o   
+Finished building target: exception_test
+ 
+
+10:51:32 Build Finished (took 264ms)
+

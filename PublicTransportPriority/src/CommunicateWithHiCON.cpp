@@ -922,8 +922,83 @@ void HiCON_Priority(xmlXPathContextPtr Xpath)
 
 			preempt_child = preempt_child->next;
 		}
+
+
 		char sqlbuf[200];
-		sprintf(sqlbuf,"update SIGNAL_PHASE_STATE set REQUSET_TIME = :x1,UPDATE_TIME = sysdate,PRIORITY_TYPE = :x2 where UNIT_ID = :x3 and PHASE_ID = :x4");
-		//update sql
+		Connection *_conn = NULL;
+		Statement *_stmt = NULL;
+		try
+		{
+			if(GetConnectFromPool(&_conn,&_stmt) == false)
+			{
+				printf("更新海信信号机优先状态,连接数据库失败,signal_id = %d\n",Spot);
+				return ;
+			}
+			sprintf(sqlbuf,"update SIGNAL_PHASE_STATE set REQUSET_TIME = to_date(:x1,'yyyy-mm-dd hh24:mi:ss'),PRIORITY_TYPE = ：x2,PRIORITY_TIME = :x3 ,UPDATE_TIME = sysdate where UNIT_ID = :x4 and PHASE_ID = :x5");
+			_stmt->setSQL(sqlbuf);
+			_stmt->setMaxIterations(Signal[i].phases_count*8);
+			_stmt->setMaxParamSize(1,30);
+			_stmt->setMaxParamSize(2,20);
+			_stmt->setMaxParamSize(3,20);
+			_stmt->setMaxParamSize(4,20);
+			_stmt->setMaxParamSize(5,20);
+			struct tm *timeinfo;
+			char time_buf[30];
+			ResultSet *Result;
+			int temp_i;
+			char type_buf[2],phaseNo_buf[2],priorityTime_buf[4],signal_id[10];
+			priorityTime_buf[0] = '0';
+			priorityTime_buf[1] = 'x';
+			char request_sql_buf[100];
+			for(temp_t = 0; temp_t < Signal[i].phases_count; temp_t++)
+			{
+				timeinfo = gmtime(&(Signal[i].priority[temp_t].time));
+				sprintf(time_buf,"%d-%02d-%02d %02d:%02d:%02d",timeinfo->tm_year+1900,timeinfo->tm_mon+1,
+						timeinfo->tm_mday,timeinfo->tm_hour,timeinfo->tm_min,timeinfo->tm_sec);
+				for(temp_i = 0;temp_i< 8;temp_i++)
+				{
+					memcpy(type_buf, Signal[i].priority[temp_t].PreemptType+temp_i*2,2);
+					if(0 == atoi(type_buf))           //优先类型为：无优先申请
+					{
+						continue;
+					}
+					memcpy(priorityTime_buf+2, Signal[i].priority[temp_t].PreemptTime+temp_i*2, 2);
+					memcpy(phaseNo_buf, Signal[i].priority[temp_t].PreemptPhaseNo+temp_i*2, 2);
+
+					/*********更新REAL_TIME_REQUEST表***********/
+					sprintf(request_sql_buf,"select t.direction from UNIT_CONFIG_INFO t where t.unit_id = '%d' and t.phase_no = %s",Spot,phaseNo_buf);
+					Result = _stmt->executeQuery(request_sql_buf);
+					if(Result->next() != 0)
+					{
+						int phase_dir = Result->getInt(1);
+						_stmt->closeResultSet(Result);
+						sprintf(request_sql_buf,"update REAL_TIME_REQUEST set IS_PASS = 1 ,PRIORITY_TIME = %ld where INTERSECTION_ID = '%d' and DIRECTION = %d",strtol(priorityTime_buf,NULL,16),Spot,phase_dir);
+						_stmt->execute(request_sql_buf);
+					}
+					else
+					{
+						continue;
+					}
+					/**********************************/
+					if( (temp_t != 0) || (temp_i != 0))
+						_stmt->addIteration();
+					_stmt->setString(1,time_buf);
+					_stmt->setInt(2,atoi(type_buf));
+					_stmt->setNumber(3,strtol(priorityTime_buf,NULL,16));
+					sprintf(signal_id,"%d",Spot);
+					_stmt->setString(4,signal_id);
+					_stmt->setNumber(5,atoi(phaseNo_buf));
+				}
+			}
+			_stmt->execute();
+		}
+		catch(SQLException &ex)
+		{
+			cout << __FILE__ << '\t'<< __FUNCTION__ << '\t' << __LINE__ << '\n' << endl;
+			ex.getErrorCode();
+		   cout << ex.getMessage();
+		}
+		DisconnectOracle(&_conn,&_stmt);
+
 		return;
 }

@@ -31,6 +31,16 @@
 
 
 #define CALLBACK
+
+enum
+{
+		value,
+#define Value value
+		char_value='c'
+#define CharValue char_value
+};
+
+
 //1111
 typedef char (* CALLBACK _PTRFUN)(int,char *);
 CALLBACK _PTRFUN pFun;
@@ -41,11 +51,20 @@ char glFun(int a,char *p)
 	printf(p);
 	return (char )a;
 }
+
 int main()
 {
 		char c;
+		time_t time_now;
+		time(&time_now);
+		 struct tm *p = gmtime(&time_now);
+		 printf("week value = %d\n",p->tm_wday);
 
-		printf("%-13ldaaaaa\n",123456L);
+
+
+		printf("int  = %d,char = %c",Value,CharValue);
+
+		printf("%05ldaaaaa\n",time_now);
     pFun = glFun;
     pFun2 = (_PTRFUN )glFun;
     c = (*pFun)(0x32,"this is pFun\n");

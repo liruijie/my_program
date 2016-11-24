@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="将资源“TcpTest”重命名为“TcpServerTest”" description="重命名资源“TcpTest”" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="/TcpTest" name="TcpServerTest" stamp="1478500380685" updateReferences="true"/>
+</session>

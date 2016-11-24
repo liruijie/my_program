@@ -39,7 +39,7 @@ void * pth_ttt(void *arg)
 {
 	struct web_message_info pthweb_message;
 	unsigned char data[100];
-	pthread_detach(pthread_self());
+	//pthread_detach(pthread_self());
 	memcpy(&pthweb_message,arg,sizeof(struct web_message_info));
 	free(arg);
 	struct sockaddr_in addr = pthweb_message.WebServerAddr;
@@ -58,7 +58,17 @@ void test(unsigned char *data,struct sockaddr_in WebAddr)
 	memcpy(web_message->RecvBuf,data,100);
 	web_message->WebServerAddr = WebAddr;
 	pthread_t ptr;
-	pthread_create(&ptr,NULL,pth_ttt,web_message);
+	pthread_attr_t attr;
+	int detachstate;
+	pthread_attr_init(&attr);
+	pthread_attr_getdetachstate(&attr,&detachstate);
+	if(detachstate==PTHREAD_CREATE_JOINABLE)
+	{
+		pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);//设置为线程分离属性设置为分离
+	}
+	pthread_create(&ptr,&attr,pth_ttt,web_message);
+	pthread_attr_destroy(&attr);//回收分配给属性的资源
+
 
 }
 

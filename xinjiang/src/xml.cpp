@@ -40,7 +40,7 @@ void AnalyseXml(xmlDocPtr pdoc,int ThreadNum)
 	Xpath = xmlXPathNewContext(pdoc);     //创建一个XPath上下文指针
 	if (Xpath == NULL)
 	{
-	   printf("context is NULL");
+	   printf("context is NULL\n");
 
 	}
 	if(IsTokenValid(Xpath,ThreadNum) == fail)
@@ -307,7 +307,7 @@ int CheckXmlResult(xmlXPathObjectPtr Xresult)
 {
 		if (Xresult == NULL)
 		{
-		   printf("xmlXPathEvalExpression return NULL");
+		   printf("xmlXPathEvalExpression return NULL\n");
 		   return fail;
 		}
 		if (xmlXPathNodeSetIsEmpty(Xresult->nodesetval))   //检查查询结果是否为空

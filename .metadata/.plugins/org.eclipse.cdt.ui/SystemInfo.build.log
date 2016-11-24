@@ -1,0 +1,15 @@
+09:26:58 **** Incremental Build of configuration Debug for project SystemInfo ****
+make all 
+Building file: ../src/SystemInfo.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/SystemInfo.d" -MT"src/SystemInfo.o" -o "src/SystemInfo.o" "../src/SystemInfo.c"
+Finished building: ../src/SystemInfo.c
+ 
+Building target: SystemInfo
+Invoking: GCC C Linker
+gcc  -o "SystemInfo"  ./src/SystemInfo.o   
+Finished building target: SystemInfo
+ 
+
+09:26:58 Build Finished (took 178ms)
+

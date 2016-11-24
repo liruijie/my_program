@@ -162,7 +162,7 @@ struct Signal_Phase
 struct Signal_Priority
 {
 		//公交优先请求发生时间
-		unsigned long time;
+		long time;
 
 		//公交优先号，取值范围 5 ~ 8
 		int PreemptNo;

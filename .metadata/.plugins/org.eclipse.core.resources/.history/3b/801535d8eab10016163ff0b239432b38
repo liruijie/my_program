@@ -1,0 +1,24 @@
+//============================================================================
+// Name        : exception_test.cpp
+// Author      : LIRUIJIE
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+//============================================================================
+
+#include <iostream>
+#include <stdio.h>
+using namespace std;
+
+int main() {
+	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+	return 0;
+}
+
+void exception_throw(int a,int b)
+{
+	if(a==0)
+		throw("a is 0\n");
+	else
+		printf("b/a = %d\n",b/a);
+}

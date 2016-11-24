@@ -43,7 +43,7 @@ int main()
 	sleep(5);
 	while(1)
 	{
-//		CheckTime();
+		CheckTime();
 		sleep(600);				//
 	}
 

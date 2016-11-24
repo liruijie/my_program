@@ -1,0 +1,15 @@
+14:14:42 **** Incremental Build of configuration Debug for project SOCK_RAW ****
+make all 
+Building file: ../src/SOCK_RAW.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/SOCK_RAW.d" -MT"src/SOCK_RAW.o" -o "src/SOCK_RAW.o" "../src/SOCK_RAW.cpp"
+Finished building: ../src/SOCK_RAW.cpp
+ 
+Building target: SOCK_RAW
+Invoking: GCC C++ Linker
+g++  -o "SOCK_RAW"  ./src/SOCK_RAW.o   
+Finished building target: SOCK_RAW
+ 
+
+14:14:43 Build Finished (took 282ms)
+
