@@ -1,0 +1,167 @@
+/*
+ * PublicDefine.h
+ *
+ * Created on: 2016年11月30日
+ * Author: LIRUIJIE
+ */
+
+#ifndef PUBLICDEFINE_H_
+#define PUBLICDEFINE_H_
+
+#define 		FrameMaxLen			10000
+#define		DISCONNECT			-1
+#define 		MaxSignalNum		1024
+#define 		XmlVersion			"1.0"
+struct ServiceInfo{
+		char my_ip[10][20];
+		char ip[20];
+		int port;
+		long ReportTime;
+		char token[30];
+		int IsConnect;
+};
+typedef struct ServiceInfo ServiceInfo;
+
+
+#define 	WAIT	-1
+
+struct SignalFlag{
+		int GetBaseInfo;
+		int GetPhase;
+		int GetPlan;
+
+		int SetPlan;
+		int SetPhase;
+
+		int CtrlNextStep;
+		int CtrlChangePlan;
+		int CtrlSpecialService;
+		int CtrlDemoteMode;
+		int CtrlRegionsCoordinate;
+		int CtrlCheckTime;
+		int CtrlRestartSignal;
+};
+
+struct SignalBaseInfo
+{
+		int unit_id;
+		char cross_name[100];
+		int signal_type;
+		int dir_type;
+		char area_name[100];
+		int area_id;
+};
+
+struct SignalPhase
+{
+		int PhaseID;		// 相位号
+		int Yellow;			//	黄灯时长 单位：秒
+		int ClearRed;		//	清场红  单位：秒
+		int PGreenFlash;	//	人行绿闪时长 单位：秒
+		int VGreenFlash;	//	车道绿闪时长 单位：秒
+		int PRedFlash;		//	人行红闪时长 单位：秒
+		int VRedFlash;		//	车道红闪时长 单位：秒
+		int LaneCount;		//	包含车道的数量
+		int LaneNo[24];	//	通道号，至少一个 通道列表详见附录6
+
+};
+
+struct SiganlRealPhaseStatus
+{
+		int PhaseNo;		//	相位号
+		int LampStatus;	//	灯态 灯态列表详见附录4
+		int Duration;		//	灯态持续时间，单位：秒
+		int ControlMode;	//	控制模式 控制模式列表详见附录7
+		int PlanNo;			//	方案号
+		int StageNo;		//	阶段号
+		int LaneNo[24];	//	通道号，至少一个 通道列表详见附录6
+		int LaneCount;		//车道数量
+};
+
+struct PlanPeriod
+{
+		int PeriodNum;			//时段序号
+		int StartHour;			//开始时间 时
+		int StartMinute;		//开始时间 分
+		int ControlMode;		//控制模式 控制模式列表详见附录7
+		int ModeNo;				//模式号
+		int CoordPhaseNo;		//协调相位号
+		int OffSet;				//相位差 单位：秒
+		int StageCount;			//阶段的数量
+		int PhaseNo[16];			//相位号
+		int Green[16];				//绿灯时长 单位：秒
+};
+struct SignalPlan
+{
+		int PlanID;				//方案号
+		int PeriodCount;			//方案中时段的数量
+		struct PlanPeriod Period[24];
+
+};
+struct SignalInfo{
+		int cross_id;
+		int status;
+		int IsSubscribe;
+		int RecvCtrlHeartbeat;
+		int IsWebControled;
+		long WebHeartbeatTime;
+		long LastReportTime;
+		char ip[20];
+		int port;
+		struct SignalFlag flag;
+		struct SignalBaseInfo baseinfo;
+};
+
+enum OperateObject
+{
+	BaseInfo = 1,
+	Phase = 2,
+	Plan = 3,
+	NextStep = 4,
+	ChangePlan = 5,
+	SpecialService = 6,
+	DemoteMode = 7,
+	RegionsCoordinate = 8,
+	CheckTime = 9,
+	RestartSignal = 10
+};
+
+struct FlowInfo
+{
+		int signal_id;
+		int dirction;
+		int flow;
+};
+
+struct AreaCoordSingalInfo
+{
+		int cross_id;
+		struct AreaCoordSingalInfo *Next_E;			//东方向路口
+		struct AreaCoordSingalInfo *Next_W;			//西方向路口
+		struct AreaCoordSingalInfo *Next_S;			//南方向路口
+		struct AreaCoordSingalInfo *Next_N;			//北方向路口
+};
+
+struct RegionsCoord_unit_info
+{
+		int IS_MASTER;
+		int Unit_ID;
+		int Signal_type;
+};
+struct RegionsCoord
+{
+		int CYCLE_MAX;
+		int CYCLE_MIN;
+		int PLAN_UPDATE_CYCLE;
+
+};
+
+
+
+
+
+void GetSeq(char *seqbuf);
+
+
+
+#endif /* PUBLICDEFINE_H_ */

@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -locci -lnsl -lclntsh -lm
+LIBS := -locci -lm -lnsl -lclntsh
 

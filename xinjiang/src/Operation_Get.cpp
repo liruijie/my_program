@@ -340,9 +340,9 @@ int Get_CrossParam(xmlNodePtr OperationNode,int ThreadNum)
 
 				xmlAddChild(node_Object,node_CorssParam);
 			}
+			TcpThread[ThreadNum].stmt->closeResultSet(Result);
 			if(ResultNum == 0)
 			{
-				TcpThread[ThreadNum].stmt->closeResultSet(Result);
 				return SDE_Failure;
 			}
 		}
@@ -353,7 +353,6 @@ int Get_CrossParam(xmlNodePtr OperationNode,int ThreadNum)
 			cout << sqlExcp.getMessage() << endl; //获得异常信息
 			return SDE_Failure;
 		}
-		TcpThread[ThreadNum].stmt->closeResultSet(Result);
 		xmlUnlinkNode(OperationNode->children);
 		xmlAddChild(OperationNode, node_Object);
 	return succeed;

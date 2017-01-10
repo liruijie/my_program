@@ -308,6 +308,7 @@ int ChangeOracleFlag(int SignalID)
 		}
 		else
 		{
+			ctr_stmt->closeResultSet(Result);
 			sprintf(sqlbuf,"insert into CONTROL_CMD  (signal_id,CONTROL_FLAG) values(%d,1)",SignalID);
 			ctr_stmt->setSQL(sqlbuf);
 			ctr_stmt->executeUpdate();

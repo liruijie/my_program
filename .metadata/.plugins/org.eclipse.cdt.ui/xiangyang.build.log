@@ -1,0 +1,45 @@
+11:19:13 **** Incremental Build of configuration Debug for project xiangyang ****
+make all 
+Building file: ../src/CommunicateWithServer.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithServer.d" -MT"src/CommunicateWithServer.o" -o "src/CommunicateWithServer.o" "../src/CommunicateWithServer.cpp"
+Finished building: ../src/CommunicateWithServer.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/GetFlowData.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/GetFlowData.d" -MT"src/GetFlowData.o" -o "src/GetFlowData.o" "../src/GetFlowData.cpp"
+Finished building: ../src/GetFlowData.cpp
+ 
+Building file: ../src/OracleOperate.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/OracleOperate.d" -MT"src/OracleOperate.o" -o "src/OracleOperate.o" "../src/OracleOperate.cpp"
+Finished building: ../src/OracleOperate.cpp
+ 
+Building file: ../src/PublicFunction.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicFunction.d" -MT"src/PublicFunction.o" -o "src/PublicFunction.o" "../src/PublicFunction.cpp"
+Finished building: ../src/PublicFunction.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/main.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.cpp"
+Finished building: ../src/main.cpp
+ 
+Building target: xiangyang
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xiangyang"  ./src/CommunicateWithServer.o ./src/CommunicateWithWeb.o ./src/GetFlowData.o ./src/OracleOperate.o ./src/PublicFunction.o ./src/Queue.o ./src/main.o   -lclntsh -lm -lpthread -lnsl -lxml2 -locci
+Finished building target: xiangyang
+ 
+
+11:19:17 Build Finished (took 3s.986ms)
+

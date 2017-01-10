@@ -1,0 +1,1635 @@
+/*
+ * CommunicateWithServer.cpp
+ *
+ * Created on: 2016年11月30日
+ * Author: LIRUIJIE
+ */
+#include "include.h"
+extern ServiceInfo Server;
+extern SignalInfo	Signal[MaxSignalNum];
+extern int ExistSignalNum;
+int ServerSocket;
+pthread_mutex_t send_mutex;
+void CommunicateWithServer()
+{
+	int ret;
+	pthread_mutex_init(&send_mutex,NULL);
+	InitQueue();
+	pthread_t p_HandleServerData;
+	ret = pthread_create(&p_HandleServerData,NULL,HandleServerData,NULL);
+	if(ret!=0)
+	{
+		exit(0);
+	}
+	pthread_t p_Server;
+	ret = pthread_create(&p_Server,NULL,ReceiveFromServer,NULL);
+	if(ret!=0)
+	{
+		exit(0);
+	}
+	pthread_t pHeartBeat;
+	ret = pthread_create(&pHeartBeat,NULL,HeartBeat,NULL);
+	if(ret!=0)
+	{
+		exit(0);
+	}
+
+}
+/*
+ * 接收报文的线程函数
+ */
+void * ReceiveFromServer(void * arg)
+{
+	int ret;
+	char data[FrameMaxLen];
+	pthread_t p_subscribe;
+	prctl(PR_SET_NAME, (unsigned long)"ReceiveFromServer");
+_Start:
+	ret=InitTCP();
+	if(ret == false)
+		exit(0);
+__login:
+	ret = Login();
+	if(ret != true)
+	{
+		sleep(1);
+		goto __login;
+	}
+	else
+	{
+		Server.IsConnect = true;
+		ret = pthread_create(&p_subscribe,NULL,Subscribe,NULL);
+		if(ret != 0)
+		{
+			exit(0);
+		}
+	}
+
+	while(1)
+	{
+		memset(data,'\0',FrameMaxLen);
+		ret = ReceiveServerData(ServerSocket,data,5);
+		if(ret == DISCONNECT)
+		{
+			Server.IsConnect = false;
+			printf("连接断开，重新连接\t 接收数据\n");
+			close(ServerSocket);
+			ServerSocket = 0;
+			goto _Start;
+		}
+		else if(ret >20)
+		{
+			//入队列
+			if(check_xml(data) == true)
+				EnQueue(data);
+		}
+	}
+	return (void *)0;
+}
+/*
+ * 处理报文数据的线程函数
+ */
+void * HandleServerData(void * arg)
+{
+	prctl(PR_SET_NAME, (unsigned long)"HandleServerData");
+	char data[FrameMaxLen];
+	while(1)
+	{
+		if(IsQueueEmpty())
+		{
+			usleep(100);
+			continue;
+		}
+		else
+		{
+			DelQueue(data);
+			ParseData(data);
+		}
+	}
+	return (void *)0;
+}
+void * HeartBeat(void *arg)
+{
+	int i;
+	time_t time_now;
+	tm *timeinfo;
+	Connection *_conn = NULL;
+	Statement *_stmt = NULL;
+	char xml_buf[500];
+	char seq_buf[20];
+	char sqlbuf[500];
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
+	{
+		printf("判断心跳,连接数据库失败\n");
+		exit(0);
+	}
+	_stmt->setAutoCommit(true);
+	while(1)
+	{
+		time(&time_now);
+		for(i=0;i<ExistSignalNum;i++)
+		{
+			if((time_now -Signal[i].LastReportTime)>10)
+			{
+				if(Signal[i].status == 1)
+				{
+					memset(sqlbuf,'\0',500);
+					timeinfo = localtime(&time_now);
+					try
+					{
+						sprintf(sqlbuf,"update REAL_TC_STATUS set network_stuats = 0,Updatetime = sysdate where signal_id = %d",Signal[i].cross_id);
+						_stmt->execute(sqlbuf);
+
+						//插入实时故障表 离线故障
+						memset(sqlbuf,'\0',500);
+						sprintf(sqlbuf,"insert into ATC_ALARMLIST(Sn,device_id,alarm_id,processstatus_id,occur_time,faultcomment,unit_id) values((select nvl(max(t.Sn)+1,1) from ATC_ALARMLIST t),%d,1,0,sysdate,'设备离线',%d) ",
+								Signal[i].cross_id,Signal[i].cross_id);
+						_stmt->execute(sqlbuf);
+
+						//插入历史故障表 离线故障
+						memset(sqlbuf,'\0',500);
+						sprintf(sqlbuf,"insert into ATC_ALARMHIS_%d%02d(Sn,deviceid,alarm_id,faultcomment,unit_id,type,Report_time) values((select nvl(max(t.Sn)+1,1) from ATC_ALARMHIS_%d%02d t), %d,1,'设备离线',%d,1,sysdate) ",
+								timeinfo->tm_year+1900,timeinfo->tm_mon+1,timeinfo->tm_year+1900,timeinfo->tm_mon+1,Signal[i].cross_id,Signal[i].cross_id);
+						_stmt->execute(sqlbuf);
+					}
+					catch(SQLException &ex)
+					{
+						puts(sqlbuf);
+						ex.getErrorCode();
+						cout<<ex.getMessage()<<endl;
+					}
+
+				}
+			}
+			else
+			{
+				if(Signal[i].status == 0)    //当前记录的状态离线
+				{
+					try
+					{
+						memset(sqlbuf,'\0',500);
+						sprintf(sqlbuf,"update REAL_TC_STATUS set network_stuats = 1,Updatetime = sysdate where signal_id = %d",Signal[i].cross_id);
+						_stmt->execute(sqlbuf);
+
+						//删除实时故障表表中的离线故障
+						memset(sqlbuf,'\0',500);
+						sprintf(sqlbuf,"delete  from ATC_ALARMLIST where device_id = %d and alarm_id = 1 ",Signal[i].cross_id);
+						_stmt->execute(sqlbuf);
+
+						//插入历史故障表  故障恢复
+						memset(sqlbuf,'\0',500);
+						sprintf(sqlbuf,"insert into ATC_ALARMHIS_%d%02d(Sn,deviceid,alarm_id,faultcomment,unit_id,type,Report_time) values((select nvl(max(t.Sn)+1,1) from ATC_ALARMHIS_%d%02d t), %d,1,'离线恢复',%d,0,sysdate) ",
+								timeinfo->tm_year+1900,timeinfo->tm_mon+1,timeinfo->tm_year+1900,timeinfo->tm_mon+1,Signal[i].cross_id,Signal[i].cross_id);
+						_stmt->execute(sqlbuf);
+					}
+					catch(SQLException &ex)
+					{
+						puts(sqlbuf);
+						ex.getErrorCode();
+						cout<<ex.getMessage()<<endl;
+					}
+				}
+			}
+		}
+		if(Server.IsConnect)
+		{
+			GetSeq(seq_buf);
+			sprintf(xml_buf,	"<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+									"<Message>"
+										  "<Version>%s</Version>"
+										  "<Token>%s</Token>"
+										  "<From>%s</From>"
+										  "<To>%s</To>"
+										  "<Type>PUSH</Type>"
+										  "<Seq>%s</Seq>"
+										  "<Body>"
+											"<Operation order=\"1\" name=\"Notify\">"
+											  "<SDO_HeartBeat/>"
+											"</Operation>"
+										  "</Body>"
+									"</Message>",XmlVersion,Server.token,Server.my_ip[0],Server.ip,seq_buf);
+			//SendData(xml_buf,strlen(xml_buf));
+		}
+		sleep(1);
+
+	}
+	return (void *)0;
+}
+
+/*
+ * 初始化TCP连接
+ */
+int InitTCP()
+{
+	struct sockaddr_in server_addr;
+	if ((ServerSocket = socket(PF_INET, SOCK_STREAM, 0)) < 0)
+	{
+		perror("fail to socket");
+		return false;
+	}
+	int on=1;
+	if((setsockopt(ServerSocket,SOL_SOCKET,SO_REUSEADDR,&on,sizeof(on)))<0)
+	{
+		perror("setsockopt failed");
+		close(ServerSocket);
+		return false;
+	}
+	server_addr.sin_family = PF_INET;
+	server_addr.sin_port = htons(Server.port);
+	server_addr.sin_addr.s_addr = inet_addr(Server.ip);
+	if(connect(ServerSocket,(struct sockaddr *) &server_addr, sizeof(server_addr)) <0)
+	{
+		perror("连接服务端失败\n");
+		return false;
+	}
+
+	return true;
+}
+/*
+ * 接收报文
+ */
+int ReceiveServerData(int sockfd,char *data,int timeout_s)
+{
+	fd_set fdset;
+	struct timeval 	timeVal;
+	int ret;
+	timeVal.tv_sec = timeout_s;
+	timeVal.tv_usec= 0;
+	FD_ZERO(&fdset);
+	FD_SET(sockfd, &fdset);
+	ret = select((int) sockfd + 1, &fdset,NULL, NULL, &timeVal);
+	if( ret == 0 )    //select timeout
+	{
+		return 0;
+	}
+	if( !ret )    //select error
+	{
+		printf("receive error result=%d,file=%s,function=%s,line=%d\n",ret,__FILE__,__FUNCTION__,__LINE__);
+		return DISCONNECT;
+	}
+	else          //select success
+	{
+		ret = recv(sockfd,data,FrameMaxLen,0);
+		if(ret==-1)
+		{
+			return DISCONNECT;
+		}
+		else if(ret == 0)
+		{
+			return DISCONNECT;
+		}
+		return ret;
+	}
+}
+int SendData(char *data,long len)
+{
+	//puts(data);
+	//return false;
+
+
+	pthread_mutex_lock(&send_mutex);
+	long ret = send(ServerSocket,data,len,0);
+	pthread_mutex_unlock(&send_mutex);
+	if(ret == -1)
+	{
+		return DISCONNECT;
+	}
+	else if(ret != len)
+	{
+		return false;
+	}
+	return true;
+}
+int Login()
+{
+	char buf[500];
+	char seq_buf[25];
+	char recv_buf[500];
+	memset(seq_buf,'\0',25);
+	GetSeq(seq_buf);
+	int ret;
+	memset(buf,'\0',500);
+	sprintf(buf,"<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+					"<Message>"
+						"<Version>%s</Version>"
+						"<Token></Token>"
+						"<From>%s</From>"
+						"<To>%s</To>"
+						"<Type>REQUEST</Type>"
+						"<Seq>%s</Seq>"
+						"<Body>"
+							"<Operation order=\"1\" name=\"Login\">"
+								"<SDO_User>"
+									"<UserName>%s</UserName>"
+									"<Pwd>%s</Pwd>"
+								"</SDO_User>"
+							"</Operation>"
+						"</Body>"
+					"</Message>",XmlVersion,Server.my_ip[0],Server.ip,seq_buf,"admin","123456");
+	ret = SendData(buf,strlen(buf));
+	if(ret==false)
+	{
+		return false;
+	}
+	memset(recv_buf,'\0',500);
+	ret = ReceiveServerData(ServerSocket,recv_buf,5);
+	if(ret > 0)
+	{
+		ret = check_xml(recv_buf);
+		if(ret == true)
+		{
+			ret = ParseData(recv_buf);
+			return ret;
+		}
+	}
+	else
+	{
+		return false;
+	}
+	return false;
+}
+void * Subscribe(void *arg)
+{
+	char buf[500];
+	char seq_buf[25];
+	memset(seq_buf,'\0',25);
+	pthread_detach(pthread_self());
+	int ret;
+	int i,j;
+	for(i=0;i<ExistSignalNum;)
+	{
+		memset(buf,'\0',500);
+		GetSeq(seq_buf);
+		sprintf(buf,"<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+						"<Message>"
+							"<Version>%s</Version>"
+							"<Token>%s</Token>"
+							"<From>%s</From>"
+							"<To>%s</To>"
+							"<Type>REQUEST</Type>"
+							"<Seq>%s</Seq>"
+							"<Body>"
+							"<Operation order=\"1\" name=\"Subscribe\">"
+								"<SDO_MsgEntity>"
+								"<MsgType></MsgType>"
+								"<OperName></OperName>"
+								"<ObjName>CrossPhaseLampStatus</ObjName>"
+								"</SDO_MsgEntity>"
+							"</Operation>"
+							"</Body>"
+						"</Message>",XmlVersion,Server.token,Server.my_ip[0],Signal[i].ip,seq_buf);
+		Signal[i].IsSubscribe = -1;
+		ret = SendData(buf,strlen(buf));
+		if(ret==false)
+		{
+			continue;
+		}
+		for(j=0;j<500;j++)
+		{
+			usleep(10000);           //10ms
+			if(Signal[i].IsSubscribe == true)   //成功
+			{
+				i++;	//i++  指向下一个信号机
+				continue;
+			}
+			if(Signal[i].IsSubscribe == false)	//失败
+			{
+				continue;
+			}
+		}
+	}
+	return (void *)0;
+}
+
+
+/*
+ * 验证xml报文的头和尾是否正确
+ */
+bool check_xml(char *data)
+{
+	char xml_head[]="<?xml version=\"1.0\" encoding=\"utf-8\"?>";//<Message></Message>
+	char xml_end[]="</Message>";
+	if( ( memcmp(data,xml_head,strlen(xml_head) )== 0  )   && ( memcmp(data+strlen(data)-strlen(xml_end),xml_end,strlen(xml_end)) == 0 ))//&& ( memcmp(data+strlen(data)-strlen(xml_end),xml_end,strlen(xml_end)) == 0 )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+/*
+ * 解析xml报文
+ */
+int ParseData(char *data)
+{
+	int return_value = false;
+	xmlDocPtr pdoc;
+	xmlXPathContextPtr Xpath = NULL;    //XPATH上下文指针
+	xmlXPathObjectPtr Xresult =NULL;
+	xmlNodePtr node;
+	xmlChar *text;
+	char type_buf[20];
+	xmlKeepBlanksDefault(0);
+
+	pdoc = xmlReadMemory((char *)data,(int )strlen((char *)data), NULL, "utf-8", XML_PARSE_NOERROR|XML_PARSE_NOBLANKS);//
+	if(pdoc == NULL)
+	{
+		cout << "Buff is error,can not parse" << endl;
+		return return_value;
+	}
+	Xpath = xmlXPathNewContext(pdoc);     //创建一个XPath上下文指针
+	if (Xpath == NULL)
+	{
+	   printf("context is NULL\n");
+	   goto __FREEDOC;
+	}
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//Type", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		goto __FREEXPATH;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	text = xmlNodeGetContent(node);
+	memcpy(type_buf,(char *)text,strlen((char *)text));
+	xmlFree(text);
+	xmlXPathFreeObject(Xresult);
+	if( strncmp(type_buf,"REQUEST",7) == 0)
+	{
+	 //RequestOperate(pdoc,Xpath,ThreadNum);
+
+	}
+	else if(strncmp(type_buf,"RESPONSE",7) == 0)
+	{
+		return_value = Server_RESPONSE(Xpath);
+	}
+	else if(strncmp(type_buf,"PUSH",4) == 0)
+	{
+		return_value = Server_PUSH(Xpath);
+	}
+	else if(strncmp(type_buf,"ERROR",5) == 0)
+	{
+		return_value = Server_Error(Xpath);
+	}
+__FREEXPATH:
+	xmlXPathFreeContext(Xpath);
+__FREEDOC:
+	xmlFreeDoc(pdoc);
+   xmlCleanupParser();
+   xmlMemoryDump();
+   if(return_value==false)
+   {
+	   puts(data);
+   }
+	return return_value;
+}
+
+int CheckXmlResult(xmlXPathObjectPtr Xresult)
+{
+		if (Xresult == NULL)
+		{
+		   printf("xmlXPathEvalExpression return NULL\n");
+		   return false;
+		}
+		if (xmlXPathNodeSetIsEmpty(Xresult->nodesetval))   //检查查询结果是否为空
+		{
+		   xmlXPathFreeObject(Xresult);
+		   return false;
+		}
+		return true;
+}
+
+int Server_RESPONSE(xmlXPathContextPtr Xpath)
+{
+	xmlXPathObjectPtr Xresult =NULL;
+	xmlNodePtr node;
+	xmlChar *OperationProp_Name;
+	xmlChar *token;
+	char operate_name[10];
+	int Object;
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//Operation", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	OperationProp_Name = xmlGetProp(node, (xmlChar *)"name");
+	memcpy(operate_name,(char *)OperationProp_Name,strlen((char *)OperationProp_Name));
+
+	xmlFree(OperationProp_Name);
+	xmlXPathFreeObject(Xresult);
+	if( strncmp(operate_name,"Login",5) == 0)
+	{
+			memset(Server.token,'\0',30);
+			Xresult = xmlXPathEvalExpression((xmlChar*)"//Token", Xpath);
+			if(CheckXmlResult(Xresult) == false)
+			{
+				return false;
+			}
+			node = Xresult->nodesetval->nodeTab[0];
+			token  = xmlNodeGetContent(node);
+			memcpy(Server.token,(char *)token,strlen((char *)token));
+			xmlFree(token);
+			xmlXPathFreeObject(Xresult);
+			return true;
+	}
+	else if(strncmp(operate_name,"Logout",6) == 0)
+	{
+		return false;
+	}
+	else if(strncmp(operate_name,"Get",3) == 0)
+	{
+			//判断是不是基础信息
+			Xresult = xmlXPathEvalExpression((xmlChar*)"//SignalControler", Xpath);
+			if(CheckXmlResult(Xresult) == true)
+			{
+				xmlXPathFreeObject(Xresult);
+				return GetBaseInfo(Xpath);
+			}
+
+			//判断是不是方案
+			Xresult = xmlXPathEvalExpression((xmlChar*)"//Period", Xpath);
+			if(CheckXmlResult(Xresult) == true)
+			{
+				xmlXPathFreeObject(Xresult);
+				return GetPhaseInfo(Xpath);
+			}
+
+			//判断是不是相位
+			Xresult = xmlXPathEvalExpression((xmlChar*)"//Phase", Xpath);
+			if(CheckXmlResult(Xresult) == true)
+			{
+				xmlXPathFreeObject(Xresult);
+				return GetPlanInfo(Xpath);
+			}
+	}
+	else if(strncmp(operate_name,"Set",3) == 0)
+	{
+			Object = JudgeOperateObject(Xpath);
+			if(Object == 0)
+				return false;
+			int i = GetSignalIndex(Xpath);
+			switch(Object)
+			{
+				case	Phase :
+						Signal[i].flag.SetPhase = true;
+						return true;
+				case	Plan :
+						Signal[i].flag.SetPlan = true;
+						return true;
+				case	NextStep :
+						Signal[i].flag.CtrlNextStep = true;
+						return true;
+				case	ChangePlan :
+						Signal[i].flag.CtrlChangePlan = true;
+						return true;
+				case	SpecialService :
+						Signal[i].flag.CtrlSpecialService = true;
+						return true;
+				case	DemoteMode :
+						Signal[i].flag.CtrlDemoteMode = true;
+						return true;
+				case	RegionsCoordinate :
+						Signal[i].flag.CtrlRegionsCoordinate = true;
+						return true;
+				case	CheckTime :
+						Signal[i].flag.CtrlCheckTime = true;
+						return true;
+				case	RestartSignal :
+						Signal[i].flag.CtrlRestartSignal = true;
+						return true;
+				default:
+					return false;
+			}
+	}
+	else if(strncmp(operate_name,"Subscribe",9) == 0)
+	{
+		return Subscribe_RESPONSE(Xpath);
+	}
+	return false;
+}
+int Server_Error(xmlXPathContextPtr Xpath)
+{
+	xmlXPathObjectPtr Xresult =NULL;
+	xmlNodePtr node;
+	xmlChar *buf;
+	char OperateName[10];
+	char ErrObj[30];
+	int i;
+	i = GetSignalIndex(Xpath);
+	if(i == -1)
+	{
+		return false;
+	}
+
+	//获取操作名称
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//Operation", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlGetProp(node, (xmlChar *)"name");
+	memcpy(OperateName,(char *)buf,strlen((char *)buf));
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取错误对象
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//ErrObj", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	memcpy(ErrObj,(char *)buf,strlen((char *)buf));
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	if( strncmp(OperateName,"Login",5) == 0)
+	{
+		return false;
+	}
+	else if(strncmp(OperateName,"Get",3) == 0)
+	{
+		if(strncmp(ErrObj,"Period",6) == 0)
+		{
+			Signal[i].flag.GetPlan = false;
+			return true;
+		}
+		else if(strncmp(ErrObj,"Phase",5) == 0)
+		{
+			Signal[i].flag.GetPhase = false;
+			return true;
+		}
+		else if(strncmp(ErrObj,"SignalControler",15) == 0)
+		{
+			Signal[i].flag.GetBaseInfo = false;
+			return true;
+		}
+		else
+			return false;
+	}
+	else if(strncmp(OperateName,"Set",3) == 0)
+	{
+		int len = strlen(ErrObj);
+		if(strncmp(ErrObj,"Period",len) == 0)
+		{
+			Signal[i].flag.SetPlan = false;
+			return true;
+		}
+		else if(strncmp(ErrObj,"Phase",len) == 0)
+		{
+			Signal[i].flag.SetPhase = false;
+			return true;
+		}
+		else if(strncmp(ErrObj,"NextStep",len) == 0)
+		{
+			Signal[i].flag.CtrlNextStep = false;
+			return true;
+		}
+		else if(strncmp(ErrObj,"CrossPlan",len) == 0)
+		{
+			Signal[i].flag.CtrlChangePlan = false;
+			return true;
+		}
+		else if(strncmp(ErrObj,"GreenChannel",len) == 0)
+		{
+			Signal[i].flag.CtrlSpecialService = false;
+			return true;
+		}
+		else if(strncmp(ErrObj,"DomoteMode",len) == 0)
+		{
+			Signal[i].flag.CtrlDemoteMode = false;
+			return true;
+		}
+		else if(strncmp(ErrObj,"RegionsCoordinate",len) == 0)
+		{
+			Signal[i].flag.CtrlRegionsCoordinate = false;
+			return true;
+		}
+		else if(strncmp(ErrObj,"SDO_TimeServer",len) == 0)
+		{
+			Signal[i].flag.CtrlCheckTime = false;
+			return true;
+		}
+		else if(strncmp(ErrObj,"Restart",len) == 0)
+		{
+			Signal[i].flag.CtrlRestartSignal = false;
+			return true;
+		}
+
+	}
+	else if(strncmp(OperateName,"Subscribe",9) == 0)
+	{
+		return Subscribe_Error(Xpath);
+	}
+	return false;
+}
+int Server_PUSH(xmlXPathContextPtr Xpath)
+{
+	xmlXPathObjectPtr Xresult =NULL;
+	xmlNodePtr node;
+	xmlChar *OperationProp_Name;
+	char buf[20];
+	int i = GetSignalIndex(Xpath);
+	if(i == -1)
+	{
+		return false;
+	}
+	char operate_name[10];
+	char ObjectName[30];
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//Operation", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	OperationProp_Name = xmlGetProp(node, (xmlChar *)"name");
+	memcpy(operate_name,(char *)OperationProp_Name,strlen((char *)OperationProp_Name));
+	xmlFree(OperationProp_Name);
+
+	node = node->children;
+	if(node == NULL)
+		return false;
+	memcpy(buf, node->name,strlen((char *)node->name));
+	memcpy(ObjectName,buf,strlen((char *)buf));
+	xmlXPathFreeObject(Xresult);
+	if( strncmp(operate_name,"Notify",5) == 0)
+	{
+		//判断是不是实时灯态上报
+		if(strncmp(ObjectName,"CrossPhaseLampStatus",strlen(ObjectName) ) == 0)
+		{
+			return Subscribe_RealPhaseStatus(Xpath);
+		}
+		//判断是不是心跳包
+		else if( strncmp(ObjectName,"SDO_HeartBeat",strlen(ObjectName) ) == 0)
+		{
+			Signal[i].LastReportTime = time(NULL);
+			return true;
+		}
+	}
+	return false;
+}
+int GetSignalIndex(xmlXPathContextPtr Xpath)
+{
+	int i;
+	xmlXPathObjectPtr Xresult =NULL;
+	xmlNodePtr node;
+	xmlChar *From;
+
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//From", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return -1;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	From = xmlNodeGetContent(node);
+	xmlXPathFreeObject(Xresult);
+	for(i=0;i<ExistSignalNum;i++)
+	{
+		if(memcmp(Signal[i].ip,(char *)From,strlen(Signal[i].ip)) == 0)   //
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+/*
+ * 订阅报文回复
+ */
+int Subscribe_RESPONSE(xmlXPathContextPtr Xpath)
+{
+	int i;
+	i = GetSignalIndex(Xpath);
+	if(i == -1)
+	{
+		return false;
+	}
+	else
+	{
+		Signal[i].IsSubscribe = true;
+	}
+	return true;
+}
+/*
+ * 订阅失败
+ */
+int Subscribe_Error(xmlXPathContextPtr Xpath)
+{
+	int i;
+	i = GetSignalIndex(Xpath);
+	if(i == -1)
+	{
+		return false;
+	}
+	else
+	{
+		Signal[i].IsSubscribe = false;
+	}
+	return true;
+}
+
+int Subscribe_RealPhaseStatus(xmlXPathContextPtr Xpath)
+{
+	xmlXPathObjectPtr Xresult =NULL;
+	xmlNodePtr node;
+	xmlChar *buf;
+	char sqlbuf[500];
+	Connection *_conn = NULL;
+	Statement *_stmt = NULL;
+	struct SiganlRealPhaseStatus RealStatus;
+
+	int i = GetSignalIndex(Xpath);
+	if(i == -1)
+	{
+		return false;
+	}
+
+	//获取相位号
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//PhaseNo", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	RealStatus.PhaseNo = atoi((char *) buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取灯态
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//LampStatus", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	RealStatus.LampStatus = atoi((char *) buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+	switch(RealStatus.LampStatus)
+	{
+		case 11://灭灯
+			RealStatus.LampStatus = 1;
+			break;
+		case 21://红灯
+			RealStatus.LampStatus = 16;
+			break;
+		case 22://黄灯
+			RealStatus.LampStatus = 48;
+			break;
+		case 23://绿灯
+			RealStatus.LampStatus = 32;
+			break;
+		case 31://红黄
+			RealStatus.LampStatus = 64;
+			break;
+		default://无效值
+			return false;
+	}
+
+	//获取灯态持续时间
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//Duration", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	RealStatus.Duration = atoi((char *) buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//控制模式
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//ControlMode", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	RealStatus.ControlMode = atoi((char *) buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取方案号
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//PlanNo", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	RealStatus.PlanNo = atoi((char *) buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取阶段号
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//StageNo", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	RealStatus.StageNo = atoi((char *) buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取通道号
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//LaneNo", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		return false;
+	}
+	RealStatus.LaneCount = Xresult->nodesetval->nodeNr;
+	int j,k;
+	memset(RealStatus.LaneNo,0,24);
+	for(j = 0;j<RealStatus.LaneCount;j++)
+	{
+		node = Xresult->nodesetval->nodeTab[j];
+		buf = xmlNodeGetContent(node);
+		k= atoi((char *) buf);
+		xmlFree(buf);
+		if(k>24)		//通道号不是有效值
+		{
+			xmlXPathFreeObject(Xresult);
+			return false;
+		}
+		RealStatus.LaneNo[k] = 1;		//将对应的车道置 1
+	}
+	xmlXPathFreeObject(Xresult);
+
+
+	//从连接池中获取连接
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
+	{
+		printf("更新实时相位状态,连接数据库失败\n");
+		return false;
+	}
+	try
+	{
+		_stmt->setAutoCommit(true);
+		memset(sqlbuf,'\0',500);
+		sprintf(sqlbuf,"update REAL_SIGNAL_PLAN_STATUS set cur_plan=%d,cur_stage=%d,CUR_PHASE = %d,control_model=%d,cur_week=%d,update_time=sysdate  where signal_id = '%d' and list_unit_id =1",
+								RealStatus.PlanNo,RealStatus.StageNo,RealStatus.PhaseNo,RealStatus.ControlMode,RealStatus.Duration,Signal[i].cross_id);
+		_stmt->execute(sqlbuf);
+
+		char lamp_status[100];
+		memset(lamp_status,'\0',100);
+		char temp_buf[5];
+		for(j=0;j<24;j++)
+		{
+			memset(temp_buf,'\0',5);
+			if(RealStatus.LaneNo[j] == 0)
+				sprintf(temp_buf,"16,");
+			else
+				sprintf(temp_buf,"%d,",RealStatus.LampStatus);
+			strcat(lamp_status,temp_buf);
+		}
+		lamp_status[strlen(lamp_status)-1]='\0';
+		memset(sqlbuf,'\0',500);
+		sprintf(sqlbuf,"update REAL_SIGNAL_STATUS set PHASE_LIGHT_STATE=%s,update_time=sysdate where signal_id = %d",
+				lamp_status,Signal[i].cross_id);
+		_stmt->execute(sqlbuf);
+	}
+	catch(SQLException &ex)
+	{
+		puts(sqlbuf);
+		DisconnectOracle(&_conn,&_stmt);
+		ex.getErrorCode();
+		cout<<ex.getMessage()<<endl;
+		return false;
+	}
+	DisconnectOracle(&_conn,&_stmt);
+	return true;
+}
+
+int GetBaseInfo(xmlXPathContextPtr Xpath)
+{
+	xmlXPathObjectPtr Xresult =NULL;
+	xmlNodePtr node;
+	xmlChar *buf;
+	Connection *_conn = NULL;
+	Statement *_stmt = NULL;
+	char sqlbuf[500];
+	int i = GetSignalIndex(Xpath);
+	if(i == -1)
+	{
+		return false;
+	}
+
+	//路口名
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//CrossName", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetBaseInfo = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	memcpy(Signal[i].baseinfo.cross_name,buf,strlen((char *)buf));
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//信号机类型
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//UtcType", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetBaseInfo = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Signal[i].baseinfo.signal_type = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//方向类型
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//DirectionType", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetBaseInfo = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Signal[i].baseinfo.dir_type = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+
+	//所属区域
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//AreaName", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetBaseInfo = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	memcpy(Signal[i].baseinfo.area_name,buf,strlen((char *)buf));
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//区域号
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//AreaID", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetBaseInfo = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Signal[i].baseinfo.area_id = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//信号机ID（路口号）
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//CrossID", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetBaseInfo = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Signal[i].baseinfo.unit_id = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+	//从连接池中获取连接
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
+	{
+		printf("查询设备基本信息,连接数据库失败\n");
+		Signal[i].flag.GetBaseInfo = false;
+		return false;
+	}
+	try
+	{
+		_stmt->setAutoCommit(true);
+		sprintf(sqlbuf,"update SIGNAL_CONFIG_INFO set api_unit_id = %d,signal_type = '%d' where signal_id = '%d'",
+				Signal[i].baseinfo.unit_id,Signal[i].baseinfo.signal_type,Signal[i].cross_id);
+		_stmt->execute(sqlbuf);
+
+		memset(sqlbuf,'\0',500);
+		sprintf(sqlbuf,"update UNIT_INFO set unit_name = '%s',unit_type = %d where unit_id = %d",Signal[i].baseinfo.cross_name,Signal[i].baseinfo.dir_type,Signal[i].cross_id);
+		_stmt->execute(sqlbuf);
+
+	}
+	catch(SQLException &ex)
+	{
+		puts(sqlbuf);
+		DisconnectOracle(&_conn,&_stmt);
+		ex.getErrorCode();
+		cout<<ex.getMessage()<<endl;
+		Signal[i].flag.GetBaseInfo = false;
+		return false;
+	}
+	DisconnectOracle(&_conn,&_stmt);
+	Signal[i].flag.GetBaseInfo = true;
+	return true;
+}
+
+int GetPhaseInfo(xmlXPathContextPtr Xpath)
+{
+	xmlXPathObjectPtr Xresult =NULL;
+	xmlNodePtr node;
+	xmlChar *buf;
+	Connection *_conn = NULL;
+	Statement *_stmt = NULL;
+	ResultSet *Result;
+	char sqlbuf[500];
+	struct SignalPhase Phase;
+	int i = GetSignalIndex(Xpath);
+	if(i == -1)
+	{
+		return false;
+	}
+
+	//获取相位号
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//PhaseNo", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetPhase = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Phase.PhaseID = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取黄灯时长
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//Yellow", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetPhase = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Phase.Yellow = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取清场红
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//ClearRed", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetPhase = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Phase.ClearRed = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取人行绿闪时长
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//PGreenFlash", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetPhase = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Phase.PGreenFlash = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//车道绿闪时长
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//VGreenFlash", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetPhase = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Phase.VGreenFlash = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取人行红闪时长
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//PRedFlash", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetPhase = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Phase.PRedFlash = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取车道红闪时长
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//VRedFlash", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetPhase = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Phase.VRedFlash = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取通道号
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//LaneNo", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetPhase = false;
+		return false;
+	}
+	int j;
+	char lane_buf[100];
+	memset(lane_buf,'\0',100);
+	Phase.LaneCount = Xresult->nodesetval->nodeNr;
+	for(j = 0;j<Phase.LaneCount;j++)
+	{
+		node = Xresult->nodesetval->nodeTab[j];
+		buf = xmlNodeGetContent(node);
+		Phase.LaneNo[j] = atoi((char *)buf);
+		strcat(lane_buf,(char *)buf);
+		strcat(lane_buf,",");
+		xmlFree(buf);
+	}
+	xmlXPathFreeObject(Xresult);
+
+	lane_buf[strlen(lane_buf) -1] = '\0';
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
+	{
+		printf("查询相位参数,连接数据库失败\n");
+		Signal[i].flag.GetBaseInfo = false;
+		return false;
+	}
+	try
+	{
+		char image_path[50];
+		memset(image_path,'\0',50);
+		_stmt->setAutoCommit(false);
+		//查询相位图片路径
+		memset(sqlbuf,'\0',500);
+		sprintf(sqlbuf,"select phaseimage from ZKTD_PHASE  where unit_id = %d and phaseno=%d",Signal[i].cross_id,Phase.PhaseID);
+		Result = _stmt->executeQuery(sqlbuf);
+		if(Result->next() != 0)
+		{
+			sprintf(image_path,"%s",Result->getString(1).c_str());
+			_stmt->closeResultSet(Result);
+		}
+		//删除原来数据
+		memset(sqlbuf,'\0',500);
+		sprintf(sqlbuf,"delete ZKTD_PHASE  where unit_id = %d and phaseno=%d",Signal[i].cross_id,Phase.PhaseID);
+		_stmt->execute(sqlbuf);
+		//插入新数据
+		memset(sqlbuf,'\0',500);
+		sprintf(sqlbuf,"insert into ZKTD_PHASE(unit_id,phaseno,phaseimage,yellow,clearred,pgreenflash,vgreenflash,predflash,vredflash,channels) values(%d,%d,'%s',%d,%d,%d,%d,%d,%d,'%s')",
+				Signal[i].cross_id,Phase.PhaseID,image_path,Phase.Yellow,Phase.ClearRed,Phase.PGreenFlash,Phase.VGreenFlash,Phase.PRedFlash,Phase.VRedFlash,lane_buf);
+		_stmt->execute(sqlbuf);
+		_conn->commit();
+
+	}
+	catch(SQLException &ex)
+	{
+		ex.getErrorCode();
+		cout << ex.getMessage()<<endl;
+		try
+		{
+			_conn->rollback();
+		}
+		catch(SQLException &ex1)
+		{
+			ex1.getErrorCode();
+			cout << ex1.getMessage()<<endl;
+		}
+		DisconnectOracle(&_conn,&_stmt);
+		Signal[i].flag.GetBaseInfo = false;
+		return false;
+	}
+	DisconnectOracle(&_conn,&_stmt);
+	Signal[i].flag.GetPhase = true;
+	return true;
+}
+
+int GetPlanInfo(xmlXPathContextPtr Xpath)
+{
+	xmlXPathObjectPtr Xresult =NULL;
+	xmlNodePtr node;
+	xmlChar *buf;
+	struct SignalPlan Plan;
+	char sqlbuf[500];
+	Connection *_conn = NULL;
+	Statement *_stmt = NULL;
+
+	int i = GetSignalIndex(Xpath);
+	if(i == -1)
+	{
+		return false;
+	}
+
+	//获取方案号
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//PlanNo", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetPlan = false;
+		return false;
+	}
+	node = Xresult->nodesetval->nodeTab[0];
+	buf = xmlNodeGetContent(node);
+	Plan.PlanID = atoi((char *)buf);
+	xmlFree(buf);
+	xmlXPathFreeObject(Xresult);
+
+	//获取时间段节点
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//PeriodParam", Xpath);
+	if(CheckXmlResult(Xresult) == false)
+	{
+		Signal[i].flag.GetPlan = false;
+		return false;
+	}
+	int j,k=0;;
+	for(j = 0;j<Xresult->nodesetval->nodeNr;j++)
+	{
+		//得到<PeriodParam>节点下的第一个子节点
+		node = Xresult->nodesetval->nodeTab[j];
+		xmlNodePtr FirstParamNode = node->children;
+		if(FirstParamNode == NULL)
+		{
+			Signal[i].flag.GetPlan = false;
+			xmlXPathFreeObject(Xresult);
+			return false;
+		}
+
+		//获取开始时间 时
+		xmlNodePtr WantedNode = FirstParamNode;
+		if(false == Get_Node(&WantedNode,(char *)"StartHour"))
+		{
+			Signal[i].flag.GetPlan = false;
+			xmlXPathFreeObject(Xresult);
+			return false;
+		}
+		buf = xmlNodeGetContent(WantedNode);
+		Plan.Period[j].StartHour = atoi((char *)buf);
+		xmlFree(buf);
+
+		//获取开始时间 分
+		WantedNode = FirstParamNode;
+		if(false == Get_Node(&WantedNode,(char *)"StartMinute"))
+		{
+			Signal[i].flag.GetPlan = false;
+			xmlXPathFreeObject(Xresult);
+			return false;
+		}
+		buf = xmlNodeGetContent(WantedNode);
+		Plan.Period[j].StartMinute = atoi((char *)buf);
+		xmlFree(buf);
+
+		//获取模式号
+		WantedNode = FirstParamNode;
+		if(false == Get_Node(&WantedNode,(char *)"ModelNo"))
+		{
+			Signal[i].flag.GetPlan = false;
+			xmlXPathFreeObject(Xresult);
+			return false;
+		}
+		buf = xmlNodeGetContent(WantedNode);
+		Plan.Period[j].ModeNo = atoi((char *)buf);
+		xmlFree(buf);
+
+		//获取协调相位号
+		WantedNode = FirstParamNode;
+		if(false == Get_Node(&WantedNode,(char *)"CoordPhaseNo"))
+		{
+			Signal[i].flag.GetPlan = false;
+			xmlXPathFreeObject(Xresult);
+			return false;
+		}
+		buf = xmlNodeGetContent(WantedNode);
+		Plan.Period[j].CoordPhaseNo = atoi((char *)buf);
+		xmlFree(buf);
+
+		//获取相位差
+		WantedNode = FirstParamNode;
+		if(false == Get_Node(&WantedNode,(char *)"OffSet"))
+		{
+			Signal[i].flag.GetPlan = false;
+			xmlXPathFreeObject(Xresult);
+			return false;
+		}
+		buf = xmlNodeGetContent(WantedNode);
+		Plan.Period[j].OffSet = atoi((char *)buf);
+		xmlFree(buf);
+
+		//获取阶段
+		WantedNode = FirstParamNode;
+		if(false == Get_Node(&WantedNode,(char *)"StageList"))
+		{
+			Signal[i].flag.GetPlan = false;
+			xmlXPathFreeObject(Xresult);
+			return false;
+		}
+		xmlNodePtr	StageNode = WantedNode->children;
+		k=0;
+		while(StageNode != NULL)
+		{
+			//获取相位号
+			WantedNode = StageNode->children;
+			if(false == Get_Node(&WantedNode,(char *)"PhaseNo"))
+			{
+				Signal[i].flag.GetPlan = false;
+				xmlXPathFreeObject(Xresult);
+				return false;
+			}
+			buf = xmlNodeGetContent(WantedNode);
+			Plan.Period[j].PhaseNo[k] = atoi((char *)buf);
+			xmlFree(buf);
+
+			//获取绿灯时长
+			WantedNode = StageNode->children;
+			if(false == Get_Node(&WantedNode,(char *)"Green"))
+			{
+				Signal[i].flag.GetPlan = false;
+				xmlXPathFreeObject(Xresult);
+				return false;
+			}
+			buf = xmlNodeGetContent(WantedNode);
+			Plan.Period[j].Green[k] = atoi((char *)buf);
+			xmlFree(buf);
+
+			StageNode = StageNode->next;
+			k++;
+		}
+		Plan.Period[j].StageCount = k;
+	}
+	Plan.PeriodCount = j;
+	xmlXPathFreeObject(Xresult);
+
+	if(GetConnectFromPool(&_conn,&_stmt) == false)
+	{
+		printf("查询方案参数,连接数据库失败\n");
+		Signal[i].flag.GetPlan = false;
+		return false;
+	}
+	try
+	{
+		//删从表->删主表->插主表->插从表
+		_stmt->setAutoCommit(false);
+
+		memset(sqlbuf,'\0',500);
+		sprintf(sqlbuf,"delete ZKTD_PLAN_TIME_STAGE where unit_id=%d and plan_no=%d",Signal[i].cross_id,Plan.PlanID);
+		_stmt->execute(sqlbuf);
+
+		memset(sqlbuf,'\0',500);
+		sprintf(sqlbuf,"delete ZKTD_PLAN_TIME where unit_id=%d and plan_no=%d",Signal[i].cross_id,Plan.PlanID);
+		_stmt->execute(sqlbuf);
+
+		int Cyclen;
+		for(j = 0; j < Plan.PeriodCount ; j++)
+		{
+			memset(sqlbuf,'\0',500);
+			for(k=0;k<Plan.Period[j].StageCount;k++)
+			{
+				Cyclen += Plan.Period[j].Green[k];
+			}
+			sprintf(sqlbuf,"insert ZKTD_PLAN_TIME(unit_id,plan_no,time_no,starthour,startminute,controlmode,modeno,cyclelen,coordphaseno,offset) values(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)",
+					Signal[i].cross_id, Plan.PlanID, j, Plan.Period[j].StartHour,Plan.Period[j].StartMinute,Plan.Period[j].ControlMode,
+					Plan.Period[j].ModeNo,Cyclen,Plan.Period[j].CoordPhaseNo,Plan.Period[j].OffSet);
+			_stmt->execute(sqlbuf);
+		}
+
+		for(j = 0;j<Plan.PeriodCount;j++)
+		{
+			for(k=0;k<Plan.Period[j].StageCount;k++)
+			{
+				memset(sqlbuf,'\0',500);
+				sprintf(sqlbuf,"insert ZKTD_PLAN_TIME_STAGE(unit_id,plan_no,time_no,stage_no,phaseno,green) values(%d,%d,%d,%d,%d,%d)",
+						Signal[i].cross_id, Plan.PlanID, j, k, Plan.Period[j].PhaseNo[k], Plan.Period[j].Green[k]);
+				_stmt->execute(sqlbuf);
+			}
+		}
+
+		_conn->commit();
+	}
+	catch (SQLException &sqlExcp)
+	{
+		sqlExcp.getErrorCode();
+	   cout << sqlExcp.getMessage() << endl;
+		try
+		{
+			_conn->rollback();
+		}
+		catch (SQLException &Excp)
+		{
+
+		}
+		DisconnectOracle(&_conn,&_stmt);
+		Signal[i].flag.GetPlan = false;
+		return false;
+	}
+
+	Signal[i].flag.GetPlan = true;
+	return true;
+}
+
+int Get_Node(xmlNodePtr *Node,char *NodeName)
+{
+	while(Node != NULL)                         //  找到object节点
+	{
+		if(strncmp(NodeName,(char *)(*Node)->name,strlen(NodeName)) == 0)
+		{
+			return true;
+		}
+		else
+		{
+			(*Node) = (*Node)->next;
+		}
+	}
+	return false;
+}
+
+int JudgeOperateObject(xmlXPathContextPtr Xpath)
+{
+	xmlXPathObjectPtr Xresult =NULL;
+
+	//判断是不是方案
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//Period", Xpath);
+	if(CheckXmlResult(Xresult) == true)
+	{
+		xmlXPathFreeObject(Xresult);
+		return Plan;
+	}
+
+	//判断是不是相位
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//Phase", Xpath);
+	if(CheckXmlResult(Xresult) == true)
+	{
+		xmlXPathFreeObject(Xresult);
+		return Phase;
+	}
+
+	//判断是不是步进
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//NextStep", Xpath);
+	if(CheckXmlResult(Xresult) == true)
+	{
+		xmlXPathFreeObject(Xresult);
+		return NextStep;
+	}
+
+	//判断是不是切换方案
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//CrossPlan", Xpath);
+	if(CheckXmlResult(Xresult) == true)
+	{
+		xmlXPathFreeObject(Xresult);
+		return ChangePlan;
+	}
+
+	//判断是不是特勤
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//GreenChannel", Xpath);
+	if(CheckXmlResult(Xresult) == true)
+	{
+		xmlXPathFreeObject(Xresult);
+		return SpecialService;
+	}
+
+	//判断是不是降级
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//DomoteMode", Xpath);
+	if(CheckXmlResult(Xresult) == true)
+	{
+		xmlXPathFreeObject(Xresult);
+		return DemoteMode;
+	}
+
+	//判断是不是区域协调
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//RegionsCoordinate", Xpath);
+	if(CheckXmlResult(Xresult) == true)
+	{
+		xmlXPathFreeObject(Xresult);
+		return RegionsCoordinate;
+	}
+
+	//判断是不是降级
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//SDO_TimeServer", Xpath);
+	if(CheckXmlResult(Xresult) == true)
+	{
+		xmlXPathFreeObject(Xresult);
+		return CheckTime;
+	}
+
+	//判断是不是区域协调
+	Xresult = xmlXPathEvalExpression((xmlChar*)"//Restart", Xpath);
+	if(CheckXmlResult(Xresult) == true)
+	{
+		xmlXPathFreeObject(Xresult);
+		return RestartSignal;
+	}
+
+	return 0;
+}
+
+

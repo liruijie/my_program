@@ -1,9 +1,9 @@
-16:08:43 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
+17:29:07 **** Incremental Build of configuration Debug for project PublicTransportPriority ****
 make all 
-Building file: ../src/PublicTransportPriority.cpp
+Building file: ../src/Queue.cpp
 Invoking: GCC C++ Compiler
-g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicTransportPriority.d" -MT"src/PublicTransportPriority.o" -o "src/PublicTransportPriority.o" "../src/PublicTransportPriority.cpp"
-Finished building: ../src/PublicTransportPriority.cpp
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
  
 Building target: PublicTransportPriority
 Invoking: GCC C++ Linker
@@ -11,5 +11,5 @@ g++ -L/usr/lib/oracle/12.1/client64/lib -L/usr/local/lib -o "PublicTransportPrio
 Finished building target: PublicTransportPriority
  
 
-16:08:44 Build Finished (took 344ms)
+17:29:08 Build Finished (took 387ms)
 

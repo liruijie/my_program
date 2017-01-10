@@ -43,7 +43,7 @@ void * Connect_HiCON(void *arg)
 	bzero(&HiCON_Addr, sizeof(HiCON_Addr));
 	HiCON_Addr.sin_family = PF_INET;
 	HiCON_Addr.sin_port = htons(10010);//htons(HiCON.port);
-	HiCON_Addr.sin_addr.s_addr = inet_addr("192.168.1.38");
+	HiCON_Addr.sin_addr.s_addr = inet_addr("192.168.1.38");//HiCON.ip;
 	Sockfd_HiCON=InitHiCON_TCP();
 	while(1)
 	{
@@ -406,6 +406,7 @@ int ParsingData(char *buf)
 	}
 
 	Xresult = xmlXPathEvalExpression((xmlChar*)"//messageType", Xpath);
+
 	if(CheckXmlResult(Xresult) == fail)
 		goto __FreeXpath;
 	node = Xresult ->nodesetval->nodeTab[0];

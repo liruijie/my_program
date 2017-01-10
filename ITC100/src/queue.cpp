@@ -23,8 +23,6 @@ using namespace oracle::occi;
 using namespace std;
 
 unsigned char temp[512];  
- 
-
 
 /*************************************************** 
  * º¯ÊıÃû£ºqueue_create

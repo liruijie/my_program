@@ -736,7 +736,6 @@ void AnalyzeXml(char *buf,int TcpNum)
 				{
 					xmlUnlinkNode(Node_Body->children);
 				}
-
 			}
 			xmlNewChild(Node_Body, NULL, BAD_CAST "PhoneNumber",PhoneNum);
 			xmlNewChild(Node_Body, NULL, BAD_CAST "errorType",BAD_CAST "sendError");

@@ -38,7 +38,7 @@ int main() {
 	cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
 	printf(zhongwen);
 
-printf("%d",SDE_Address);
+	printf("%d",SDE_Address);
     char s[] = "123,1,111111,5";
 
     char *p;
@@ -48,8 +48,8 @@ printf("%d",SDE_Address);
         printf("%s ", p);
     printf("\n");
     cout << __FILE__<< '\t'<< __FUNCTION__<< '\t'<< __LINE__<< '\t'<< " Error Number : "<<endl; //获得异常代码
-	//occi_open();
-	//selectoperate();
+	occi_open();
+	selectoperate();
 	//insertoperate();
 	//getchar();
 	return 0;
@@ -104,9 +104,9 @@ int occi_open()
 int selectoperate()
 {
 	ResultSet *Result;
-	char sqlbuf[] = "select t.disrict_id , t.disrict_name from DISRICT_INFOR t  order by t.disrict_id";
+	char sqlbuf[] = "select t.disrict_id , t.disrict_name from DISRICT_INFOR t where t.disrict_name='邯郸' order by t.disrict_id";
 	//int disrict_id;
-	char disrict_name[100];
+	//char disrict_name[100];
 	//char sqlbuf[] = "select t.detail from DISRICT_INFOR t  order by t.disrict_id";
 	try
 	{
@@ -117,12 +117,13 @@ int selectoperate()
 		{
 
 			//disrict_id = Result->getInt(1);
-			strcpy(disrict_name , Result->getString(1).c_str());
+			//strcpy(disrict_name , Result->getString(1).c_str());
 
 			printf("disrict_id = %d  ,disrict_name = %s\n",Result->getInt(1),Result->getString(2).c_str());
-			cout << Result->getString(1).c_str() << Result->getString(2)<< endl;
+			//cout << Result->getString(1).c_str() << Result->getString(2)<< endl;
 			//printf("disrict_id = %s  \n",disrict_name);
 		}
+		stmt->closeResultSet(Result);
 	}
 	catch(SQLException &sqlExcp)
 	{

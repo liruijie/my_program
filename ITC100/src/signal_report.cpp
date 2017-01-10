@@ -20,14 +20,14 @@ using namespace oracle::occi;
 
 #define BUFF_NUM  512
 
-/*ÐÅºÅ»ú³õÊ¼ÐÅÏ¢*/
+/*ï¿½ÅºÅ»ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Ï¢*/
  signal_info signal_info_data[512];
-/*ÐÅºÅ»ú×Ü¸öÊý*/
+/*ï¿½ÅºÅ»ï¿½ï¿½Ü¸ï¿½ï¿½ï¿½*/
 int signal_number;
-/*Êý¾Ý¿â²Ù×÷¾ä±ú*/
- Statement *stmt ;
+/*ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
+ //Statement *stmt ;
 
-/*¶ÓÁÐ½á¹¹*/
+/*ï¿½ï¿½ï¿½Ð½á¹¹*/
 sequeue *sq;
 
 void receive_signal_report()
@@ -81,7 +81,7 @@ void receive_signal_report_udp_server(int port)
 		perror("fail to socket");
 		exit(-1);
 	}
-	   // ÉèÖÃÌ×½Ó×ÖÑ¡Ïî±ÜÃâµØÖ·Ê¹ÓÃ´íÎó  
+	   // ï¿½ï¿½ï¿½ï¿½ï¿½×½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·Ê¹ï¿½Ã´ï¿½ï¿½ï¿½  
     	int on=1;  
    	 if((setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,&on,sizeof(on)))<0)  
    	 {  
@@ -91,7 +91,7 @@ void receive_signal_report_udp_server(int port)
 	
 #if 0
 	struct timeval tv_out;
-       tv_out.tv_sec = 10;//µÈ´ý10ÃëÉèÖÃÎª0Ôò×èÈû
+       tv_out.tv_sec = 10;//ï¿½È´ï¿½10ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
        tv_out.tv_usec = 0;
 	setsockopt(sockfd,SOL_SOCKET,SO_RCVTIMEO,&tv_out, sizeof(tv_out));
 #endif
@@ -144,7 +144,7 @@ void receive_signal_report_udp_server(int port)
 				//	printf("recv_buf[10] = %x\n",recv_buf[10]);
 					signal_info_data[signal_num].last_time = now;
 				
-					/*ÊµÊ±Êý¾Ý*/
+					/*ÊµÊ±ï¿½ï¿½ï¿½ï¿½*/
 					
 					if(recv_buf[10] == 0x50)                    
 					{
@@ -154,13 +154,13 @@ void receive_signal_report_udp_server(int port)
 						parsing_recv_buf(signal_num,recv_buf);
 					}
 
-					//ITC100, Ö÷¶¯ÉÏ±¨Á÷Á¿
+					//ITC100, ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½
 
 					else if(recv_buf[10] == 0x44 || recv_buf[10] == 0x45)
 					{
 						//int detector_num = recv_buf[11];
 
-						//Ê±¼ä
+						//Ê±ï¿½ï¿½
 						char updateTime[30],sql[500];
 						struct tm *p;
 						time_t seconds =(time_t)( recv_buf[16]*256*256*256 +recv_buf[17]*256*256 +recv_buf[18]*256+recv_buf[19]);
@@ -190,7 +190,7 @@ void receive_signal_report_udp_server(int port)
 
 					}
 						
-					/*±¨¾¯Êý¾ÝÈëÁÐ*/
+					/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 					//else if(recv_buf[10] == 0x80 || recv_buf[10] == 0x81 || recv_buf[10] == 0x82 || recv_buf[10] == 0x83 || recv_buf[10] == 0x85 || recv_buf[10] == 0x87 || recv_buf[10] == 0x89 || recv_buf[10] == 0xA0 || recv_buf[10] == 0xA2|| recv_buf[10] == 0x8A)
 					else if((recv_buf[10] >= 0x80 &&  recv_buf[10] <= 0x8A ) || (recv_buf[10] >= 0xA0&&  recv_buf[10] <= 0xA5))
 					{ 
@@ -199,7 +199,7 @@ void receive_signal_report_udp_server(int port)
 						enqueue(sq, recv_buf);
 						//printf("en_queue(&queue,recv_buf);   chenggong \n");
 					}
-					/*Õ¼ÓÐÂÊ Á÷Á¿Êý¾ÝÈëÁÐ*/
+					/*Õ¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 					else if(recv_buf[10]  == 0x41 || recv_buf[10]  == 0x40)
 					{
 					//	printf("this is a 40 and 41\n");
@@ -234,12 +234,12 @@ void receive_signal_report_udp_server(int port)
 
 
 /*************************************************** 
- * º¯ÊýÃû£ºcheck_buf
- * ¹¦ÄÜÃèÊö£º¼ì²éBUF±¨ÎÄÊÇ·ñÊÇÕýÈ·µÄ
- *±»·ÃÎÊµÄ±í£º
- *±»ÐÞ¸ÄµÄ±í£º
-* ²ÎÊýËµÃ÷£ºBUF:ÐèÒª¼ì²éµÄ ±¨ÎÄÊý×é
-*·µ»ØÖµ: -1Ê§°Ü 0³É¹¦
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½check_buf
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½BUFï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½
+ *ï¿½ï¿½ï¿½ï¿½ï¿½ÊµÄ±ï¿½
+ *ï¿½ï¿½ï¿½Þ¸ÄµÄ±ï¿½
+* ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½BUF:ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+*ï¿½ï¿½ï¿½ï¿½Öµ: -1Ê§ï¿½ï¿½ 0ï¿½É¹ï¿½
 ***************************************************/
 int check_buf( unsigned char * rcv_buf)
 {
@@ -273,12 +273,12 @@ int check_buf( unsigned char * rcv_buf)
 }
 
 /*************************************************** 
- * º¯ÊýÃû£ºcheck_signal_id
- * ¹¦ÄÜÃèÊö£º¼ì²éÐÅºÅ»úID ÔÚsignal_info_dataÖÐµÄ±àºÅ
- *±»·ÃÎÊµÄ±í£º
- *±»ÐÞ¸ÄµÄ±í£º
-* ²ÎÊýËµÃ÷£ºsignal_id ÐÅºÅ»úID
-*·µ»ØÖµ: ÔÚÊý×éÖÐµÄ±àºÅ£¬ÎÞ·µ»Ø-1
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½check_signal_id
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅºÅ»ï¿½ID ï¿½ï¿½signal_info_dataï¿½ÐµÄ±ï¿½ï¿½
+ *ï¿½ï¿½ï¿½ï¿½ï¿½ÊµÄ±ï¿½
+ *ï¿½ï¿½ï¿½Þ¸ÄµÄ±ï¿½
+* ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½signal_id ï¿½ÅºÅ»ï¿½ID
+*ï¿½ï¿½ï¿½ï¿½Öµ: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÐµÄ±ï¿½Å£ï¿½ï¿½Þ·ï¿½ï¿½ï¿½-1
 ***************************************************/
 int check_signal_id(int signal_id)
 {
@@ -295,13 +295,13 @@ int check_signal_id(int signal_id)
 }
 
 /*************************************************** 
- * º¯ÊýÃû£ºparsing_recv_buf
- * ¹¦ÄÜÃèÊö£º°ÑÊý¾Ý½âÎö´æÈë¹«¹²½á¹¹ÌåÊý×éÖÐ
- *±»·ÃÎÊµÄ±í£º
- *±»ÐÞ¸ÄµÄ±í£º
-* ²ÎÊýËµÃ÷£ºsignal_num: ÔÚ¹«¹²½á¹¹ÌåÖÐµÄ±àºÅ
-					buf:½ÓÊÕµÄ±¨ÎÄ
-*·µ»ØÖµ: Ê§°Ü·µ»Ø-1,³É¹¦·µ»Ø0
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½parsing_recv_buf
+ * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë¹«ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ *ï¿½ï¿½ï¿½ï¿½ï¿½ÊµÄ±ï¿½
+ *ï¿½ï¿½ï¿½Þ¸ÄµÄ±ï¿½
+* ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½signal_num: ï¿½Ú¹ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½ï¿½ï¿½ÐµÄ±ï¿½ï¿½
+					buf:ï¿½ï¿½ï¿½ÕµÄ±ï¿½ï¿½ï¿½
+*ï¿½ï¿½ï¿½ï¿½Öµ: Ê§ï¿½Ü·ï¿½ï¿½ï¿½-1,ï¿½É¹ï¿½ï¿½ï¿½ï¿½ï¿½0
 ***************************************************/
 int parsing_recv_buf(int signal_num, unsigned char * buf)
 {
@@ -316,7 +316,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 	if(strcmp(signal_info_data[signal_num].device_type,"TC100")== 0  &&buf[1] == 0x00 &&  buf[2] == 0x4d)
 	{
 
-	/*´¦Àí°å×´Ì¬*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬*/
 			for(i = 8; i > 0; i--)
 			{
 				if((buf[12] & (0x01 <<  (i -1)) ) == 0)
@@ -335,7 +335,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 
 			char a[2];
 			
-			/*´¦ÀíµÆÌ¬*/
+			/*ï¿½ï¿½ï¿½ï¿½ï¿½Ì¬*/
 			bzero(signal_info_data[signal_num].phase_lht,sizeof(signal_info_data[signal_num].phase_lht));
 			for(i = 0; i < 16 ; i++)
 			{
@@ -349,7 +349,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 			}
 	
 //	printf("!!!!!!!!!!!signal_info_data[signal_num].phase_lht = %s\n",signal_info_data[signal_num].phase_lht);
-	/*´¦Àí¼ì²âÆ÷×´Ì¬*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬*/
 			int m = 0;
 			
 			for(i = 0; i < 13 ; i++)
@@ -372,7 +372,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 	//printf("!!!!!!!!!!!chuliqi zhuangtai = %s\n",signal_info_data[signal_num].detect_status);
 
 	
-			/*´¦Àí¼ì²âÆ÷Êý¾Ý*/
+			/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 			m = 0;
 			for(i = 0; i < 13 ; i++)
 			{
@@ -392,7 +392,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 				}
 			}
 
-			/*´¦Àí½ô¼±ÊäÈë×´Ì¬*/
+			/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬*/
 			m = 0;
 			for(i = 0; i < 4 ; i++)
 			{
@@ -409,7 +409,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 				m++;
 			}
 
-	/*´¦ÀíÓÅÏÈÊäÈë×´Ì¬*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬*/
 			m = 0;
 			for(i = 0; i < 4 ; i++)
 			{
@@ -426,7 +426,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 				m++;
 			}
 
-	/*´¦ÀíÃÅ×´Ì¬*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬*/
 			m = 0;
 			for(i = 0; i < 2 ; i++)
 			{
@@ -443,9 +443,9 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 				m++;
 			}
 
-	/*´¦Àí·½°¸Êý¾Ý*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 			if(signal_info_data[signal_num].control_model != 0x00)
-				signal_info_data[signal_num].control_last_model = signal_info_data[signal_num].control_model;//¼ÇÂ¼ÉÏÒ»´ÎÔËÐÐÄ£Ê½
+				signal_info_data[signal_num].control_last_model = signal_info_data[signal_num].control_model;//ï¿½ï¿½Â¼ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½
 			signal_info_data[signal_num].control_model = buf[57];
 			signal_info_data[signal_num].cur_plan = buf[58];
 			signal_info_data[signal_num].cur_week = buf[59] * 256 + buf[60];
@@ -458,7 +458,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 			signal_info_data[signal_num].signal_info_state = 1;
 			signal_info_data[signal_num].oracleFlag[0]= 1;
 			signal_info_data[signal_num].oracleFlag[1]= 1;
-			/*´¦Àí¸üÐÂÊ±¼ä*/
+			/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½*/
 			sprintf(signal_info_data[signal_num].update_time,"%d-%d-%d %d:%d:%d",buf[69] * 256 + buf[70],buf[71],buf[72],buf[73],buf[74],buf[75]);
 
 
@@ -471,11 +471,11 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 
 	else if(strcmp(signal_info_data[signal_num].device_type , "ITC100")== 0 && buf[1] == 0x01 && buf[2] == 0x02)
 	{
-		/*Ä£¿é×´Ì¬£¬4¸ö×Ö½Ú*/
+		/*Ä£ï¿½ï¿½×´Ì¬ï¿½ï¿½4ï¿½ï¿½ï¿½Ö½ï¿½*/
 		int k;
 		bzero(signal_info_data[signal_num].board_state,sizeof(signal_info_data[signal_num].board_state));
 
-		for(k = 0;k < 3; k ++) //µÚÒ»¸ö×Ö½ÚÎª¿Õ
+		for(k = 0;k < 3; k ++) //ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö½ï¿½Îªï¿½ï¿½
 		{
 			for(i = 8; i > 0; i--)
 			{
@@ -494,7 +494,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 			}
 		}
 
-		//ÏàÎ»µÆÌ¬ ,´ÓµÚ16×Ö½Ú¿ªÊ¼
+		//ï¿½ï¿½Î»ï¿½ï¿½Ì¬ ,ï¿½Óµï¿½16ï¿½Ö½Ú¿ï¿½Ê¼
 		char a[2];
 		bzero(signal_info_data[signal_num].phase_lht,sizeof(signal_info_data[signal_num].phase_lht));
 	for(i = 0; i < 32 ; i++)
@@ -508,7 +508,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 		//signal_info_data[signal_num].phase_lht[i  * 2  + 1] = '\,';
 	}
 
-	//ÏàÎ»µçÁ÷£¬Ã¿¸öÏàÎ»£¬¶ÔÓ¦3¸öµçÁ÷ 
+	//ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½Ó¦3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 	bzero(signal_info_data[signal_num].phase_current,sizeof(signal_info_data[signal_num].phase_current));
 	char aa[3];
 	for(i = 0; i < 96 ; i++)
@@ -526,7 +526,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 		strcat((char *)signal_info_data[signal_num].phase_current,",");	
 	}
 	//printf("dian liu::%s\n\n",signal_info_data[signal_num].phase_current);
-	//¼ì²âÆ÷×´Ì¬£¬4¸ö×Ö½Ú
+	//ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½4ï¿½ï¿½ï¿½Ö½ï¿½
 	int m = 0;
 	
 	for(i = 0; i < 4 ; i++)
@@ -549,7 +549,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 	//printf("!!!!!!!!!!!chuliqi zhuangtai = %s\n",signal_info_data[signal_num].detect_status);
 
 	
-	/*´¦Àí¼ì²âÆ÷Êý¾Ý*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 	m = 0;
 	for(i = 0; i < 4 ; i++)
 	{
@@ -569,7 +569,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 		}
 	}
 
-	/*´¦Àí½ô¼±ÊäÈë×´Ì¬*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬*/
 	m = 0;
 	for(i = 0; i < 4 ; i++)
 	{
@@ -586,7 +586,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 		m++;
 	}
 
-	/*´¦ÀíÓÅÏÈÊäÈë×´Ì¬*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬*/
 	m = 0;
 	for(i = 0; i < 4 ; i++)
 	{
@@ -603,7 +603,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 		m++;
 	}
 
-	/*´¦ÀíÃÅ×´Ì¬,Ç°ÃÅ¡¢ºóÃÅ¡¢²àÃÅ*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬,Ç°ï¿½Å¡ï¿½ï¿½ï¿½ï¿½Å¡ï¿½ï¿½ï¿½ï¿½ï¿½*/
 	m = 0;
 	for(i = 0; i < 3 ; i++)
 	{
@@ -620,9 +620,9 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 		m++;
 	}
 
-	/*´¦Àí·½°¸Êý¾Ý*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 	if(signal_info_data[signal_num].control_model != 0x00)
-		signal_info_data[signal_num].control_last_model = signal_info_data[signal_num].control_model;//¼ÇÂ¼ÉÏÒ»´ÎÔËÐÐÄ£Ê½
+		signal_info_data[signal_num].control_last_model = signal_info_data[signal_num].control_model;//ï¿½ï¿½Â¼ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½
 	signal_info_data[signal_num].control_model = buf[158];
 	signal_info_data[signal_num].cur_plan = buf[159];
 	signal_info_data[signal_num].cur_week = (buf[160] * 256 + buf[161])/10;
@@ -635,7 +635,7 @@ int parsing_recv_buf(int signal_num, unsigned char * buf)
 	signal_info_data[signal_num].signal_info_state = 1;
 	signal_info_data[signal_num].oracleFlag[0]= 1;
 	signal_info_data[signal_num].oracleFlag[1]= 1;
-	/*´¦Àí¸üÐÂÊ±¼ä*/
+	/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½*/
 	//sprintf(signal_info_data[signal_num].update_time,"%d-%d-%d %d:%d:%d",buf[254] * 256 + buf[255],buf[256],buf[257],buf[258],buf[259],buf[260]);
 	struct tm *p;
 	time_t signalTime = (time_t)(buf[254] *256*256*256 + buf[255]*256*256 + buf[256]*256 +buf[257]);

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="将资源“xiangyang/src/xiangyang.cpp”重命名为“main.cpp”" description="重命名资源“xiangyang.cpp”" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/xiangyang.cpp" name="main.cpp" stamp="1480473354801" updateReferences="true"/>
+</session>

@@ -46,7 +46,6 @@ int main()
 					 stmt = conn->createStatement();
 					 stmt->setAutoCommit(true);
 					 cout << "Connect oracle"<<endl;
-
 			 }
 		}
 	}

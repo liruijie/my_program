@@ -52,11 +52,36 @@ char glFun(int a,char *p)
 	return (char )a;
 }
 
+void get_char(char **aa,char b)
+{
+	while(**aa != '\0')
+	{
+		if( **aa == b)
+		{
+			printf("get\n");
+			return;
+		}
+		else
+			*aa += 1;
+	}
+}
 int main()
 {
+char buf[6]="abcdf";
+buf[5] = '\0';
+char *a ;
+	a= buf;
+	get_char(&a,'c');
+	printf("buf = %s ; a = %s",buf,a);
+
+
+
 		char c;
-		time_t time_now;
+		time_t time_now = 0;
+		time_t time_now_1 = 0;
 		time(&time_now);
+		time_now_1 = time(NULL);
+		printf("time_now = %ld,time_now_1= %ld",time_now,time_now_1);
 		 struct tm *p = gmtime(&time_now);
 		 printf("week value = %d\n",p->tm_wday);
 

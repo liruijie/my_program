@@ -1,5 +1,6 @@
-10:51:51 **** Build of configuration Debug for project ITC100 ****
+10:22:31 **** Incremental Build of configuration Debug for project ITC100 ****
 make all 
+make: 对“all”无需做任何事。
 make: /home/ITC100/occi_opration.h：时间标记超出范围；正在替换 1970-01-01 08:00:00
 make: /home/ITC100/public_data.h：时间标记超出范围；正在替换 1970-01-01 08:00:00
 make: /home/ITC100/queue.h：时间标记超出范围；正在替换 1970-01-01 08:00:00
@@ -13,45 +14,12 @@ make: /home/ITC100/web_message_recv.h：时间标记超出范围；正在替换 
 make: /home/ITC100/web_online_heart.h：时间标记超出范围；正在替换 1970-01-01 08:00:00
 make: /home/ITC100/signal_control_heart.h：时间标记超出范围；正在替换 1970-01-01 08:00:00
 make: /home/ITC100/signal_check_time.h：时间标记超出范围；正在替换 1970-01-01 08:00:00
-Building file: ../src/occi_opration.cpp
-Invoking: GCC C++ Compiler
-g++ -I/usr/include/oracle/12.1/client64 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/occi_opration.d" -MT"src/occi_opration.o" -o "src/occi_opration.o" "../src/occi_opration.cpp"
-../src/occi_opration.cpp: 在函数‘int occi_open()’中:
-../src/occi_opration.cpp:51:7: 警告：未使用的变量‘i’ [-Wunused-variable]
-   int i=0;
-       ^
-../src/occi_opration.cpp:77:13: 警告：未使用的变量‘i’ [-Wunused-variable]
-         int i=sqlExcp.getErrorCode();
-             ^
-../src/occi_opration.cpp: 在函数‘int occi_singal_Init()’中:
-../src/occi_opration.cpp:106:9: 警告：variable ‘now’ set but not used [-Wunused-but-set-variable]
-  time_t now;
-         ^
-../src/occi_opration.cpp: 在函数‘int occi_singal_Init_control_heart()’中:
-../src/occi_opration.cpp:488:9: 警告：未使用的变量‘now’ [-Wunused-variable]
-  time_t now;
-         ^
-../src/occi_opration.cpp:490:9: 警告：未使用的变量‘j’ [-Wunused-variable]
-  int i ,j;
-         ^
-../src/occi_opration.cpp:592:1: 警告：在有返回值的函数中未发现 return 语句 [-Wreturn-type]
- }
- ^
-Finished building: ../src/occi_opration.cpp
- 
 make: ../src/signal_report.h：时间标记超出范围；正在替换 1970-01-01 08:00:00
 make: ../src/occi_opration.h：时间标记超出范围；正在替换 1970-01-01 08:00:00
 make: ../src/public_data.h：时间标记超出范围；正在替换 1970-01-01 08:00:00
 make: ../src/parsing_report.h：时间标记超出范围；正在替换 1970-01-01 08:00:00
 make: ../src/queue.cpp：时间标记超出范围；正在替换 1970-01-01 08:00:00
 make: ../src/web_online_heart.cpp：时间标记超出范围；正在替换 1970-01-01 08:00:00
-Building target: ITC100
-Invoking: GCC C++ Linker
-g++ -L/usr/lib/oracle/12.1/client64/lib -o "ITC100"  ./src/external_query.o ./src/main.o ./src/occi_opration.o ./src/parsing_report.o ./src/parsing_report_alalrm.o ./src/queue.o ./src/signal_check_time.o ./src/signal_control_heart.o ./src/signal_report.o ./src/signal_timeout_check.o ./src/web_control_heart.o ./src/web_message_recv.o ./src/web_online_heart.o  /usr/lib64/libstdc++.so.6 -lpthread -lm -lnsl -lclntsh -locci
-./src/signal_report.o:(.bss+0x111a008): multiple definition of `stmt'
-./src/occi_opration.o:/home/eclipseprogram/ITC100/Debug/../src/occi_opration.cpp:35：第一次在此定义
-collect2: 错误：ld 返回 1
-make: *** [ITC100] 错误 1
 
-10:51:53 Build Finished (took 1s.263ms)
+10:22:31 Build Finished (took 74ms)
 

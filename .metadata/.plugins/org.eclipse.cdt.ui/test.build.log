@@ -1,8 +1,15 @@
-13:59:35 **** Incremental Build of configuration Debug for project test ****
+10:28:01 **** Incremental Build of configuration Debug for project test ****
 make all 
-make: Warning: File `src/test.d' has modification time 172699 s in the future
-make: 对“all”无需做任何事。
-make: 警告：检测到时钟错误。您的创建可能是不完整的。
+Building file: ../src/test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test.d" -MT"src/test.o" -o "src/test.o" "../src/test.c"
+Finished building: ../src/test.c
+ 
+Building target: test
+Invoking: GCC C Linker
+gcc  -o "test"  ./src/test.o   
+Finished building target: test
+ 
 
-13:59:35 Build Finished (took 109ms)
+10:28:01 Build Finished (took 169ms)
 

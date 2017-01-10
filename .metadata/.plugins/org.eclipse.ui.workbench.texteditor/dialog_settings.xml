@@ -2,22 +2,25 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="ReceiveD" key="selection"/>
+		<item value="" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
+			<item value="t."/>
+			<item value="revice_web_message_opretion"/>
+			<item value="&gt;"/>
+			<item value="&lt;"/>
 			<item value="received"/>
 			<item value="ReceiveDeviceReply"/>
 			<item value="strtok"/>
 			<item value="sqlbuf"/>
-			<item value="_stmt"/>
-			<item value="insert into"/>
-			<item value="value"/>
-			<item value="execute"/>
 		</list>
 		<list key="replacehistory">
+			<item value=""/>
+			<item value="&gt;&quot;"/>
+			<item value="&quot;&lt;"/>
 			<item value="stmt"/>
 			<item value="printf"/>
 			<item value="recvbuf"/>
@@ -28,7 +31,7 @@
 		<item value="327" key="DIALOG_WIDTH"/>
 		<item value="1|Cantarell|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
 		<item value="451" key="DIALOG_HEIGHT"/>
-		<item value="1202" key="DIALOG_X_ORIGIN"/>
-		<item value="253" key="DIALOG_Y_ORIGIN"/>
+		<item value="517" key="DIALOG_X_ORIGIN"/>
+		<item value="287" key="DIALOG_Y_ORIGIN"/>
 	</section>
 </section>
