@@ -167,6 +167,7 @@ struct RegionsCoord_PhaseInfo
 };
 struct RegionsCoord_StageInfo
 {
+		//ITC100 信息
 		int num;		//阶段序号
 		int id;		//阶段ID
 		int green_time;		//需要放行的绿灯时间（通过流量数据计算得出）
@@ -174,7 +175,11 @@ struct RegionsCoord_StageInfo
 		int flow;				//阶段在一定周期内的流量和
 		struct RegionsCoord_PhaseInfo phase[16];			//相位ID
 
-		char ZKTD_Lane[20];
+		//中科通达信息
+		char ZKTD_Lane[20];	//阶段（相位）中包含的通道
+		struct RegionsCoord_ZKTD_Detector ZKTD_Detector[16];
+
+		int ZKTD_LaneFlow[16];
 
 };
 struct RegionsCoord_unit_info
@@ -188,6 +193,10 @@ struct RegionsCoord_unit_info
 		int flow;
 		struct RegionsCoord_StageInfo Stage[16];	//阶段信息
 		GetCoordPlan GetCoordinatePlan;
+
+
+		//中科通达用的信息
+		int ZKTD_LaneFlow[16];
 
 };
 struct RegionsCoordInfo

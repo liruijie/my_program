@@ -1494,9 +1494,10 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 	int canalization_count;
 	char *cana_id;
 
+
 	struct RegionsCoord_ZKTD_Detector ZKTD_Detector[16];
 	int detect_count=0;
-	int exit_dir_flow[16];
+	//int exit_dir_flow[16];
 	//渠化ID 释义
 	//			1	南左转			2	南调头			3	南直行			4	西左转			5	西直行			6	西右转			7	西调头			8	北左转
 	//			9	北调头			10	北直行			11	北右转			12	东直行			13	南右转			14	东左转			15	东调头			16	东右转
@@ -1577,32 +1578,32 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 						{
 							if(canalization_id[temp_m] == (EN+1))     		//东右转
 							{
-								exit_dir_flow[EN] = 	ZKTD_Detector[temp_t].flow * right_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[EN] = 	ZKTD_Detector[temp_t].flow * right_percent;
 							}
 							else if(canalization_id[temp_m] == (EW+1))		//东直行
 							{
-								exit_dir_flow[EW] = 	ZKTD_Detector[temp_t].flow * straight_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[EW] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
 							else if(canalization_id[temp_m] == (ES+1))		//东左转
 							{
-								exit_dir_flow[ES] = 	ZKTD_Detector[temp_t].flow * straight_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[ES] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
 						}
-						if( (exit_dir_flow[EN] == 0) && (exit_dir_flow[EW] !=0) && (exit_dir_flow[ES] != 0) )	//没有右转 将右转流量加到直行
+						if( (RegionsCoord.Unit[i].ZKTD_LaneFlow[EN] == 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[EW] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[ES] != 0) )	//没有右转 将右转流量加到直行
 						{
-							exit_dir_flow[EW] = ZKTD_Detector[temp_t].flow * (right_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[EW] = ZKTD_Detector[temp_t].flow * (right_percent + straight_percent);
 						}
-						else if((exit_dir_flow[EN] != 0) && (exit_dir_flow[EW] ==0) && (exit_dir_flow[ES] != 0))	//没有直行  将直行数据加到左转
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[EN] != 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[EW] ==0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[ES] != 0))	//没有直行  将直行数据加到左转
 						{
-							exit_dir_flow[ES] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[ES] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
 						}
-						else if((exit_dir_flow[EN] != 0) && (exit_dir_flow[EW] !=0) && (exit_dir_flow[ES] == 0))    //没有左转  将左转数据加到直行
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[EN] != 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[EW] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[ES] == 0))    //没有左转  将左转数据加到直行
 						{
-							exit_dir_flow[EW] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[EW] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
 						}
-						else if((exit_dir_flow[EN] == 0) && (exit_dir_flow[EW] !=0) && (exit_dir_flow[ES] == 0))		//没有转弯，只有直行
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[EN] == 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[EW] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[ES] == 0))		//没有转弯，只有直行
 						{
-							exit_dir_flow[EW] = ZKTD_Detector[temp_t].flow;
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[EW] = ZKTD_Detector[temp_t].flow;
 						}
 						break;
 					}
@@ -1613,32 +1614,32 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 						{
 							if(canalization_id[temp_m] == (WS+1))     		//西右转
 							{
-								exit_dir_flow[WS] = 	ZKTD_Detector[temp_t].flow * right_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[WS] = 	ZKTD_Detector[temp_t].flow * right_percent;
 							}
 							else if(canalization_id[temp_m] == (WE+1))		//西直行
 							{
-								exit_dir_flow[WE] = 	ZKTD_Detector[temp_t].flow * straight_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[WE] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
 							else if(canalization_id[temp_m] == (WN+1))		//西左转
 							{
-								exit_dir_flow[WN] = 	ZKTD_Detector[temp_t].flow * straight_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[WN] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
 						}
-						if( (exit_dir_flow[WS] == 0) && (exit_dir_flow[WE] !=0) && (exit_dir_flow[WN] != 0) )	//没有右转 将右转流量加到直行
+						if( (RegionsCoord.Unit[i].ZKTD_LaneFlow[WS] == 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[WE] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[WN] != 0) )	//没有右转 将右转流量加到直行
 						{
-							exit_dir_flow[WE] = ZKTD_Detector[temp_t].flow * (right_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[WE] = ZKTD_Detector[temp_t].flow * (right_percent + straight_percent);
 						}
-						else if((exit_dir_flow[WS] != 0) && (exit_dir_flow[WE] ==0) && (exit_dir_flow[WN] != 0))	//没有直行  将直行数据加到左转
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[WS] != 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[WE] ==0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[WN] != 0))	//没有直行  将直行数据加到左转
 						{
-							exit_dir_flow[WN] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[WN] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
 						}
-						else if((exit_dir_flow[WS] != 0) && (exit_dir_flow[WE] !=0) && (exit_dir_flow[WN] == 0))    //没有左转  将左转数据加到直行
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[WS] != 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[WE] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[WN] == 0))    //没有左转  将左转数据加到直行
 						{
-							exit_dir_flow[WE] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[WE] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
 						}
-						else if((exit_dir_flow[WS] == 0) && (exit_dir_flow[WE] !=0) && (exit_dir_flow[WN] == 0))		//没有转弯，只有直行
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[WS] == 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[WE] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[WN] == 0))		//没有转弯，只有直行
 						{
-							exit_dir_flow[WE] = ZKTD_Detector[temp_t].flow;
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[WE] = ZKTD_Detector[temp_t].flow;
 						}
 						break;
 					}
@@ -1649,32 +1650,32 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 						{
 							if(canalization_id[temp_m] == (SE+1))     		//南右转
 							{
-								exit_dir_flow[SE] = 	ZKTD_Detector[temp_t].flow * right_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[SE] = 	ZKTD_Detector[temp_t].flow * right_percent;
 							}
 							else if(canalization_id[temp_m] == (SN+1))		//南直行
 							{
-								exit_dir_flow[SN] = 	ZKTD_Detector[temp_t].flow * straight_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[SN] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
 							else if(canalization_id[temp_m] == (SW+1))		//南左转
 							{
-								exit_dir_flow[SW] = 	ZKTD_Detector[temp_t].flow * straight_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[SW] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
 						}
-						if( (exit_dir_flow[SE] == 0) && (exit_dir_flow[SN] !=0) && (exit_dir_flow[SW] != 0) )	//没有右转 将右转流量加到直行
+						if( (RegionsCoord.Unit[i].ZKTD_LaneFlow[SE] == 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[SN] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[SW] != 0) )	//没有右转 将右转流量加到直行
 						{
-							exit_dir_flow[SN] = ZKTD_Detector[temp_t].flow * (right_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[SN] = ZKTD_Detector[temp_t].flow * (right_percent + straight_percent);
 						}
-						else if((exit_dir_flow[SE] != 0) && (exit_dir_flow[SN] ==0) && (exit_dir_flow[SW] != 0))	//没有直行  将直行数据加到左转
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[SE] != 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[SN] ==0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[SW] != 0))	//没有直行  将直行数据加到左转
 						{
-							exit_dir_flow[SW] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[SW] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
 						}
-						else if((exit_dir_flow[SE] != 0) && (exit_dir_flow[SN] !=0) && (exit_dir_flow[SW] == 0))    //没有左转  将左转数据加到直行
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[SE] != 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[SN] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[SW] == 0))    //没有左转  将左转数据加到直行
 						{
-							exit_dir_flow[SN] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[SN] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
 						}
-						else if((exit_dir_flow[SE] == 0) && (exit_dir_flow[SN] !=0) && (exit_dir_flow[SW] == 0))		//没有转弯，只有直行
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[SE] == 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[SN] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[SW] == 0))		//没有转弯，只有直行
 						{
-							exit_dir_flow[SN] = ZKTD_Detector[temp_t].flow;
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[SN] = ZKTD_Detector[temp_t].flow;
 						}
 						break;
 					}
@@ -1685,32 +1686,32 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 						{
 							if(canalization_id[temp_m] == (NW+1))     		//北右转
 							{
-								exit_dir_flow[NW] = ZKTD_Detector[temp_t].flow * right_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[NW] = ZKTD_Detector[temp_t].flow * right_percent;
 							}
 							else if(canalization_id[temp_m] == (NS+1))		//北直行
 							{
-								exit_dir_flow[NS] = 	ZKTD_Detector[temp_t].flow * straight_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[NS] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
 							else if(canalization_id[temp_m] == (NE+1))		//北左转
 							{
-								exit_dir_flow[NE] = 	ZKTD_Detector[temp_t].flow * straight_percent;
+								RegionsCoord.Unit[i].ZKTD_LaneFlow[NE] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
 						}
-						if( (exit_dir_flow[NW] == 0) && (exit_dir_flow[NS] !=0) && (exit_dir_flow[NE] != 0) )	//没有右转 将右转流量加到直行
+						if( (RegionsCoord.Unit[i].ZKTD_LaneFlow[NW] == 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[NS] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[NE] != 0) )	//没有右转 将右转流量加到直行
 						{
-							exit_dir_flow[NS] = ZKTD_Detector[temp_t].flow * (right_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[NS] = ZKTD_Detector[temp_t].flow * (right_percent + straight_percent);
 						}
-						else if((exit_dir_flow[NW] != 0) && (exit_dir_flow[NS] ==0) && (exit_dir_flow[NE] != 0))	//没有直行  将直行数据加到左转
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[NW] != 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[NS] ==0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[NE] != 0))	//没有直行  将直行数据加到左转
 						{
-							exit_dir_flow[NE] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[NE] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
 						}
-						else if((exit_dir_flow[NW] != 0) && (exit_dir_flow[NS] !=0) && (exit_dir_flow[NE] == 0))    //没有左转  将左转数据加到直行
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[NW] != 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[NS] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[NE] == 0))    //没有左转  将左转数据加到直行
 						{
-							exit_dir_flow[NS] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[NS] = ZKTD_Detector[temp_t].flow * (left_percent + straight_percent);
 						}
-						else if((exit_dir_flow[NW] == 0) && (exit_dir_flow[NS] !=0) && (exit_dir_flow[NE] == 0))		//没有转弯，只有直行
+						else if((RegionsCoord.Unit[i].ZKTD_LaneFlow[NW] == 0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[NS] !=0) && (RegionsCoord.Unit[i].ZKTD_LaneFlow[NE] == 0))		//没有转弯，只有直行
 						{
-							exit_dir_flow[NS] = ZKTD_Detector[temp_t].flow;
+							RegionsCoord.Unit[i].ZKTD_LaneFlow[NS] = ZKTD_Detector[temp_t].flow;
 						}
 						break;
 					}
@@ -1733,11 +1734,11 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 	_stmt->closeResultSet(Result);
 	RegionsCoord.Unit[i].StageCount = j;
 
-
+	char temp_buf[20];
 	for(j = 0; j<RegionsCoord.Unit[i].StageCount;j++)
 	{
 		memset(sqlbuf,'\0',sizeof(sqlbuf));
-		//通过渠化关联查询放行相位包含的通道ID
+		//通过渠化关联,查询放行相位包含的ID，然后配合上面得到的各个检测器出口流量分配的值，算出各个阶段的流量
 		sprintf(sqlbuf,"select canalization_id from UNIT_PHASE_CANALIZATION_CFG t where t.signal_id=%d and t.phase_id=%d",RegionsCoord.Unit[i].ID);
 		Result = _stmt->executeQuery(sqlbuf);
 		if(Result->next() != 0)
@@ -1745,6 +1746,20 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 			memset(RegionsCoord.Unit[i].Stage[j].ZKTD_Lane,'\0',20);
 			sprintf(RegionsCoord.Unit[i].Stage[j].ZKTD_Lane,Result->getString(1).c_str());
 			_stmt->closeResultSet(Result);
+			memset(temp_buf,'\0',sizeof(temp_buf));
+			sprintf(temp_buf,RegionsCoord.Unit[i].Stage[j].ZKTD_Lane);
+			cana_id = strtok(temp_buf,",");
+			RegionsCoord.Unit[i].Stage[j].flow = 0;
+			while(cana_id != NULL)
+			{
+				temp_t = 0;
+				temp_t = atoi(cana_id);
+				if((temp_t >= 0) && (temp_t <= 16 ))		//渠化关联ID有效
+				{
+					RegionsCoord.Unit[i].Stage[j].flow = RegionsCoord.Unit[i].Stage[j].flow + RegionsCoord.Unit[i].ZKTD_LaneFlow[temp_t-1];
+				}
+				cana_id = strtok(NULL,",");
+			}
 		}
 		else
 		{
@@ -1797,7 +1812,7 @@ void SetNextUnitCoordinate(int index,Connection *_conn,Statement *_stmt )
 				//如果要协调的路口已经被设置成协调路口
 				if(RegionsCoord.Unit[i].IS_Coordinated == 1)
 				{
-
+					return ;
 				}
 				else
 				{
