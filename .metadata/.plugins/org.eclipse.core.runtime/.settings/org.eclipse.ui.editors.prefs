@@ -2,6 +2,7 @@ AbstractTextEditor.Color.SelectionBackground=32,74,135
 AbstractTextEditor.Color.SelectionBackground.SystemDefault=false
 AbstractTextEditor.Color.SelectionForeground=238,238,236
 AbstractTextEditor.Color.SelectionForeground.SystemDefault=false
+currentLineColor=233,185,110
 eclipse.preferences.version=1
 isIndexResultGoToNextNavigationTarget=true
 overviewRuler_migration=migrated_3.1

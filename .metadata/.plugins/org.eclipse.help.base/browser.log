@@ -8,3 +8,8 @@
 11月 01, 2016 09:42:21.34 which: no mozilla in (/usr/local/arm-2014.05/bin:/home/Qt5.7.0/5.7/gcc_64/bin/:/usr/lib/oracle/12.1/client64/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/root/bin)
 11月 01, 2016 09:42:21.34 /usr/bin/firefox
 11月 01, 2016 09:42:21.34 which: no netscape in (/usr/local/arm-2014.05/bin:/home/Qt5.7.0/5.7/gcc_64/bin/:/usr/lib/oracle/12.1/client64/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/root/bin)
+
+1月 22, 2017 14:09:49.09 NEW SESSION
+1月 22, 2017 14:09:49.09 which: no mozilla in (/usr/local/arm-2014.05/bin:/home/Qt5.7.0/5.7/gcc_64/bin/:/usr/lib/oracle/12.1/client64/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/root/bin)
+1月 22, 2017 14:09:49.11 which: no netscape in (/usr/local/arm-2014.05/bin:/home/Qt5.7.0/5.7/gcc_64/bin/:/usr/lib/oracle/12.1/client64/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/root/bin)
+1月 22, 2017 14:09:49.11 /usr/bin/firefox

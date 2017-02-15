@@ -1,4 +1,4 @@
-11:19:13 **** Incremental Build of configuration Debug for project xiangyang ****
+11:03:09 **** Build of configuration Debug for project xiangyang ****
 make all 
 Building file: ../src/CommunicateWithServer.cpp
 Invoking: GCC C++ Compiler
@@ -41,5 +41,5 @@ g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xiangyang"  ./src/C
 Finished building target: xiangyang
  
 
-11:19:17 Build Finished (took 3s.986ms)
+11:03:12 Build Finished (took 3s.426ms)
 

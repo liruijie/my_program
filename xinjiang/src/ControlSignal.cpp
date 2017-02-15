@@ -257,6 +257,7 @@ int Control_CrossPlan(int index)
 
 	}
 }
+
 int Control_CrossStage(int index)
 {
 	if(ChangeOracleFlag(SignalRealData[index].CrossID) == fail)

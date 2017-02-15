@@ -1182,7 +1182,8 @@ int Set_CrossPlan(xmlNodePtr OperationNode,int ThreadNum)
 	return succeed;
 }
 
-/***********************指定控制方式*******************************/
+/***********************指定控制方式，将公安协议中的值对应到公司协议的值*******************************/
+/***********************函数只设置标志和控制的模式的值，具体控制命令的执行在ControlSignal.cpp中**************************************/
 int Set_CrossControlMode(xmlNodePtr OperationNode,int ThreadNum)
 {
 	xmlNodePtr ObjectNode = OperationNode ->children->children;
@@ -1230,6 +1231,7 @@ int Set_CrossControlMode(xmlNodePtr OperationNode,int ThreadNum)
 				23 单点自适应控制		31 线协调控制			41 区域协调控制			51 干预控制-手动控制		52 干预控制-锁定阶段控制
 				53 干预控制-指定方案 */
 			case 11:
+				//SignalRealData[i].CrossContolMode = ？？？
 				break;
 			case 12:
 				break;

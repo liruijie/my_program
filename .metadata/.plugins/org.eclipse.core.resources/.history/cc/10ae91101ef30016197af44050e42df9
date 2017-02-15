@@ -1,0 +1,50 @@
+/*
+ ============================================================================
+ Name        : test_fork.c
+ Author      : LIRUIJIE
+ Version     :
+ Copyright   : BYZT
+ Description : Hello World in C, Ansi-style
+ ============================================================================
+ */
+
+#include<sys/types.h>
+#include<unistd.h>
+#include<stdio.h>
+struct test_str{
+		int num1;
+		int num2;
+		char buf[10];
+};
+int main()
+{
+	struct test_str stru1,struc2;
+	stru1.num1 = 5;
+	stru1.num2 = 10;
+	memcpy(stru1.buf,"123456asf",9);
+	struc2 = stru1;
+
+	printf("num1:%d,num2:%d,buf:%s\n",struc2.num1,struc2.num2,struc2.buf);
+
+	return 0;
+	pid_t pid;
+	int cnt = 0;
+	pid = fork();
+	if(pid< 0 )
+		printf("error in fork!\n");
+	else if(pid == 0)
+	{
+		cnt=cnt + 5;
+		printf("cnt=%d,\t%p\n",cnt,&cnt);
+		printf("I am the child process,ID is %d\n",getpid());
+		_exit(0);
+	}
+	else
+	{
+		//sleep(1);
+		cnt=cnt + 10;
+		printf("cnt=%d,\t%p\n",cnt,&cnt);
+		printf("I am the parent process,ID is %d\n",getpid());
+	}
+	return 0;
+}

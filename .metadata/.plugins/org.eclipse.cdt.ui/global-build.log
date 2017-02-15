@@ -105,3 +105,464 @@ Invoking: GCC C++ Linker
 g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xiangyang"  ./src/CommunicateWithServer.o ./src/CommunicateWithWeb.o ./src/GetFlowData.o ./src/OracleOperate.o ./src/PublicFunction.o ./src/Queue.o ./src/main.o   -lclntsh -lm -lpthread -lnsl -lxml2 -locci
 Finished building target: xiangyang
  
+14:38:25 **** Build of configuration Debug for project xiangyang ****
+make all 
+Building file: ../src/CommunicateWithServer.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithServer.d" -MT"src/CommunicateWithServer.o" -o "src/CommunicateWithServer.o" "../src/CommunicateWithServer.cpp"
+Finished building: ../src/CommunicateWithServer.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void ZKTD_CoordinatePlan(int, oracle::occi::Connection*, oracle::occi::Statement*)’中:
+../src/CommunicateWithWeb.cpp:1747:140: 警告：格式 ‘%d’ expects a matching ‘int’ argument [-Wformat=]
+   sprintf(sqlbuf,"select canalization_id from UNIT_PHASE_CANALIZATION_CFG t where t.signal_id=%d and t.phase_id=%d",RegionsCoord.Unit[i].ID);
+                                                                                                                                            ^
+../src/CommunicateWithWeb.cpp:1487:26: 警告：未使用的变量‘Canalization’ [-Wunused-variable]
+  struct CANALIZATION_CFG Canalization[16];
+                          ^
+../src/CommunicateWithWeb.cpp:1491:10: 警告：未使用的变量‘k’ [-Wunused-variable]
+  int j=0,k=0;  //j 阶段下标    k 相位下标
+          ^
+../src/CommunicateWithWeb.cpp:1494:7: 警告：未使用的变量‘Phase’ [-Wunused-variable]
+  char Phase[100];
+       ^
+../src/CommunicateWithWeb.cpp:1495:8: 警告：未使用的变量‘PhaseID’ [-Wunused-variable]
+  char *PhaseID;
+        ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/GetFlowData.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/GetFlowData.d" -MT"src/GetFlowData.o" -o "src/GetFlowData.o" "../src/GetFlowData.cpp"
+Finished building: ../src/GetFlowData.cpp
+ 
+Building file: ../src/OracleOperate.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/OracleOperate.d" -MT"src/OracleOperate.o" -o "src/OracleOperate.o" "../src/OracleOperate.cpp"
+Finished building: ../src/OracleOperate.cpp
+ 
+Building file: ../src/PublicFunction.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicFunction.d" -MT"src/PublicFunction.o" -o "src/PublicFunction.o" "../src/PublicFunction.cpp"
+Finished building: ../src/PublicFunction.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/main.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.cpp"
+Finished building: ../src/main.cpp
+ 
+Building target: xiangyang
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xiangyang"  ./src/CommunicateWithServer.o ./src/CommunicateWithWeb.o ./src/GetFlowData.o ./src/OracleOperate.o ./src/PublicFunction.o ./src/Queue.o ./src/main.o   -lclntsh -lm -lpthread -lnsl -lxml2 -locci
+Finished building target: xiangyang
+ 
+14:39:45 **** Incremental Build of configuration Debug for project xiangyang ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void ZKTD_CoordinatePlan(int, oracle::occi::Connection*, oracle::occi::Statement*)’中:
+../src/CommunicateWithWeb.cpp:1487:26: 警告：未使用的变量‘Canalization’ [-Wunused-variable]
+  struct CANALIZATION_CFG Canalization[16];
+                          ^
+../src/CommunicateWithWeb.cpp:1491:10: 警告：未使用的变量‘k’ [-Wunused-variable]
+  int j=0,k=0;  //j 阶段下标    k 相位下标
+          ^
+../src/CommunicateWithWeb.cpp:1494:7: 警告：未使用的变量‘Phase’ [-Wunused-variable]
+  char Phase[100];
+       ^
+../src/CommunicateWithWeb.cpp:1495:8: 警告：未使用的变量‘PhaseID’ [-Wunused-variable]
+  char *PhaseID;
+        ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: xiangyang
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xiangyang"  ./src/CommunicateWithServer.o ./src/CommunicateWithWeb.o ./src/GetFlowData.o ./src/OracleOperate.o ./src/PublicFunction.o ./src/Queue.o ./src/main.o   -lclntsh -lm -lpthread -lnsl -lxml2 -locci
+Finished building target: xiangyang
+ 
+14:40:38 **** Incremental Build of configuration Debug for project xiangyang ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void ZKTD_CoordinatePlan(int, oracle::occi::Connection*, oracle::occi::Statement*)’中:
+../src/CommunicateWithWeb.cpp:1487:26: 警告：未使用的变量‘Canalization’ [-Wunused-variable]
+  struct CANALIZATION_CFG Canalization[16];
+                          ^
+../src/CommunicateWithWeb.cpp:1491:10: 警告：未使用的变量‘k’ [-Wunused-variable]
+  int j=0,k=0;  //j 阶段下标    k 相位下标
+          ^
+../src/CommunicateWithWeb.cpp:1494:7: 警告：未使用的变量‘Phase’ [-Wunused-variable]
+  char Phase[100];
+       ^
+../src/CommunicateWithWeb.cpp:1495:8: 警告：未使用的变量‘PhaseID’ [-Wunused-variable]
+  char *PhaseID;
+        ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: xiangyang
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xiangyang"  ./src/CommunicateWithServer.o ./src/CommunicateWithWeb.o ./src/GetFlowData.o ./src/OracleOperate.o ./src/PublicFunction.o ./src/Queue.o ./src/main.o   -lclntsh -lm -lpthread -lnsl -lxml2 -locci
+Finished building target: xiangyang
+ 
+14:51:00 **** Incremental Build of configuration Debug for project xiangyang ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void ZKTD_CoordinatePlan(int, oracle::occi::Connection*, oracle::occi::Statement*)’中:
+../src/CommunicateWithWeb.cpp:1487:26: 警告：未使用的变量‘Canalization’ [-Wunused-variable]
+  struct CANALIZATION_CFG Canalization[16];
+                          ^
+../src/CommunicateWithWeb.cpp:1491:10: 警告：未使用的变量‘k’ [-Wunused-variable]
+  int j=0,k=0;  //j 阶段下标    k 相位下标
+          ^
+../src/CommunicateWithWeb.cpp:1494:7: 警告：未使用的变量‘Phase’ [-Wunused-variable]
+  char Phase[100];
+       ^
+../src/CommunicateWithWeb.cpp:1495:8: 警告：未使用的变量‘PhaseID’ [-Wunused-variable]
+  char *PhaseID;
+        ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: xiangyang
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xiangyang"  ./src/CommunicateWithServer.o ./src/CommunicateWithWeb.o ./src/GetFlowData.o ./src/OracleOperate.o ./src/PublicFunction.o ./src/Queue.o ./src/main.o   -lclntsh -lm -lpthread -lnsl -lxml2 -locci
+Finished building target: xiangyang
+ 
+14:21:41 **** Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+14:22:01 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+make: 对“all”无需做任何事。
+14:22:40 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+../src/test_fork.c: 在函数‘main’中:
+../src/test_fork.c:25:9: 警告：格式 ‘%ld’ expects argument of type ‘long int’, but argument 2 has type ‘int *’ [-Wformat=]
+         printf("cnt=%ld\n",&cnt);
+         ^
+../src/test_fork.c:31:9: 警告：格式 ‘%ld’ expects argument of type ‘long int’, but argument 2 has type ‘int *’ [-Wformat=]
+         printf("cnt=%ld\n",&cnt);
+         ^
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+14:23:54 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+14:25:44 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+14:26:16 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+14:26:47 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+14:27:10 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+make: 对“all”无需做任何事。
+14:27:33 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+14:28:36 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+14:29:17 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+make: 对“all”无需做任何事。
+14:30:42 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+14:31:06 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+14:32:31 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+16:54:35 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+16:37:21 **** Build of configuration Debug for project xiangyang ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+../src/CommunicateWithWeb.cpp: 在函数‘void ZKTD_CoordinatePlan(int, oracle::occi::Connection*, oracle::occi::Statement*)’中:
+../src/CommunicateWithWeb.cpp:1492:10: 警告：未使用的变量‘k’ [-Wunused-variable]
+  int j=0,k=0;  //j 阶段下标    k 相位下标
+          ^
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: xiangyang
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xiangyang"  ./src/CommunicateWithServer.o ./src/CommunicateWithWeb.o ./src/GetFlowData.o ./src/OracleOperate.o ./src/PublicFunction.o ./src/Queue.o ./src/main.o   -lclntsh -lm -lpthread -lnsl -lxml2 -locci
+Finished building target: xiangyang
+ 
+16:37:42 **** Incremental Build of configuration Debug for project xiangyang ****
+make all 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building target: xiangyang
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xiangyang"  ./src/CommunicateWithServer.o ./src/CommunicateWithWeb.o ./src/GetFlowData.o ./src/OracleOperate.o ./src/PublicFunction.o ./src/Queue.o ./src/main.o   -lclntsh -lm -lpthread -lnsl -lxml2 -locci
+Finished building target: xiangyang
+ 
+09:25:38 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+09:28:05 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+../src/test_fork.c: 在函数‘main’中:
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+../src/test_fork.c:24:2: 警告：隐式声明函数‘memcpy’ [-Wimplicit-function-declaration]
+  memcpy(stru1.buf,"123456asf",9);
+  ^
+../src/test_fork.c:24:2: 警告：隐式声明与内建函数‘memcpy’不兼容 [默认启用]
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+09:28:36 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+../src/test_fork.c: 在函数‘main’中:
+../src/test_fork.c:24:2: 警告：隐式声明函数‘memcpy’ [-Wimplicit-function-declaration]
+  memcpy(stru1.buf,(char *)"123456asf",9);
+  ^
+../src/test_fork.c:24:2: 警告：隐式声明与内建函数‘memcpy’不兼容 [默认启用]
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+09:30:44 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+../src/test_fork.c: 在函数‘main’中:
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+../src/test_fork.c:24:2: 警告：隐式声明函数‘strcpy’ [-Wimplicit-function-declaration]
+  strcpy(stru1.buf,"123456asf");
+  ^
+../src/test_fork.c:24:2: 警告：隐式声明与内建函数‘strcpy’不兼容 [默认启用]
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+09:31:04 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+../src/test_fork.c: 在函数‘main’中:
+../src/test_fork.c:24:2: 警告：隐式声明函数‘strcpy’ [-Wimplicit-function-declaration]
+  strcpy(stru1.buf,(char *)"123456asf");
+  ^
+../src/test_fork.c:24:2: 警告：隐式声明与内建函数‘strcpy’不兼容 [默认启用]
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+09:31:57 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+Building file: ../src/test_fork.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/test_fork.d" -MT"src/test_fork.o" -o "src/test_fork.o" "../src/test_fork.c"
+Finished building: ../src/test_fork.c
+ 
+Building target: test_fork
+Invoking: GCC C Linker
+gcc  -o "test_fork"  ./src/test_fork.o   
+Finished building target: test_fork
+ 
+09:32:14 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+make: 对“all”无需做任何事。
+09:32:30 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+make: 对“all”无需做任何事。
+11:03:09 **** Build of configuration Debug for project xiangyang ****
+make all 
+Building file: ../src/CommunicateWithServer.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithServer.d" -MT"src/CommunicateWithServer.o" -o "src/CommunicateWithServer.o" "../src/CommunicateWithServer.cpp"
+Finished building: ../src/CommunicateWithServer.cpp
+ 
+Building file: ../src/CommunicateWithWeb.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/CommunicateWithWeb.d" -MT"src/CommunicateWithWeb.o" -o "src/CommunicateWithWeb.o" "../src/CommunicateWithWeb.cpp"
+Finished building: ../src/CommunicateWithWeb.cpp
+ 
+Building file: ../src/GetFlowData.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/GetFlowData.d" -MT"src/GetFlowData.o" -o "src/GetFlowData.o" "../src/GetFlowData.cpp"
+Finished building: ../src/GetFlowData.cpp
+ 
+Building file: ../src/OracleOperate.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/OracleOperate.d" -MT"src/OracleOperate.o" -o "src/OracleOperate.o" "../src/OracleOperate.cpp"
+Finished building: ../src/OracleOperate.cpp
+ 
+Building file: ../src/PublicFunction.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/PublicFunction.d" -MT"src/PublicFunction.o" -o "src/PublicFunction.o" "../src/PublicFunction.cpp"
+Finished building: ../src/PublicFunction.cpp
+ 
+Building file: ../src/Queue.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/Queue.d" -MT"src/Queue.o" -o "src/Queue.o" "../src/Queue.cpp"
+Finished building: ../src/Queue.cpp
+ 
+Building file: ../src/main.cpp
+Invoking: GCC C++ Compiler
+g++ -I/usr/include/oracle/12.1/client64 -I/usr/local/include/libxml2 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.cpp"
+Finished building: ../src/main.cpp
+ 
+Building target: xiangyang
+Invoking: GCC C++ Linker
+g++ -L/usr/local/lib -L/usr/lib/oracle/12.1/client64/lib -o "xiangyang"  ./src/CommunicateWithServer.o ./src/CommunicateWithWeb.o ./src/GetFlowData.o ./src/OracleOperate.o ./src/PublicFunction.o ./src/Queue.o ./src/main.o   -lclntsh -lm -lpthread -lnsl -lxml2 -locci
+Finished building target: xiangyang
+ 

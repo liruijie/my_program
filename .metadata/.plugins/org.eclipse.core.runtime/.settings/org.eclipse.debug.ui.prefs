@@ -1,5 +1,6 @@
 DEBUG.consoleOpenOnErr=false
 DEBUG.consoleOpenOnOut=false
+StringVariablePreferencePage=181,151,151,120,
 eclipse.preferences.version=1
 org.eclipse.debug.ui.MemoryView.RenderingViewPane.1=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<persistedMemoryRenderings>\n<memoryRendering memoryBlock\="1050233622" renderingId\="org.eclipse.debug.ui.rendering.hexint"/>\n</persistedMemoryRenderings>\n
 org.eclipse.debug.ui.MemoryView.RenderingViewPane.2=

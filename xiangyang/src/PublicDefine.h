@@ -203,9 +203,10 @@ struct RegionsCoordInfo
 {
 		int CYCLE_MAX;					//最大周期
 		int CYCLE_MIN;					//最小周期
-		int PLAN_UPDATE_CYCLE;		//方案跟新周期
+		int PLAN_UPDATE_CYCLE;		//方案更新周期
 		int MasterUnitCycle;			//主要路口方案周期
 		int UnitCount;					//路口数量
+		bool STOP;
 		struct RegionsCoord_unit_info Unit[100];		//路口信息
 };
 

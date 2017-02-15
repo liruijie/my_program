@@ -9,10 +9,11 @@
 #define 	WebPort 			10010
 #define 	WebControlPort	10011
 
+#define	Speed				1.5
 
-#define straight_percent 	0.7
-#define left_percent 		0.2
-#define right_percent 		0.1
+#define straight_percent 	0.7					//直行比例
+#define left_percent 		0.2					//左转比例
+#define right_percent 		0.1					//右转比例
 
 int web_sock;
 int web_control_sock;
@@ -147,6 +148,7 @@ void * ReceiveWebData(void *arg)
 }
 /*
  *
+ *
  */
 void * WebControlReceive(void * arg)
 {
@@ -207,7 +209,7 @@ void * WebControlReceive(void * arg)
 			ret = recvfrom(web_control_sock,  data,  WebBufLen,  0,  (struct sockaddr *)&WebServerAddr, (socklen_t *) &socklen);
 			if(ret==-1)
 			{
-				return (void *)0;;
+				return (void *)0;
 			}
 			else if(ret == 0)
 			{
@@ -1272,6 +1274,7 @@ void * RegionsCoordinate_pthread(void *arg)
 	Statement *_stmt = NULL;
 	ResultSet *Result;
 	char sqlbuf[200];
+	int temp_t;
 	int coor_id = *((int *)arg);
 	pthread_detach(pthread_self());
 	prctl(PR_SET_NAME, (unsigned long)"RegionsCoordinate");
@@ -1327,6 +1330,7 @@ void * RegionsCoordinate_pthread(void *arg)
 	}
 	RegionsCoord.UnitCount = j;
 
+	RegionsCoord.STOP = false;
 _StartCoordinate:
 	//把所有路口的IS_Coordinated（参与协调标志清零）
 
@@ -1342,9 +1346,18 @@ _StartCoordinate:
 	}
 	//下发方案
 
-	sleep(30* 60);
+	//sleep(30* 60);
+	for(temp_t = 0; temp_t < (30* 60); temp_t++)
+	{
+		sleep(1);
+		if(RegionsCoord.STOP == true)
+			goto _EndCoordinate;
+	}
 goto _StartCoordinate;
 
+
+_EndCoordinate:
+	DisconnectOracle(&_conn,&_stmt);
 	return (void *)0;
 }
 
@@ -1455,13 +1468,55 @@ void ITC_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 			}
 			RegionsCoord.Unit[i].flow += RegionsCoord.Unit[i].Stage[j].flow;
 		}
+		//如果是主要路口   计算周期
+		if(RegionsCoord.Unit[i].IS_MASTER == 1)
+		{
+			RegionsCoord.MasterUnitCycle = RegionsCoord.Unit[i].flow / Speed;
+
+			if(RegionsCoord.MasterUnitCycle > RegionsCoord.CYCLE_MAX)
+				RegionsCoord.MasterUnitCycle = RegionsCoord.CYCLE_MAX;
+			else if(RegionsCoord.MasterUnitCycle < RegionsCoord.CYCLE_MIN)
+				RegionsCoord.MasterUnitCycle = RegionsCoord.CYCLE_MIN;
+		}
+
+
 		//得到协调方案各阶段的放行时间
 		for(j=0;j<RegionsCoord.Unit[i].StageCount;j++)
 		{
-			RegionsCoord.Unit[i].Stage[j].green_time = PlanTime * RegionsCoord.Unit[i].Stage[j].flow / RegionsCoord.Unit[i].flow;
+			RegionsCoord.Unit[i].Stage[j].green_time = RegionsCoord.MasterUnitCycle * RegionsCoord.Unit[i].Stage[j].flow / RegionsCoord.Unit[i].flow;
 		}
 
+		//根据放行时间得到协调方向（路口不一定参与协调，为后面规划协调做准备）
+
+
+		//删除原来的方案
+		sprintf(sqlbuf,"delete from UNIT_COORD_PLAN_TIME_TEMP where UNIT_ID = %d",RegionsCoord.Unit[i].ID);
+		ExcuteSql(sqlbuf);
+		sprintf(sqlbuf,"delete from UNIT_COORD_PLAN_TEMP where UNIT_ID = %d",RegionsCoord.Unit[i].ID);
+		ExcuteSql(sqlbuf);
+
 		//将方案保存到数据库
+		sprintf(sqlbuf,"insert into UNIT_COORD_PLAN_TEMP(UNIT_ID,CYCLELEN,COORDPHASENO,OFFSET) values(%d,%d,0,0)",RegionsCoord.Unit[i].ID,RegionsCoord.MasterUnitCycle);
+		ExcuteSql(sqlbuf);
+		sprintf(sqlbuf,"insert into UNIT_COORD_PLAN_TIME_TEMP(UNIT_ID,STAGE_NO,STAGE_ID,GREEN) values(%d,:x1,:x2,:x3)",RegionsCoord.Unit[i].ID);
+		_stmt->setSQL(sqlbuf);
+		_stmt->setMaxIterations(RegionsCoord.Unit[i].StageCount);
+		_stmt->setMaxParamSize(1,sizeof(int));
+		_stmt->setMaxParamSize(2,sizeof(int));
+		_stmt->setMaxParamSize(3,sizeof(int));
+
+		for(j=0;j<RegionsCoord.Unit[i].StageCount;j++)
+		{
+			if(j != 0 )
+			{
+				_stmt->addIteration();
+			}
+			_stmt->setNumber(1,RegionsCoord.Unit[i].Stage[j].num);
+			_stmt->setNumber(2,RegionsCoord.Unit[i].Stage[j].id);
+			_stmt->setNumber(3,RegionsCoord.Unit[i].Stage[j].green_time);
+		}
+		_stmt->executeUpdate();
+
 
 		//判断是不是协调路口  如果是就找到协调方向  根据协调方向将相邻下一个路口（该路口在协调区域范围内）设置成协调路口
 		if(RegionsCoord.Unit[i].IS_Coordinated == 1)
@@ -1480,23 +1535,23 @@ void ITC_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
  */
 void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 {
-	struct CANALIZATION_CFG Canalization[16];
+	//struct CANALIZATION_CFG Canalization[16];
 	ResultSet *Result;
 
 	int i=index;		//i 路口下标
-	int j=0,k=0;		//j 阶段下标    k 相位下标
+	int j=0;//k=0;		//j 阶段下标    k 相位下标
 	int temp_t=0;
 	char sqlbuf[200];
-	char Phase[100];
-	char *PhaseID;
+	//char Phase[100];
+	//char *PhaseID;
 	char canalization_buf[100];
-	int canalization_id[16];
-	int canalization_count;
+	int canalization_id[16];				//渠化关联ID
+	int canalization_count;					//渠化id个数
 	char *cana_id;
 
 
 	struct RegionsCoord_ZKTD_Detector ZKTD_Detector[16];
-	int detect_count=0;
+	int detect_count = 0;
 	//int exit_dir_flow[16];
 	//渠化ID 释义
 	//			1	南左转			2	南调头			3	南直行			4	西左转			5	西直行			6	西右转			7	西调头			8	北左转
@@ -1541,7 +1596,7 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 	canalization_count = temp_t;
 
 
-	//查询路口的检测器id和方向
+	//通过渠化ID查询路口的检测器id和入口方向
 	sprintf(sqlbuf,"select d.detector_id,d.direction from ITC_CFG_DETECTOR_DETAIL d where d.signal_id=%d and d.direction in("
               	  	  	  "select distinct c.direction_enter from UNIT_CANALIZATION_CFG c where c.id in(%s))",RegionsCoord.Unit[i].ID,canalization_buf);
 	Result = _stmt->executeQuery(sqlbuf);
@@ -1555,7 +1610,7 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 	_stmt->closeResultSet(Result);
 	detect_count = temp_t;
 
-	//查询检测器流量和计算相关出口方向流量
+	//根据检测器ID查询检测器流量和计算相关出口方向流量
 	for(temp_t=0;temp_t < detect_count;temp_t++)
 	{
 		memset(sqlbuf,'\0',sizeof(sqlbuf));
@@ -1648,15 +1703,15 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 						//循环所有的渠化ID,通过ID判断出口方向，得出流量分配比例
 						for(temp_m=0;temp_m<canalization_count;temp_m++)
 						{
-							if(canalization_id[temp_m] == (SE+1))     		//南右转
+							if(canalization_id[temp_m] == (SE + 1))     		//南右转
 							{
 								RegionsCoord.Unit[i].ZKTD_LaneFlow[SE] = 	ZKTD_Detector[temp_t].flow * right_percent;
 							}
-							else if(canalization_id[temp_m] == (SN+1))		//南直行
+							else if(canalization_id[temp_m] == (SN + 1))		//南直行
 							{
 								RegionsCoord.Unit[i].ZKTD_LaneFlow[SN] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
-							else if(canalization_id[temp_m] == (SW+1))		//南左转
+							else if(canalization_id[temp_m] == (SW + 1))		//南左转
 							{
 								RegionsCoord.Unit[i].ZKTD_LaneFlow[SW] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
@@ -1684,15 +1739,15 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 						//循环所有的渠化ID,通过ID判断出口方向，得出流量分配比例
 						for(temp_m=0;temp_m<canalization_count;temp_m++)
 						{
-							if(canalization_id[temp_m] == (NW+1))     		//北右转
+							if(canalization_id[temp_m] == (NW + 1))     		//北右转
 							{
 								RegionsCoord.Unit[i].ZKTD_LaneFlow[NW] = ZKTD_Detector[temp_t].flow * right_percent;
 							}
-							else if(canalization_id[temp_m] == (NS+1))		//北直行
+							else if(canalization_id[temp_m] == (NS + 1))		//北直行
 							{
 								RegionsCoord.Unit[i].ZKTD_LaneFlow[NS] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
-							else if(canalization_id[temp_m] == (NE+1))		//北左转
+							else if(canalization_id[temp_m] == (NE + 1))		//北左转
 							{
 								RegionsCoord.Unit[i].ZKTD_LaneFlow[NE] = 	ZKTD_Detector[temp_t].flow * straight_percent;
 							}
@@ -1735,12 +1790,14 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 	RegionsCoord.Unit[i].StageCount = j;
 
 	char temp_buf[20];
+	RegionsCoord.Unit[i].flow = 0;
 	for(j = 0; j<RegionsCoord.Unit[i].StageCount;j++)
 	{
 		memset(sqlbuf,'\0',sizeof(sqlbuf));
 		//通过渠化关联,查询放行相位包含的ID，然后配合上面得到的各个检测器出口流量分配的值，算出各个阶段的流量
-		sprintf(sqlbuf,"select canalization_id from UNIT_PHASE_CANALIZATION_CFG t where t.signal_id=%d and t.phase_id=%d",RegionsCoord.Unit[i].ID);
+		sprintf(sqlbuf,"select canalization_id from UNIT_PHASE_CANALIZATION_CFG t where t.signal_id=%d and t.phase_id=%d",RegionsCoord.Unit[i].ID,RegionsCoord.Unit[i].Stage[j].id);
 		Result = _stmt->executeQuery(sqlbuf);
+		RegionsCoord.Unit[i].Stage[j].flow = 0;
 		if(Result->next() != 0)
 		{
 			memset(RegionsCoord.Unit[i].Stage[j].ZKTD_Lane,'\0',20);
@@ -1749,12 +1806,11 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 			memset(temp_buf,'\0',sizeof(temp_buf));
 			sprintf(temp_buf,RegionsCoord.Unit[i].Stage[j].ZKTD_Lane);
 			cana_id = strtok(temp_buf,",");
-			RegionsCoord.Unit[i].Stage[j].flow = 0;
 			while(cana_id != NULL)
 			{
 				temp_t = 0;
 				temp_t = atoi(cana_id);
-				if((temp_t >= 0) && (temp_t <= 16 ))		//渠化关联ID有效
+				if((temp_t >= 0) && (temp_t < 16 ))		//渠化关联ID有效
 				{
 					RegionsCoord.Unit[i].Stage[j].flow = RegionsCoord.Unit[i].Stage[j].flow + RegionsCoord.Unit[i].ZKTD_LaneFlow[temp_t-1];
 				}
@@ -1766,7 +1822,59 @@ void ZKTD_CoordinatePlan(int index,Connection *_conn,Statement *_stmt )
 			//待协商处理
 			_stmt->closeResultSet(Result);
 		}
+		//计算路口的流量
+		RegionsCoord.Unit[i].flow = RegionsCoord.Unit[i].flow + RegionsCoord.Unit[i].Stage[j].flow;
 	}
+
+	//如果是主要路口   计算周期
+	if(RegionsCoord.Unit[i].IS_MASTER == 1)
+	{
+		RegionsCoord.MasterUnitCycle = RegionsCoord.Unit[i].flow / Speed;
+
+		if(RegionsCoord.MasterUnitCycle > RegionsCoord.CYCLE_MAX)
+			RegionsCoord.MasterUnitCycle = RegionsCoord.CYCLE_MAX;
+		else if(RegionsCoord.MasterUnitCycle < RegionsCoord.CYCLE_MIN)
+			RegionsCoord.MasterUnitCycle = RegionsCoord.CYCLE_MIN;
+	}
+
+	//计算百分比，算出个阶段放行时间
+	for(j = 0; j<RegionsCoord.Unit[i].StageCount;j++)
+	{
+		RegionsCoord.Unit[i].Stage[j].green_time = RegionsCoord.MasterUnitCycle * RegionsCoord.Unit[i].Stage[j].flow /RegionsCoord.Unit[i].flow;
+	}
+
+	//删除原来的方案
+	sprintf(sqlbuf,"delete from UNIT_COORD_PLAN_TIME_TEMP where UNIT_ID = %d",RegionsCoord.Unit[i].ID);
+	ExcuteSql(sqlbuf);
+	sprintf(sqlbuf,"delete from UNIT_COORD_PLAN_TEMP where UNIT_ID = %d",RegionsCoord.Unit[i].ID);
+	ExcuteSql(sqlbuf);
+
+	//将方案保存到数据库
+	sprintf(sqlbuf,"insert into UNIT_COORD_PLAN_TEMP(UNIT_ID,CYCLELEN,COORDPHASENO,OFFSET) values(%d,%d,0,0)",RegionsCoord.Unit[i].ID,RegionsCoord.MasterUnitCycle);
+	ExcuteSql(sqlbuf);
+	sprintf(sqlbuf,"insert into UNIT_COORD_PLAN_TIME_TEMP(UNIT_ID,STAGE_NO,STAGE_ID,GREEN) values(%d,:x1,:x2,:x3)",RegionsCoord.Unit[i].ID);
+	_stmt->setSQL(sqlbuf);
+	_stmt->setMaxIterations(RegionsCoord.Unit[i].StageCount);
+	_stmt->setMaxParamSize(1,sizeof(int));
+	_stmt->setMaxParamSize(2,sizeof(int));
+	_stmt->setMaxParamSize(3,sizeof(int));
+
+	for(j=0;j<RegionsCoord.Unit[i].StageCount;j++)
+	{
+		if(j != 0 )
+		{
+			_stmt->addIteration();
+		}
+		_stmt->setNumber(1,RegionsCoord.Unit[i].Stage[j].num);
+		_stmt->setNumber(2,RegionsCoord.Unit[i].Stage[j].id);
+		_stmt->setNumber(3,RegionsCoord.Unit[i].Stage[j].green_time);
+	}
+	_stmt->executeUpdate();
+
+
+	//找到流量最大的阶段和阶段中流量最大的通道，得到要协调的相位
+
+
 
 
 

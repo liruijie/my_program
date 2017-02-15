@@ -16,9 +16,8 @@ struct QueueInfo Queue[QueueNum];
 struct QueueInfo *QueueHead,*QueueTail;
 /*发送更新信号机参数命令时加锁，防止别的连接进行更新*/
 pthread_mutex_t UpdateSignalParameter;
-
 /*当解析信号机数据或开始向平台(TCP建立的连接)上报时加锁，防止两个线程互相更改标志位
-对应的两个线程分别是void *ReportRealStatus(void *arg)  和
+对应的两个线程分别是void *ReportRealStatus(void *arg)  和 void *AnalyzeSignalData(void *arg)
 
 当上报时，解析线程停止解析数据，接收到的数据全部进入队列
 当解析数据时，上报线程停止上报，等待解析完成*/
@@ -46,7 +45,6 @@ void *ItcServerCommt(void *arg)
 	}
 
 	pthread_mutex_init(&UpdateSignalParameter,NULL);
-	UpdateParam(1000);
 
 	sleep(5);
 	while(1)

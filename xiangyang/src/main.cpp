@@ -43,6 +43,7 @@ int main()
 	//和Web平台通信
 	CommunicateWithWeb();
 	//获取流量数据
+	GetFlowDataFromServer();
 
 	while(1)
 		sleep(60*60);

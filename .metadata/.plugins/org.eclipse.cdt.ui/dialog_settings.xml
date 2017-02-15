@@ -56,6 +56,7 @@
 		<item value="false" key="caseSensitive"/>
 		<item value="227191" key="searchFlags"/>
 		<list key="previousPatterns">
+			<item value="switch"/>
 			<item value="status"/>
 			<item value="ExistSignalNum"/>
 			<item value="Subscribe"/>

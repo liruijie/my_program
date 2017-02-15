@@ -1615,7 +1615,7 @@ int JudgeOperateObject(xmlXPathContextPtr Xpath)
 		return RegionsCoordinate;
 	}
 
-	//判断是不是降级
+	//判断是不是校时
 	Xresult = xmlXPathEvalExpression((xmlChar*)"//SDO_TimeServer", Xpath);
 	if(CheckXmlResult(Xresult) == true)
 	{
@@ -1623,7 +1623,7 @@ int JudgeOperateObject(xmlXPathContextPtr Xpath)
 		return CheckTime;
 	}
 
-	//判断是不是区域协调
+	//判断是不是重启
 	Xresult = xmlXPathEvalExpression((xmlChar*)"//Restart", Xpath);
 	if(CheckXmlResult(Xresult) == true)
 	{

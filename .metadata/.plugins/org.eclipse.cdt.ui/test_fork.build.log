@@ -1,0 +1,6 @@
+09:32:30 **** Incremental Build of configuration Debug for project test_fork ****
+make all 
+make: 对“all”无需做任何事。
+
+09:32:30 Build Finished (took 126ms)
+

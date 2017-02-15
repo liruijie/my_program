@@ -2,9 +2,9 @@
 <section name="Workbench">
 	<item value="true" key="CommitDialog.showUntracked"/>
 	<list key="CommitDialog.authorValues">
+		<item value="Your Name &lt;email@example.com&gt;"/>
 		<item value="李瑞杰 &lt;email@example.com&gt;"/>
 		<item value="liruijie&lt;email@example.com&gt;"/>
-		<item value="Your Name &lt;email@example.com&gt;"/>
 	</list>
 	<list key="CommitDialog.committerValues">
 		<item value="Your Name &lt;email@example.com&gt;"/>
