@@ -1,1 +1,0 @@
-delete from  PLAN_CONFIG  where signal_id = 1  and to_number(plan_id)<129 
